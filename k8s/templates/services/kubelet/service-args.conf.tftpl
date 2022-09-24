@@ -1,0 +1,33 @@
+KUBELET_HOSTNAME="
+    --hostname-override=${ instance_name }.${base_domain}
+    --node-labels=node.kubernetes.io/${instance_type}
+"
+KUBELET_BASIC_ARGS="
+    --register-node=true
+    --image-pull-progress-deadline=2m
+    --v=2
+"
+KUBELET_AUTH_ARGS="
+    --anonymous-auth="false"
+"
+KUBELET_CNI_ARGS="
+    --cni-bin-dir=/opt/cni/bin
+    --cni-conf-dir=/etc/cni/net.d
+    --network-plugin=cni
+"
+KUBELET_CONFIGS_ARGS="
+    --config=${base_path.kubernetes_path}/kubelet/config.yaml
+    --root-dir=/var/lib/kubelet
+    --register-node=true
+    --image-pull-progress-deadline=2m
+    --v=2
+"
+KUBELET_KUBECONFIG_ARGS="
+    --kubeconfig=${base_path.kubernetes_path}/kubelet/kubeconfig
+    --bootstrap-kubeconfig=${base_path.kubernetes_path}/kubelet/bootstrap-kubeconfig
+"
+KUBELET_RUNTIME_ARGS="
+    --container-runtime=remote
+    --container-runtime-endpoint=/run/containerd/containerd.sock
+    --pod-infra-container-image=k8s.gcr.io/pause:3.6
+"

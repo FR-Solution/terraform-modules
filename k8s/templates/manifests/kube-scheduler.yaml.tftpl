@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-scheduler
+    command:
+    - kube-scheduler
+    args:
+      - --authentication-kubeconfig=${base_path.kubernetes_path}/kube-scheduler/kubeconfig 
+      - --authorization-kubeconfig=${base_path.kubernetes_path}/kube-scheduler/kubeconfig 
+      - --kubeconfig=${base_path.kubernetes_path}/kube-scheduler/kubeconfig 
+      - --tls-cert-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-scheduler-server"].certificates["kube-scheduler-server"].key-keeper-args.host_path}/kube-scheduler-server.pem 
+      - --tls-private-key-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-scheduler-server"].certificates["kube-scheduler-server"].key-keeper-args.host_path}/kube-scheduler-server-key.pem 
+      - --bind-address=0.0.0.0
+      - --leader-elect=true
+      - --secure-port=10259
+    image: ${kube-scheduler-image}:${kubernetes-version}
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 100m
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: ${base_path.kubernetes_path}/kube-scheduler
+      name: k8s-kube-scheduler-configs
+      readOnly: true
+    - mountPath: ${base_local_path_certs}/certs
+      name: k8s-certs
+      readOnly: true
+    - mountPath: ${base_local_path_certs}/ca
+      name: k8s-ca
+      readOnly: true
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+      seccompProfile:
+        type: RuntimeDefault 
+  volumes:
+  - hostPath:
+      path: ${base_path.kubernetes_path}/kube-scheduler
+      type: DirectoryOrCreate
+    name: k8s-kube-scheduler-configs
+  - hostPath:
+      path: ${base_local_path_certs}/certs
+      type: DirectoryOrCreate
+    name: k8s-certs
+  - hostPath:
+      path: ${base_local_path_certs}/ca
+      type: DirectoryOrCreate
+    name: k8s-ca
+status: {}

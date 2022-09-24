@@ -1,0 +1,292 @@
+# #cloud-config
+# users:
+#   - name: dkot
+#     sudo: ALL=(ALL) NOPASSWD:ALL
+#     groups: users, admin
+#     shell: /bin/bash
+#     lock_passwd: true
+#     ssh_authorized_keys:
+#       - ${ ssh_key }
+
+# runcmd:
+#  - /usr/bin/key-keeper -config-dir /etc/kubernetes/pki -config-regexp .*vault-config 
+
+# write_files:
+
+#   - path: /etc/kubernetes/kubelet/kubeconfig
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       ---
+#       apiVersion: v1
+#       clusters:
+#       - cluster:
+#           certificate-authority: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+#           server: https://api.${cluster_name}.${base_domain}:6443
+#         name: kubernetes
+#       contexts:
+#       - context:
+#           cluster: kubernetes
+#           namespace: default
+#           user: kubelet
+#         name: kubelet@kubernetes
+#       current-context: kubelet@kubernetes
+#       kind: Config
+#       preferences: {}
+#       users:
+#       - name: kubelet
+#         user:
+#           client-certificate: /etc/kubernetes/pki/certs/kubelet/kubelet-client.pem
+#           client-key: /etc/kubernetes/pki/certs/kubelet/kubelet-client-key.pem
+
+#   - path: /etc/kubernetes/kubelet/config.yaml
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       apiVersion: kubelet.config.k8s.io/v1beta1
+#       kind: KubeletConfiguration
+#       authentication:
+#         anonymous:
+#           enabled: false
+#         webhook:
+#           cacheTTL: 0s
+#           enabled: true
+#         x509:
+#           clientCAFile: "/etc/kubernetes/pki/ca/kubernetes-ca.pem"
+#       tlsCertFile: /etc/kubernetes/pki/certs/kubelet/kubelet-server.pem
+#       tlsPrivateKeyFile: /etc/kubernetes/pki/certs/kubelet/kubelet-server-key.pem
+#       authorization:
+#         mode: Webhook
+#         webhook:
+#           cacheAuthorizedTTL: 0s
+#           cacheUnauthorizedTTL: 0s
+#       cgroupDriver: systemd
+#       clusterDNS:
+#         - "29.64.0.10"
+#       clusterDomain: 
+#       cpuManagerReconcilePeriod: 0s
+#       evictionPressureTransitionPeriod: 0s
+#       fileCheckFrequency: 0s
+#       healthzBindAddress: 127.0.0.1
+#       healthzPort: 10248
+#       httpCheckFrequency: 0s
+#       imageMinimumGCAge: 0s
+#       logging:
+#         flushFrequency: 0
+#         options:
+#           json:
+#             infoBufferSize: "0"
+#         verbosity: 0
+#       memorySwap: {}
+#       nodeStatusReportFrequency: 0s
+#       nodeStatusUpdateFrequency: 0s
+#       resolvConf: /etc/resolv.conf
+#       rotateCertificates: true
+#       runtimeRequestTimeout: 0s
+#       serverTLSBootstrap: true
+#       shutdownGracePeriod: 0s
+#       shutdownGracePeriodCriticalPods: 0s
+#       staticPodPath: "/etc/kubernetes/manifests"
+#       streamingConnectionIdleTimeout: 0s
+#       syncFrequency: 0s
+#       volumeStatsAggPeriod: 0s
+      
+#   - path: /etc/kubernetes/kubelet/service/args-custom-hostname.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_HOSTNAME="
+#           --hostname-override=${ instance_name }.${base_domain}
+#           --node-labels=node.kubernetes.io/${instance_type}
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-custom-cni.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_CNI_ARGS="
+#           --cni-bin-dir=/opt/cni/bin
+#           --cni-conf-dir=/etc/cni/net.d
+#           --network-plugin=cni
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-custom-runtime.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_RUNTIME_ARGS="
+#           --container-runtime=remote
+#           --container-runtime-endpoint=/run/containerd/containerd.sock
+#           --pod-infra-container-image=k8s.gcr.io/pause:3.6
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-custom-auth.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_AUTH_ARGS="
+#           --anonymous-auth="false"
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-custom-configs.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_CONFIGS_ARGS="
+#           --config=/etc/kubernetes/kubelet/config.yaml
+#           --root-dir=/var/lib/kubelet
+#           --register-node=true
+#           --image-pull-progress-deadline=2m
+#           --v=2
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-basic.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_BASIC_ARGS="
+#           --register-node=true
+#           --image-pull-progress-deadline=2m
+#           --v=2
+#       "
+#   - path: /etc/kubernetes/kubelet/service/args-custom-kubeconfig.env
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       KUBELET_KUBECONFIG_ARGS="
+#           --kubeconfig=/etc/kubernetes/kubelet/kubeconfig
+#           --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig
+#       "
+
+#   - path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       [Service]
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-hostname.env
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-cni.env
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-runtime.env
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-auth.env
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-configs.env
+#       EnvironmentFile=-/etc/kubernetes/kubelet/service/args-custom-kubeconfig.env
+
+#       ExecStart=
+#       ExecStart=/usr/bin/kubelet $KUBELET_HOSTNAME $KUBELET_CNI_ARGS $KUBELET_RUNTIME_ARGS $KUBELET_AUTH_ARGS $KUBELET_CONFIGS_ARGS $KUBELET_BASIC_ARGS $KUBELET_KUBECONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS $KUBELET_ARGS
+
+
+#   - path: /etc/kubernetes/pki/vault-config
+#     owner: root:root
+#     permissions: '0644'
+#     content: |
+#       ---
+#       issuers:
+    
+#         - name: kubernetes-ca
+#           vault:
+#             server: "http://51.250.67.8:9200"
+#             auth:
+#               caBundle: ""
+#               tlsInsecure: true
+#               bootstrap:
+#                 token: "${temporary_token}"
+#               appRole:
+#                 name: "test-role"
+#                 path: "clusters/${cluster_name}/approle"
+#                 roleIDLocalPath: /etc/kubernetes/pki/roleIDLocalPath
+#                 secretIDLocalPath: /etc/kubernetes/pki/secretIDLocalPath
+#             timeout: 15s
+
+#         - name: kubelet-client
+#           vault:
+#             role:
+#               name: "kubelet-client"
+#               path: "clusters/${cluster_name}/pki/kubernetes"
+#             server: "http://51.250.67.8:9200"
+#             auth:
+#               caBundle: ""
+#               tlsInsecure: true
+#               bootstrap:
+#                 token: "${temporary_token}"
+#               appRole:
+#                 name: "test-role"
+#                 path: "clusters/${cluster_name}/approle"
+#                 roleIDLocalPath: /etc/kubernetes/pki/roleIDLocalPath
+#                 secretIDLocalPath: /etc/kubernetes/pki/secretIDLocalPath
+#             timeout: 15s
+
+#         - name: kubelet-server
+#           vault:
+#             role:
+#               name: "kubelet-server"
+#               path: "clusters/${cluster_name}/pki/kubernetes"
+#             server: "http://51.250.67.8:9200"
+#             auth:
+#               caBundle: ""
+#               tlsInsecure: true
+#               bootstrap:
+#                 token: "${temporary_token}"
+#               appRole:
+#                 name: "test-role"
+#                 path: "clusters/${cluster_name}/approle"
+#                 roleIDLocalPath: /etc/kubernetes/pki/roleIDLocalPath
+#                 secretIDLocalPath: /etc/kubernetes/pki/secretIDLocalPath
+#             timeout: 15s
+
+#       certificates:
+    
+#         - name: kubernetes-ca
+#           issuerRef:
+#             name: kubernetes-ca
+#           isCa: true
+#           ca:
+#             exportedKey: false
+#             generate: false
+#           vault:
+#             role: ""
+#             path: "clusters/${cluster_name}/pki/kubernetes"
+#             rootCAPath: "clusters/${cluster_name}/pki/root"
+#           hostPath: /etc/kubernetes/pki/ca/
+
+#         - name: kubelet-client
+#           issuerRef:
+#             name: kubelet-client
+#           vault:
+#             role: "kubelet-client"
+#             path: "clusters/${cluster_name}/pki/kubernetes"
+#           spec:
+#             privateKey:
+#               algorithm: RSA
+#               encoding: PKCS1
+#               size: 4096
+#             subject:
+#               commonName: "system:node:${ instance_name }.${base_domain}"
+#               organizations:
+#                 - system:nodes
+#             usages:
+#               - client auth
+#             ttl: 100h
+#           renewBefore: 50h
+#           hostPath: "/etc/kubernetes/pki/certs/kubelet/"
+
+#         - name: kubelet-server
+#           issuerRef:
+#             name: kubelet-server
+#           vault:
+#             role: "kubelet-server"
+#             path: "clusters/${cluster_name}/pki/kubernetes"
+#           spec:
+#             subject:
+#               commonName: "system:node:${ instance_name }.${base_domain}"
+#               organizations:
+#                 - system:nodes
+#             privateKey:
+#               algorithm: RSA
+#               encoding: PKCS1
+#               size: 4096
+#             usages:
+#               - server auth
+#             hostnames:
+#               - "localhost"
+#               - "${ instance_name }.${base_domain}"
+#             ipAddresses:
+#               interfaces:
+#                 - lo
+#                 - eth0
+#             ttl: 100h
+#           renewBefore: 50h
+#           hostPath: "/etc/kubernetes/pki/certs/kubelet/"

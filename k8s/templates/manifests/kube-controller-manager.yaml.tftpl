@@ -1,0 +1,147 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-controller-manager
+    tier: control-plane
+  name: kube-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-controller-manager
+    command:
+      - kube-controller-manager
+    args:
+      - --tls-cert-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-controller-manager-server"].certificates["kube-controller-manager-server"].key-keeper-args.host_path}/kube-controller-manager-server.pem 
+      - --tls-private-key-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-controller-manager-server"].certificates["kube-controller-manager-server"].key-keeper-args.host_path}/kube-controller-manager-server-key.pem 
+      - --client-ca-file=${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem 
+      # Не требуется, если используется внешний модуль подписи сертификатов
+      #- --cluster-signing-key-file=${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca-key.pem
+      #- --cluster-signing-cert-file=${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem 
+      - --requestheader-client-ca-file=${ssl.intermediate["front-proxy-ca"].host_path}/front-proxy-ca.pem 
+      - --service-account-private-key-file=${base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem
+      - --kubeconfig=${base_path.kubernetes_path}/kube-controller-manager/kubeconfig 
+      - --authentication-kubeconfig=${base_path.kubernetes_path}/kube-controller-manager/kubeconfig 
+      - --authorization-kubeconfig=${base_path.kubernetes_path}/kube-controller-manager/kubeconfig
+      - --root-ca-file=${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem
+      - --bind-address=0.0.0.0
+      - --v=2
+      - --secure-port=10257
+      - --allocate-node-cidrs=true
+      - --cluster-cidr=${service_cidr}
+      - --cluster-name=kubernetes
+      - --concurrent-deployment-syncs=5
+      - --concurrent-endpoint-syncs=5
+      - --concurrent-namespace-syncs=10
+      - --concurrent-replicaset-syncs=20
+      - --concurrent-resource-quota-syncs=5
+      - --horizontal-pod-autoscaler-sync-period=30s
+      - --kube-api-burst=120
+      - --kube-api-qps=100
+      - --leader-elect=true
+      - --leader-elect-lease-duration=15s
+      - --leader-elect-renew-deadline=10s
+      - --leader-elect-retry-period=2s
+      - --namespace-sync-period=2m0s
+      - --node-cidr-mask-size=24
+      - --node-monitor-grace-period=40s
+      - --node-monitor-period=5s
+      - --node-startup-grace-period=1m0s
+      - --pod-eviction-timeout=30s
+      - --profiling=false
+      - --resource-quota-sync-period=5m0s
+      - --terminated-pod-gc-threshold=0
+      - --use-service-account-credentials=true
+      - --controllers=*,bootstrapsigner,tokencleaner,cloud-node-lifecycle,csrapproving,csrcleaner,csrsigning
+      - --authorization-always-allow-paths=/healthz,/metrics
+      - --feature-gates=RotateKubeletServerCertificate=true
+    image: ${kube-controller-manager-image}:${kubernetes-version}
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 200m
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10257
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10257
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: ca-certs
+      readOnly: true
+    - mountPath: /etc/ca-certificates
+      name: etc-ca-certificates
+      readOnly: true
+    - mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+      name: flexvolume-dir
+    - mountPath: /usr/local/share/ca-certificates
+      name: usr-local-share-ca-certificates
+      readOnly: true
+    - mountPath: /usr/share/ca-certificates
+      name: usr-share-ca-certificates
+      readOnly: true
+    - mountPath: ${base_path.kubernetes_path}/kube-controller-manager
+      name: k8s-kube-controller-manager-configs
+      readOnly: true
+    - mountPath: ${base_local_path_certs}/certs
+      name: k8s-certs
+      readOnly: true
+    - mountPath: ${base_local_path_certs}/ca
+      name: k8s-ca
+      readOnly: true
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+      seccompProfile:
+        type: RuntimeDefault 
+  volumes:
+  - hostPath:
+      path: /etc/ssl/certs
+      type: DirectoryOrCreate
+    name: ca-certs
+  - hostPath:
+      path: /etc/ca-certificates
+      type: DirectoryOrCreate
+    name: etc-ca-certificates
+  - hostPath:
+      path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+      type: DirectoryOrCreate
+    name: flexvolume-dir 
+  - hostPath:
+      path: ${base_local_path_certs}/certs
+      type: DirectoryOrCreate
+    name: k8s-certs
+  - hostPath:
+      path: ${base_local_path_certs}/ca
+      type: DirectoryOrCreate
+    name: k8s-ca
+  - hostPath:
+      path: ${base_path.kubernetes_path}/kube-controller-manager
+      type: DirectoryOrCreate
+    name: k8s-kube-controller-manager-configs
+  - hostPath:
+      path: /usr/local/share/ca-certificates
+      type: DirectoryOrCreate
+    name: usr-local-share-ca-certificates
+  - hostPath:
+      path: /usr/share/ca-certificates
+      type: DirectoryOrCreate
+    name: usr-share-ca-certificates
+status: {}

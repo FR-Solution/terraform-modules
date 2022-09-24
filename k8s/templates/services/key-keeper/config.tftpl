@@ -1,0 +1,205 @@
+---
+issuers:
+%{ for secret_name, secret in secrets }
+  - name: ${secret_name}
+    vault:
+      server: ${vault_config.server}
+      auth:
+        caBundle: ${vault_config.caBundle}
+        tlsInsecure: ${vault_config.tlsInsecure}
+        bootstrap:
+          token: ${bootstrap_tokens_kv[secret_name].client_token}
+        appRole:
+          name: ${secret_name}
+          path: "${base_vault_path_approle}"
+          secretIDLocalPath: ${base_local_path_vault}/${secret_name}/secret-id
+          roleIDLocalPath: ${base_local_path_vault}/${secret_name}/role-id
+      kv:
+        path: ${secret.path}
+      timeout: 15s
+%{~ endfor ~}
+
+%{ for intermediate_name, intermediate in intermediates }
+  - name: ${intermediate_name}
+    vault:
+      server: ${vault_config.server}
+      auth:
+        caBundle: ${vault_config.caBundle}
+        tlsInsecure: ${vault_config.tlsInsecure}
+        bootstrap:
+          token: ${bootstrap_tokens_ca[intermediate_name].client_token}
+        appRole:
+          name: ${intermediate_name}
+          path: "${base_vault_path_approle}"
+          secretIDLocalPath: ${base_local_path_vault}/${intermediate_name}/secret-id
+          roleIDLocalPath: ${base_local_path_vault}/${intermediate_name}/role-id
+      certificate:
+        CAPath: "${intermediate.path}"
+        rootCAPath: "${intermediate.root_path}"
+      timeout: 15s
+
+  %{~ for issuer_name, issuers in intermediate.issuers ~}
+  - name: ${issuer_name}
+    vault:
+      server: ${vault_config.server}
+      auth:
+        caBundle: ${vault_config.caBundle}
+        tlsInsecure: ${vault_config.tlsInsecure}
+        bootstrap:
+          token: ${bootstrap_tokens_sign[format("%s:%s:%s", intermediate_name, issuer_name, availability_zone)].client_token}
+        appRole:
+          name: ${issuer_name}-${availability_zone}
+          path: "${base_vault_path_approle}"
+          secretIDLocalPath: ${base_local_path_vault}/${issuer_name}/secret-id
+          roleIDLocalPath: ${base_local_path_vault}/${issuer_name}/role-id
+      certificate:
+        role: ${issuer_name}
+        CAPath: "${intermediate.path}"
+      timeout: 15s
+
+  %{~ endfor ~}
+%{~ endfor ~}
+
+certificates:
+
+%{ for intermediate_name, intermediate in intermediates }
+  - name: ${intermediate_name}
+    issuerRef:
+      name: ${intermediate_name}
+    isCa: true
+    ca:
+      exportedKey: ${intermediate.exportedKey}
+      generate: ${intermediate.generate}
+    hostPath: "${intermediate.host_path}"
+
+  %{~ for issuer_name, issuers in intermediate.issuers ~}
+    %{~ for certificate_name, certificate in issuers.certificates ~}
+  - name: ${certificate_name}
+    issuerRef:
+      name: ${issuer_name}
+    spec:
+      subject:
+        %{~ if try(certificate["key-keeper-args"].spec.subject.commonName, "") != "" ~}
+          %{~ if contains(["kubelet-server", "kubelet-client"], issuer_name) == true ~}
+        commonName: "system:node:${ instance_name }.${base_domain}"
+          %{~ else ~}
+        commonName: "${certificate["key-keeper-args"].spec.subject.commonName}"
+          %{~ endif ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.country, []) != [] ~}
+          %{~ for country in certificate["key-keeper-args"].spec.subject.country ~}
+        country:
+          - ${country}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.localite, []) != [] ~}
+          %{~ for localite in certificate["key-keeper-args"].spec.subject.localite ~}
+        localite:
+          - ${localite}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.organization, []) != [] ~}
+          %{~ for organization in certificate["key-keeper-args"].spec.subject.organization ~}
+        organization:
+          - ${organization}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.organizationalUnit, []) != [] ~}
+          %{~ for organizationalUnit in certificate["key-keeper-args"].spec.subject.organizationalUnit ~}
+        organizationalUnit:
+          - ${organizationalUnit}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.province, []) != [] ~}
+          %{~ for province in certificate["key-keeper-args"].spec.subject.province ~}
+        province:
+          - ${province}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.postalCode, []) != [] ~}
+          %{~ for postalCode in certificate["key-keeper-args"].spec.subject.postalCode ~}
+        postalCode:
+          - ${postalCode}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.streetAddress, []) != [] ~}
+          %{~ for streetAddress in certificate["key-keeper-args"].spec.subject.streetAddress ~}
+        streetAddress:
+          - ${streetAddress}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.subject.serialNumber, []) != [] ~}
+          %{~ for serialNumber in certificate["key-keeper-args"].spec.subject.serialNumber ~}
+        serialNumber:
+          - ${serialNumber}
+          %{~ endfor ~}
+        %{~ endif ~}
+      %{~ if try(certificate["key-keeper-args"].spec.usages, base_certificate_atrs.spec.usages) != [] ~}
+      usage:
+      %{~ for usage in try(certificate["key-keeper-args"].spec.usages, base_certificate_atrs.spec.usages) ~}
+        - ${usage}
+      %{~ endfor ~}
+      %{~ endif ~}
+      privateKey:
+        algorithm: "${try(certificate["key-keeper-args"].spec.privateKey.algorithm, base_certificate_atrs.spec.privateKey.algorithm)}"
+        encoding: "${try(certificate["key-keeper-args"].spec.privateKey.encoding, base_certificate_atrs.spec.privateKey.encoding)}"
+        size: ${try(certificate["key-keeper-args"].spec.privateKey.size, base_certificate_atrs.spec.privateKey.size)}
+      %{~ if try(certificate["key-keeper-args"].spec.ipAddresses, base_certificate_atrs.spec.ipAddresses) != {} ~}
+      ipAddresses:
+        %{~ if try(certificate["key-keeper-args"].spec.ipAddresses.static, "") != "" ~}
+        static:
+          %{~ for static in certificate["key-keeper-args"].spec.ipAddresses.static~}
+          - ${static}
+          %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.ipAddresses.interfaces, []) != [] ~}
+        interfaces:
+        %{~ for interface in certificate["key-keeper-args"].spec.ipAddresses.interfaces ~}
+          - ${interface}
+        %{~ endfor ~}
+        %{~ endif ~}
+        %{~ if try(certificate["key-keeper-args"].spec.ipAddresses.dnsLookup, []) != [] ~}
+        dnsLookup:
+        %{~ for dnsLookup in certificate["key-keeper-args"].spec.ipAddresses.dnsLookup ~}
+          - ${dnsLookup}
+        %{~ endfor ~}
+          %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
+          - "${instance_name}.${base_domain}"
+          %{~ else ~}
+          %{~ endif ~}
+        %{~ endif ~}
+      %{~ endif ~}
+      ttl: ${try(certificate["key-keeper-args"].spec.ttl, base_certificate_atrs.spec.ttl)}
+      %{~ if try(certificate["key-keeper-args"].spec.hostnames, base_certificate_atrs.spec.hostnames) != [] ~}
+      hostnames:
+      %{~ for hostname in try(certificate["key-keeper-args"].spec.hostnames, base_certificate_atrs.spec.hostnames) ~}
+        - ${hostname}
+      %{~ endfor ~}
+          %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
+        - "${instance_name}.${base_domain}"
+          %{~ else ~}
+          %{~ endif ~}
+      %{~ endif ~}
+    renewBefore: ${try(certificate["key-keeper-args"].renewBefore, base_certificate_atrs.renewBefore)}
+    hostPath: "${certificate["key-keeper-args"].host_path}"
+    #   %{~ if try(certificate.labels.component, "") != "" ~}
+    #     %{~ if try(certificate.labels.trigger-command, "") != "" ~}
+    # trigger:
+    #   - ${try(certificate.labels.trigger-command, "")}
+    #     %{~ endif ~}
+    #   %{~ endif ~}
+
+    %{~ endfor ~}
+  %{~ endfor ~}
+%{~ endfor ~}
+
+secrets:
+%{ for secret_name, secret in secrets }
+  %{~ for key_name, key in secret.keys ~}
+  - name: ${secret_name}
+    issuerRef:
+      name: ${secret_name}
+    key: ${key_name}  
+    hostPath: ${key.host_path}
+  %{~ endfor ~}
+%{~ endfor ~}

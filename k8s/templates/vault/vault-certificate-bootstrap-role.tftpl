@@ -1,0 +1,9 @@
+%{for zone_name in keys(availability_zones) }
+path "auth/clusters/${cluster_name}/approle/role/${approle_name}-${zone_name}/role-id" {
+  capabilities = [ "read" ]
+}
+
+path "auth/clusters/${cluster_name}/approle/role/${approle_name}-${zone_name}/secret-id" {
+  capabilities = [ "update" ]
+} 
+%{endfor}

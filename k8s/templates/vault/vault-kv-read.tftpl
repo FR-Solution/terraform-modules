@@ -1,0 +1,15 @@
+path "clusters/${cluster_name}/kv/data/kube-apiserver-sa" {
+    capabilities = ["read"]
+}
+
+path "auth/clusters/${cluster_name}/approle/login" {
+  capabilities = [ "update" ]
+}
+
+path "auth/token/renew" {
+    capabilities = ["update"]
+}
+
+path "auth/token/renew-self" {
+    capabilities = ["update"]
+}
