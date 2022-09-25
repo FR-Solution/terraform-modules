@@ -3,7 +3,7 @@ issuers:
 %{ for secret_name, secret in secrets }
   - name: ${secret_name}
     vault:
-      server: ${vault_config.server}
+      server: ${vault_server}
       auth:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
@@ -22,7 +22,7 @@ issuers:
 %{ for intermediate_name, intermediate in intermediates }
   - name: ${intermediate_name}
     vault:
-      server: ${vault_config.server}
+      server: ${vault_server}
       auth:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
@@ -41,7 +41,7 @@ issuers:
   %{~ for issuer_name, issuers in intermediate.issuers ~}
   - name: ${issuer_name}
     vault:
-      server: ${vault_config.server}
+      server: ${vault_server}
       auth:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}

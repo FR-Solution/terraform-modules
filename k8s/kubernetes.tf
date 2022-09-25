@@ -108,7 +108,7 @@
 #     "spec" = {
 #       "vault" = {
 #         "path" = "${format("%s/sign/kubelet-peer-k8s-certmanager", local.ssl.intermediate.kubernetes-ca.path)}"
-#         "server" = var.vault_config.server
+#         "server" = var.vault_server
 #         "caBundle" = base64encode(vault_pki_secret_backend_cert.terrafor-kubeconfig.certificate)
 #         "auth" = {
 #             "appRole" = {

@@ -4,14 +4,19 @@ variable "instance_name" {
   type = string
   default = "default"
 }
+
+variable "vault_server" {
+  type = string
+  default = ""
+}
+
+
 variable "vault_config" {
   type = object({
-    server          = string
     caBundle        = string
     tlsInsecure     = bool
   })
   default = {
-    server      = ""
     caBundle    = ""
     tlsInsecure = true
   }
