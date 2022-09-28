@@ -89,7 +89,6 @@ locals {
 
       }
     }
-
     intermediate = {
       kubernetes-ca = {
         labels = {
@@ -523,9 +522,9 @@ locals {
                 "system:etcd-peer",
                 "system:etcd-server",
                 "localhost",
-                "*.${var.cluster_name}.${var.base_domain}",
                 "custom:etcd-peer",
-                "custom:etcd-server"
+                "custom:etcd-server",
+                local.wildcard_base_cluster_fqdn,
               ]
               client_flag     = true
               server_flag     = true
@@ -548,7 +547,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
-                      "${local.etcd_server_lb_fqdn}"
+                      # "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
                       static = [

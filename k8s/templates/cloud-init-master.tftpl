@@ -321,8 +321,8 @@ write_files:
 
       new_kubeconfig () {
         SRC_SSH_PORT=$(env | grep SSH_CONNECTION | awk '{print $2}')
-        cp -uf ${base_path.kubernetes_path}/kube-apiserver/kubeconfig /tmp/$\{USER\}.$\{SRC_SSH_PORT\}.kubeconfig
-        export KUBECONFIG=/tmp/$\{USER\}.$\{SRC_SSH_PORT\}.kubeconfig
+        cp -uf ${base_path.kubernetes_path}/kube-apiserver/kubeconfig /tmp/kubeconfig
+        export KUBECONFIG=/tmp/kubeconfig
       }
       new_kubeconfig
 
@@ -330,15 +330,27 @@ write_files:
         kubectl config set-context --current --namespace=$1
       }
 
+
+      export ETCDCTL_CERT=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
+      export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
+      export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
+
+      etcd_endpoints () {
+        export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:2379
+        etcdctl \
+        --endpoints=$ENDPOINTS \
+        member list |
+        awk '{print $5}' |
+        sed "s/,//") | sed "s/ /,/g")
+      }
+
+      etcd_endpoints
+
       estat () {
-          ENDPOINTS=$(cat ${base_path.static_pod_path}/kube-apiserver.yaml | grep etcd-endpoints=https | awk -F "=" '{print $2}')
-          etcdctl \
-          --write-out=table \
-          --endpoints=$ENDPOINTS \
-          --cert ${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
-          --key ${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
-          --cacert ${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
-          endpoint status
+        etcdctl \
+        --write-out=table \
+        --endpoints=$ENDPOINTS \
+        endpoint status
       }
 
       # Source global definitions

@@ -14,8 +14,8 @@ spec:
     command:
     - kube-apiserver     
     args:
-      #etcd-endpoints=${etcd_advertise_client_urls}
-      - --etcd-servers=https://${etcd_server_lb}
+      # - --etcd-servers=https://${etcd_server_lb}
+      - --etcd-servers=${etcd_advertise_client_urls}
       - --tls-cert-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-apiserver"].certificates["kube-apiserver"].key-keeper-args.host_path}/kube-apiserver.pem
       - --tls-private-key-file=${ssl.intermediate["kubernetes-ca"].issuers["kube-apiserver"].certificates["kube-apiserver"].key-keeper-args.host_path}/kube-apiserver-key.pem
       - --client-ca-file=${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem

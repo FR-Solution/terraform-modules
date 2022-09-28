@@ -13,37 +13,7 @@ resource "yandex_lb_target_group" "master-tg" {
   }
 }
 
-
-resource "yandex_lb_network_load_balancer" "etcd-internal" {
-  name = "lb-etcd-${var.cluster_name}"
-  type = "internal"
-  listener {
-    name = "etcd-server-${var.cluster_name}"
-    port = var.etcd-server-port-lb
-    target_port = var.etcd-server-port-target-lb
-
-    internal_address_spec {
-      ip_version = "ipv4"
-      subnet_id = yandex_vpc_subnet.master-subnets.id
-    }
-
-  }
-  attached_target_group {
-    target_group_id = "${yandex_lb_target_group.master-tg.id}"
-
-    healthcheck {
-      name = "etcd-server"
-      tcp_options {
-        port = var.etcd-server-port-target-lb
-      }
-
-    }
-  }
-}
 resource "yandex_lb_network_load_balancer" "api-internal" {
-  depends_on = [
-    yandex_lb_network_load_balancer.etcd-internal
-  ]
   name = "lb-api-${var.cluster_name}"
   type = "external"
   listener {
@@ -51,15 +21,9 @@ resource "yandex_lb_network_load_balancer" "api-internal" {
     port = var.kube-apiserver-port-lb
     target_port = var.kube-apiserver-port
     
-    # internal_address_spec {
-    #   ip_version = "ipv4"
-    #   subnet_id = yandex_vpc_subnet.master-subnets.id
-    # }
     external_address_spec {
       ip_version = "ipv4"
-
     }
-    
   }
   attached_target_group {
     target_group_id = "${yandex_lb_target_group.master-tg.id}"
