@@ -184,7 +184,7 @@ write_files:
       clusters:
       - cluster:
           certificate-authority: ${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem
-          server: https://127.0.0.1:6443
+          server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
         name: kubernetes
       contexts:
       - context:
@@ -210,7 +210,7 @@ write_files:
       clusters:
       - cluster:
           certificate-authority: ${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem
-          server: https://127.0.0.1:6443
+          server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
         name: kubernetes
       contexts:
       - context:
@@ -236,7 +236,7 @@ write_files:
       clusters:
       - cluster:
           certificate-authority: ${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem
-          server: https://127.0.0.1:6443
+          server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
         name: kubernetes
       contexts:
       - context:
@@ -262,7 +262,7 @@ write_files:
       clusters:
       - cluster:
           certificate-authority: ${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem
-          server: https://127.0.0.1:6443
+          server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
         name: kubernetes
       contexts:
       - context:
@@ -331,7 +331,7 @@ write_files:
       }
 
       estat () {
-          ENDPOINTS=$(cat ${base_path.static_pod_path}/kube-apiserver.yaml | grep etcd-servers=https | awk -F "=" '{print $2}')
+          ENDPOINTS=$(cat ${base_path.static_pod_path}/kube-apiserver.yaml | grep etcd-endpoints=https | awk -F "=" '{print $2}')
           etcdctl \
           --write-out=table \
           --endpoints=$ENDPOINTS \

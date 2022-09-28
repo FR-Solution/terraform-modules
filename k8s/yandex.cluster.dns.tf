@@ -1,12 +1,12 @@
 locals {
-  etcd_member_servers = flatten([
+  etcd_member_servers_srv = flatten([
     for master_name, master_value in yandex_compute_instance.master: [
-     "0 0 2380 ${var.master-configs.group}-${index(keys(yandex_compute_instance.master), master_name)}.${var.cluster_name}.${var.base_domain}."
+     "0 0 ${var.etcd-peer-port} ${var.master-configs.group}-${index(keys(yandex_compute_instance.master), master_name)}.${var.cluster_name}.${var.base_domain}."
     ]
   ])
-  etcd_member_clients = flatten([
+  etcd_member_clients_srv = flatten([
     for master_name, master_value in yandex_compute_instance.master: [
-     "0 0 2379 ${var.master-configs.group}-${index(keys(yandex_compute_instance.master), master_name)}.${var.cluster_name}.${var.base_domain}."
+     "0 0 ${var.etcd-server-port} ${var.master-configs.group}-${index(keys(yandex_compute_instance.master), master_name)}.${var.cluster_name}.${var.base_domain}."
     ]
   ])
 }
@@ -32,18 +32,18 @@ resource "yandex_dns_zone" "cluster-external" {
 
 resource "yandex_dns_recordset" "api" {
   zone_id = yandex_dns_zone.cluster-external.id
-  name    = "api.${var.cluster_name}.${var.base_domain}."
+  name    = "${local.kube_apiserver_lb_fqdn}."
   type    = "A"
   ttl     = 60
-  data    = "${(tolist(yandex_lb_network_load_balancer.master-lb.listener)[0].external_address_spec)[*].address}"
+  data    = "${(tolist(yandex_lb_network_load_balancer.api-internal.listener)[0].external_address_spec)[*].address}"
 }
 
 resource "yandex_dns_recordset" "etcd" {
   zone_id = yandex_dns_zone.cluster-external.id
-  name    = "etcd.${var.cluster_name}.${var.base_domain}."
+  name    = "${local.etcd_server_lb_fqdn}."
   type    = "A"
   ttl     = 60
-  data    = "${(tolist(yandex_lb_network_load_balancer.master-lb-etcd.listener)[0].external_address_spec)[*].address}"
+  data    = "${(tolist(yandex_lb_network_load_balancer.etcd-internal.listener)[0].internal_address_spec)[*].address}"
 }
 
 resource "yandex_dns_recordset" "etcd-srv-server" {
@@ -51,7 +51,7 @@ resource "yandex_dns_recordset" "etcd-srv-server" {
   name      = "_etcd-server-ssl._tcp.${var.cluster_name}.${var.base_domain}."
   type      = "SRV"
   ttl       = 60
-  data      = local.etcd_member_servers
+  data      = local.etcd_member_servers_srv
 }
 
 resource "yandex_dns_recordset" "etcd-srv-client" {
@@ -59,6 +59,6 @@ resource "yandex_dns_recordset" "etcd-srv-client" {
   name      = "_etcd-client-ssl._tcp.${var.cluster_name}.${var.base_domain}."
   type      = "SRV"
   ttl       = 60
-  data      = local.etcd_member_clients
+  data      = local.etcd_member_clients_srv
 }
 

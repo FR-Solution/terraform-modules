@@ -1,5 +1,5 @@
 KUBELET_HOSTNAME="
-    --hostname-override=${ instance_name }.${base_domain}
+    --hostname-override=${ full_instance_name }
     --node-labels=node.kubernetes.io/${instance_type}
 "
 KUBELET_BASIC_ARGS="

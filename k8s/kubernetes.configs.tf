@@ -23,46 +23,65 @@ variable "base_domain" {
 variable "master-configs" {
   type = object({
     group = string
+    zone = string
   })
   default = {
     group = "master"
+    zone  = "ru-central1-a"
 
   }
 }
 
 variable "master-instance-count" {
   type = number
-  default = 1
+  default = 3
 }
 
-locals {
-  master-instance-list = flatten([
-    for master-index in range(var.master-instance-count): [
-     "master-${master-index + 1}"
-    ]
-  ])
-}
-
-
-variable "etcd_server_port" {
+variable "etcd-server-port-lb" {
   type = string
-  default = "2379"
+  default = "43379"
 }
 
-variable "kube_apiserver_port" {
+variable "kube-apiserver-port-lb" {
   type = string
   default = "6443"
 }
 
+
+variable "etcd-server-port-target-lb" {
+  type = string
+  default = "2382"
+}
+
+variable "etcd-server-port" {
+  type = string
+  default = "2379"
+}
+
+variable "etcd-peer-port" {
+  type = string
+  default = "2380"
+}
+
+variable "etcd-metrics-port" {
+  type = string
+  default = "2381"
+}
+
+variable "kube-apiserver-port" {
+  type = string
+  default = "443"
+}
+
 locals {
   list_masters                = formatlist("master-%s.${var.cluster_name}.${var.base_domain}", 
-                                            range(length(var.availability_zones)))
+                                            range(var.master-instance-count))
 
-  etcd_list_servers           = formatlist("https://master-%s.${var.cluster_name}.${var.base_domain}:2379", 
-                                            range(length(var.availability_zones)))
-  etcd_list_initial_cluster   = formatlist("master-%s.${var.cluster_name}.${var.base_domain}=https://master-%s.${var.cluster_name}.${var.base_domain}:2380", 
-                                            range(length(var.availability_zones)), 
-                                            range(length(var.availability_zones)))
+  etcd_list_servers           = formatlist("https://master-%s.${var.cluster_name}.${var.base_domain}:${var.etcd-server-port}", 
+                                            range(var.master-instance-count))
+  etcd_list_initial_cluster   = formatlist("master-%s.${var.cluster_name}.${var.base_domain}=https://master-%s.${var.cluster_name}.${var.base_domain}:${var.etcd-peer-port}", 
+                                            range(var.master-instance-count), 
+                                            range(var.master-instance-count))
 
   etcd_advertise_client_urls  = join(",", local.etcd_list_servers)
   etcd_initial_cluster        = join(",", local.etcd_list_initial_cluster)
@@ -72,12 +91,23 @@ locals {
   dns_address                 = format("%s.10", join(".", slice(split(".",local.service_cidr), 0, 3)) )
 
 
-  base_cluster_fqdn           = format("%s.%s"  , var.cluster_name, var.base_domain)
-  etcd_server_lb_fqdn         = format("etcd.%s", local.base_cluster_fqdn)
-  kube_apiserver_lb_fqdn      = format("api.%s" , local.base_cluster_fqdn)
+  base_cluster_fqdn             = format("%s.%s"  , var.cluster_name, var.base_domain)
+  etcd_server_lb_fqdn           = format("%s.%s", "etcd", local.base_cluster_fqdn)
+  kube_apiserver_lb_fqdn        = format("%s.%s", "api" , local.base_cluster_fqdn)
+  kube_apiserver_lb_fqdn_local  = format("%s.%s", "api-int" , local.base_cluster_fqdn)
   
-  etcd_server_lb_access       = format("%s:%s" , local.etcd_server_lb_fqdn, var.etcd_server_port)
-  kube_apiserver_lb_access    = format("%s:%s" , local.kube_apiserver_lb_fqdn, var.kube_apiserver_port)
+  etcd_server_lb_access       = format("%s:%s" , local.etcd_server_lb_fqdn, var.etcd-server-port-lb)
+  kube_apiserver_lb_access    = format("%s:%s" , local.kube_apiserver_lb_fqdn, var.kube-apiserver-port-lb)
+
+  master_instance_list        = flatten([
+    for master-index in range(var.master-instance-count): [
+     "master-${master-index}"
+    ]
+  ])
+
+  master_instance_list_map = { for item in local.master_instance_list :
+    item => {}
+  }
 
   kubelet-config-args = {
     dns_address = local.dns_address

@@ -15,24 +15,24 @@ spec:
       - etcd
     args:
     - --discovery-srv=${cluster_name}.${base_domain}
-    - --name=${ instance_name }.${cluster_name}.${base_domain}
-    - --initial-advertise-peer-urls=https://${ instance_name }.${cluster_name}.${base_domain}:2380
-    - --advertise-client-urls=https://${ instance_name }.${cluster_name}.${base_domain}:2379
+    - --name=${full_instance_name}
+    - --initial-advertise-peer-urls=https://${full_instance_name}:${etcd-peer-port}
+    - --advertise-client-urls=https://${full_instance_name}:${etcd-server-port}
     - --trusted-ca-file=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem
     - --cert-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-server"].key-keeper-args.host_path}/etcd-server.pem
     - --key-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-server"].key-keeper-args.host_path}/etcd-server-key.pem
     - --peer-trusted-ca-file=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem
     - --peer-cert-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-peer"].key-keeper-args.host_path}/etcd-peer.pem
     - --peer-key-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-peer"].key-keeper-args.host_path}/etcd-peer-key.pem
-    - --listen-client-urls=https://0.0.0.0:2379
-    - --listen-peer-urls=https://0.0.0.0:2380
-    - --listen-metrics-urls=http://0.0.0.0:2381
+    - --listen-client-urls=https://0.0.0.0:${etcd-server-port},https://0.0.0.0:${etcd-server-port-target-lb}
+    - --listen-peer-urls=https://0.0.0.0:${etcd-peer-port}
+    - --listen-metrics-urls=http://0.0.0.0:${etcd-metrics-port}
     - --initial-cluster-token=etcd
     - --initial-cluster-state=new
     - --data-dir=/var/lib/etcd
     - --strict-reconfig-check
     - --peer-client-cert-auth=true
-    - --peer-auto-tls=false
+    - --peer-auto-tls=true
     - --client-cert-auth=true
     image: ${etcd-image}:${etcd-version}
     imagePullPolicy: IfNotPresent
@@ -41,7 +41,7 @@ spec:
       httpGet:
         host: 127.0.0.1
         path: /health
-        port: 2381
+        port: ${etcd-metrics-port}
         scheme: HTTP
       initialDelaySeconds: 10
       periodSeconds: 10
@@ -55,7 +55,7 @@ spec:
       httpGet:
         host: 127.0.0.1
         path: /health
-        port: 2381
+        port: ${etcd-metrics-port}
         scheme: HTTP
     volumeMounts:
     - mountPath: /var/lib/etcd

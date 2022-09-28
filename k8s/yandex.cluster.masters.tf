@@ -3,11 +3,11 @@
 ##-->
 resource "yandex_compute_instance" "master" {
 
-  for_each    = "${var.availability_zones}"
-  name        = "${var.master-configs.group}-${index(keys(var.availability_zones), each.key)}-${var.cluster_name}"
-  hostname    = format("%s-%s.%s.%s",var.master-configs.group, index(keys(var.availability_zones), each.key),var.cluster_name, var.base_domain)
+  for_each    = "${local.master_instance_list_map}"
+  name        = "${each.key}-${var.cluster_name}"
+  hostname    = format("%s.%s.%s", each.key ,var.cluster_name, var.base_domain)
   platform_id = "standard-v1"
-  zone        = "${each.key}"
+  zone        = var.master-configs.zone
 
   resources {
     cores         = "${var.master_flavor.core}"
@@ -22,7 +22,7 @@ resource "yandex_compute_instance" "master" {
   }
 
   network_interface {
-    subnet_id = "${yandex_vpc_subnet.cluster-subnet[each.key].id}"
+    subnet_id = "${yandex_vpc_subnet.master-subnets.id}"
     nat = true
   }
 
@@ -34,6 +34,8 @@ resource "yandex_compute_instance" "master" {
         base_local_path_certs             = local.base_local_path_certs
         ssl                               = local.ssl
         base_path                         = var.base_path
+        kube_apiserver_lb_fqdn            = local.kube_apiserver_lb_fqdn
+        kube-apiserver-port-lb            = var.kube-apiserver-port-lb
 
         key_keeper_config                 = templatefile("templates/services/key-keeper/config.tftpl", {
           availability_zone               = each.key
@@ -50,10 +52,10 @@ resource "yandex_compute_instance" "master" {
           bootstrap_tokens_sign           = vault_token.kubernetes-sign-login
           bootstrap_tokens_kv             = vault_token.kubernetes-kv-login
           availability_zone               = each.key
-          instance_name                   = format("%s-%s.%s",var.master-configs.group, index(keys(var.availability_zones), each.key),var.cluster_name)
+          full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
         })
         kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
-          instance_name                   = format("%s-%s.%s",var.master-configs.group, index(keys(var.availability_zones), each.key),var.cluster_name)
+          full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
           instance_type                   = var.master-configs.group
           base_path                       = var.base_path
           base_domain                     = var.base_domain
@@ -66,7 +68,11 @@ resource "yandex_compute_instance" "master" {
           base_domain                     = var.base_domain
           etcd-image                      = var.etcd-image.repository
           etcd-version                    = var.etcd-image.version
-          instance_name                   = format("%s-%s",var.master-configs.group, index(keys(var.availability_zones), each.key))
+          full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
+          etcd-peer-port                  = var.etcd-peer-port
+          etcd-server-port                = var.etcd-server-port
+          etcd-metrics-port               = var.etcd-metrics-port
+          etcd-server-port-target-lb      = var.etcd-server-port-target-lb
         })
 
         kube-apiserver-manifest           = local.kube-apiserver-manifest
@@ -85,10 +91,5 @@ resource "yandex_compute_instance" "master" {
 }
 
 output "cloud_init" {
-    value = "${yandex_compute_instance.master[*].ru-central1-a.network_interface[*].nat_ip_address}"
-}
-
-
-output "LB-API" {
-    value = "${tolist(tolist(yandex_lb_network_load_balancer.master-lb.listener)[0].external_address_spec)[0].address}"
+    value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
 }

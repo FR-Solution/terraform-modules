@@ -224,7 +224,8 @@ locals {
                 "kubernetes.default.svc.cluster",
                 "kubernetes.default.svc.cluster.local",
                 "custom:kube-apiserver",
-                "${local.kube_apiserver_lb_fqdn}"
+                "${local.kube_apiserver_lb_fqdn}",
+                "${local.kube_apiserver_lb_fqdn_local}"
               ]
               server_flag     = true
               allow_ip_sans   = true
@@ -250,7 +251,8 @@ locals {
                       "kubernetes.default.svc",
                       "kubernetes.default.svc.cluster",
                       "kubernetes.default.svc.cluster.local",
-                      "${local.kube_apiserver_lb_fqdn}"
+                      "${local.kube_apiserver_lb_fqdn}",
+                      "${local.kube_apiserver_lb_fqdn_local}"
                     ]
                     ipAddresses = {
                       static = [
@@ -549,6 +551,9 @@ locals {
                       "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
+                      static = [
+                        "127.0.1.1"
+                      ]
                       interfaces = [
                         "lo",
                         "eth*"
@@ -692,8 +697,8 @@ locals {
   issuers_content = flatten([
   for name in keys(local.ssl.intermediate) : [
     for issuer_name,issuer in local.ssl.intermediate[name].issuers : [
-      for availability_zone_name in sort(keys(var.availability_zones)):  
-        {"${name}:${issuer_name}:${availability_zone_name}" = merge("${local.ssl["global-args"]["issuer-args"]}", issuer["issuer-args"])}
+      for master_name in local.master_instance_list:  
+        {"${name}:${issuer_name}:${master_name}" = merge("${local.ssl["global-args"]["issuer-args"]}", issuer["issuer-args"])}
         ]
       ]
     ]

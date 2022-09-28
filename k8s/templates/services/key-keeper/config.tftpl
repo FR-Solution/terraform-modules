@@ -81,7 +81,7 @@ certificates:
       subject:
         %{~ if try(certificate["key-keeper-args"].spec.subject.commonName, "") != "" ~}
           %{~ if contains(["kubelet-server", "kubelet-client"], issuer_name) == true ~}
-        commonName: "system:node:${ instance_name }.${base_domain}"
+        commonName: "system:node:${ full_instance_name }"
           %{~ else ~}
         commonName: "${certificate["key-keeper-args"].spec.subject.commonName}"
           %{~ endif ~}
@@ -164,7 +164,7 @@ certificates:
           - ${dnsLookup}
         %{~ endfor ~}
           %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
-          - "${instance_name}.${base_domain}"
+          - "${ full_instance_name }"
           %{~ else ~}
           %{~ endif ~}
         %{~ endif ~}
@@ -176,7 +176,7 @@ certificates:
         - ${hostname}
       %{~ endfor ~}
           %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
-        - "${instance_name}.${base_domain}"
+        - "${ full_instance_name }"
           %{~ else ~}
           %{~ endif ~}
       %{~ endif ~}
