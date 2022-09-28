@@ -182,12 +182,6 @@ certificates:
       %{~ endif ~}
     renewBefore: ${try(certificate["key-keeper-args"].renewBefore, base_certificate_atrs.renewBefore)}
     hostPath: "${certificate["key-keeper-args"].host_path}"
-    #   %{~ if try(certificate.labels.component, "") != "" ~}
-    #     %{~ if try(certificate.labels.trigger-command, "") != "" ~}
-    # trigger:
-    #   - ${try(certificate.labels.trigger-command, "")}
-    #     %{~ endif ~}
-    #   %{~ endif ~}
 
     %{~ endfor ~}
   %{~ endfor ~}

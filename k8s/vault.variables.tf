@@ -1,3 +1,21 @@
+variable "vault_server" {
+  type = string
+  default = ""
+}
+
+
+variable "vault_config" {
+  type = object({
+    caBundle        = string
+    tlsInsecure     = bool
+  })
+  default = {
+    caBundle    = ""
+    tlsInsecure = true
+  }
+}
+
+
 locals {
   base_local_path_certs   = "/etc/kubernetes/pki"
   base_local_path_vault   = "/var/lib/key-keeper/vault"
@@ -206,7 +224,7 @@ locals {
                 "kubernetes.default.svc.cluster",
                 "kubernetes.default.svc.cluster.local",
                 "custom:kube-apiserver",
-                "api.${var.cluster_name}.${var.base_domain}"
+                "${local.kube_apiserver_lb_fqdn}"
               ]
               server_flag     = true
               allow_ip_sans   = true
@@ -232,18 +250,18 @@ locals {
                       "kubernetes.default.svc",
                       "kubernetes.default.svc.cluster",
                       "kubernetes.default.svc.cluster.local",
-                      "api.${var.cluster_name}.${var.base_domain}"
+                      "${local.kube_apiserver_lb_fqdn}"
                     ]
                     ipAddresses = {
                       static = [
-                        local.api_address
+                        local.local_api_address
                       ]
                       interfaces = [
                         "lo",
                         "eth*"
                       ]
                       dnsLookup = [
-                        "api.${var.cluster_name}.${var.base_domain}"
+                        "${local.kube_apiserver_lb_fqdn}"
                       ]
                     }
                   }
@@ -325,26 +343,25 @@ locals {
               }
             }
           },
-          kubelet-peer-k8s-certmanager = {
-            issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
-              allowed_domains = [
-                "localhost",
-                "*.${var.cluster_name}.${var.base_domain}",
-                "${ var.instance_name }.${var.cluster_name}.${var.base_domain}",
-                "system:node:*"
-              ]
-              organization = [
-                "system:nodes",
-              ]
-              server_flag     = true
-              client_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
-            }
-            certificates = {}
-          }
+          # kubelet-peer-k8s-certmanager = {
+          #   issuer-args = {
+          #     backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+          #     key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
+          #     allowed_domains = [
+          #       "localhost",
+          #       "*.${var.cluster_name}.${var.base_domain}",
+          #       "system:node:*"
+          #     ]
+          #     organization = [
+          #       "system:nodes",
+          #     ]
+          #     server_flag     = true
+          #     client_flag     = true
+          #     allow_ip_sans   = true
+          #     allow_localhost = true
+          #   }
+          #   certificates = {}
+          # }
           kubelet-server = {
             labels = {
               type = "worker"
@@ -355,7 +372,6 @@ locals {
               allowed_domains = [
                 "localhost",
                 "*.${var.cluster_name}.${var.base_domain}",
-                "${ var.instance_name }.${var.cluster_name}.${var.base_domain}",
                 "system:node:*"
               ]
               organization = [
@@ -375,7 +391,7 @@ locals {
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "system:node:${ var.instance_name }.${var.cluster_name}.${var.base_domain}"
+                      commonName = "default:key-keeper"
                       organizations = [
                         "system:nodes"
                       ]
@@ -425,7 +441,7 @@ locals {
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "system:node:${ var.instance_name }.${var.cluster_name}.${var.base_domain}"
+                      commonName = "default:key-keeper"
                       organization = [
                         "system:nodes"
                       ]
@@ -530,6 +546,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
                       interfaces = [

@@ -25,6 +25,7 @@ locals {
         service_cidr                    = local.service_cidr
         base_local_path_certs           = local.base_local_path_certs
         ssl                             = local.ssl
+        etcd_server_lb                  = local.etcd_server_lb_access
         kube-apiserver-image            = var.kube-apiserver-image
         kubernetes-version              = var.kubernetes-version
         base_path                       = var.base_path

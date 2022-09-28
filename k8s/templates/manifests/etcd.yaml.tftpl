@@ -14,10 +14,10 @@ spec:
     command:
       - etcd
     args:
-    - --initial-cluster=${ etcd_initial_cluster }
-    - --name=${ instance_name }.${base_domain}
-    - --initial-advertise-peer-urls=https://${ instance_name }.${base_domain}:2380
-    - --advertise-client-urls=https://${ instance_name }.${base_domain}:2379
+    - --discovery-srv=${cluster_name}.${base_domain}
+    - --name=${ instance_name }.${cluster_name}.${base_domain}
+    - --initial-advertise-peer-urls=https://${ instance_name }.${cluster_name}.${base_domain}:2380
+    - --advertise-client-urls=https://${ instance_name }.${cluster_name}.${base_domain}:2379
     - --trusted-ca-file=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem
     - --cert-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-server"].key-keeper-args.host_path}/etcd-server.pem
     - --key-file=${ssl.intermediate["etcd-ca"].issuers["etcd-peer"].certificates["etcd-server"].key-keeper-args.host_path}/etcd-server-key.pem
@@ -32,7 +32,7 @@ spec:
     - --data-dir=/var/lib/etcd
     - --strict-reconfig-check
     - --peer-client-cert-auth=true
-    - --peer-auto-tls=true
+    - --peer-auto-tls=false
     - --client-cert-auth=true
     image: ${etcd-image}:${etcd-version}
     imagePullPolicy: IfNotPresent
