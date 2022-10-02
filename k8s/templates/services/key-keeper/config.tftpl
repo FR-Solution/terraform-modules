@@ -1,5 +1,24 @@
 ---
 issuers:
+
+  - name: oidc-ca
+    vault:
+      server: ${vault_server}
+      auth:
+        caBundle: ${vault_config.caBundle}
+        tlsInsecure: ${vault_config.tlsInsecure}
+        bootstrap:
+          token: ${bootstrap_tokens_ca[format("kubernetes-ca:%s", availability_zone)].client_token}
+        appRole:
+          name: ${format("kubernetes-ca-%s", availability_zone)}
+          path: "${base_vault_path_approle}"
+          secretIDLocalPath: ${base_local_path_vault}/oidc-ca/secret-id
+          roleIDLocalPath: ${base_local_path_vault}/oidc-ca/role-id
+      certificate:
+        CAPath: "pki-int"
+      timeout: 15s
+
+
 %{ for secret_name, secret in secrets }
   - name: ${secret_name}
     vault:
@@ -27,9 +46,9 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          token: ${bootstrap_tokens_ca[intermediate_name].client_token}
+          token: ${bootstrap_tokens_ca[format("%s:%s", intermediate_name, availability_zone)].client_token}
         appRole:
-          name: ${intermediate_name}
+          name: ${intermediate_name}-${availability_zone}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/${intermediate_name}/secret-id
           roleIDLocalPath: ${base_local_path_vault}/${intermediate_name}/role-id
@@ -187,6 +206,15 @@ certificates:
   %{~ endfor ~}
 %{~ endfor ~}
 
+  - name: oidc-ca
+    issuerRef:
+      name: oidc-ca
+    isCa: true
+    ca:
+      exportedKey: false
+      generate: false
+    hostPath: "/etc/kubernetes/pki/ca"
+
 secrets:
 %{ for secret_name, secret in secrets }
   %{~ for key_name, key in secret.keys ~}
@@ -197,3 +225,4 @@ secrets:
     hostPath: ${key.host_path}
   %{~ endfor ~}
 %{~ endfor ~}
+

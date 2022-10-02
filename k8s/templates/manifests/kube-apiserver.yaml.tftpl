@@ -35,6 +35,7 @@ spec:
       # - --advertise-address=29.64.0.1
       - --bind-address=0.0.0.0 # Нужно научить выставлять на адреса интерфейсов
       - --audit-policy-file=${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+      - --audit-log-path=/var/log/kubernetes/audit/audit.log
       - --event-ttl=1h0m0s
       - --kubernetes-service-node-port=0
       - --master-service-namespace=default
@@ -42,7 +43,7 @@ spec:
       - --max-requests-inflight=400
       - --min-request-timeout=1800
       - --profiling=false
-      - --feature-gates=RotateKubeletServerCertificate=true
+      - --feature-gates=RotateKubeletServerCertificate=false
       - --anonymous-auth=true
       - --audit-log-maxage=30
       - --audit-log-maxbackup=10
@@ -61,10 +62,18 @@ spec:
       - --allow-privileged=true
       - --authorization-mode=Node,RBAC
       - --service-account-issuer=https://kubernetes.default.svc.cluster.local
+      - --service-account-jwks-uri=https://193.32.219.99/auth/realms/master
       - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
       - --kubelet-timeout=5s
       - --v=2
       - --cloud-provider=external
+      - --oidc-ca-file=/etc/kubernetes/pki/ca/oidc-ca.pem
+      - --oidc-client-id=kubernetes
+      - --oidc-username-claim=email
+      - --oidc-groups-claim=groups
+      - --oidc-username-prefix=-
+      - --oidc-issuer-url=https://auth.dobry-kot.ru/auth/realms/master
+
     image: ${kube-apiserver-image}:${kubernetes-version}
     imagePullPolicy: IfNotPresent
     resources:
@@ -100,6 +109,12 @@ spec:
       periodSeconds: 10
       timeoutSeconds: 15
     volumeMounts:
+    - mountPath: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+      name: audit
+      readOnly: true
+    - mountPath: /var/log/kubernetes/audit/
+      name: audit-log
+      readOnly: false
     - mountPath: /etc/ssl/certs
       name: ca-certs
       readOnly: true
@@ -155,4 +170,12 @@ spec:
       path: /usr/share/ca-certificates
       type: DirectoryOrCreate
     name: usr-share-ca-certificates
+  - name: audit
+    hostPath:
+      path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+      type: File
+  - name: audit-log
+    hostPath:
+      path: /var/log/kubernetes/audit/
+      type: DirectoryOrCreate
 status: {}

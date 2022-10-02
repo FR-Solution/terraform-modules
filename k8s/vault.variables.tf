@@ -706,6 +706,17 @@ locals {
     keys(item)[0] => values(item)[0]
   }
 
+  intermediate_content = flatten([
+  for name in keys(local.ssl.intermediate) : [
+      for master_name in local.master_instance_list:  
+        {"${name}:${master_name}" = {}}
+        ]
+      ]
+  )
+  intermediate_content_map = { for item in local.intermediate_content :
+    keys(item)[0] => values(item)[0]
+  }
+
   access_cidr_availability_zones = flatten([for zone_name in keys(var.availability_zones) : [var.availability_zones[zone_name]]])
 
 }

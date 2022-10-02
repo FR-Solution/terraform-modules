@@ -2,7 +2,7 @@ locals {
     containerd-service                  = file("templates/services/containerd/service.tftpl")
     base-cni                            = file("templates/cni/net.d/99-loopback.conf.tftpl")
     sysctl-network                      = file("templates/sysctl/99-network.conf.tftpl")
-    modules-load-k8s                    = file("templates/modules-load.d/k8s.conf.tgtpl")
+    modules-load-k8s                    = file("templates/modules-load.d/k8s.conf.tftpl")
     kubelet-service                     = file("templates/services/kubelet/service.tftpl")
     
     key-keeper-service                  = templatefile("templates/services/key-keeper/service.yaml.tftpl", {

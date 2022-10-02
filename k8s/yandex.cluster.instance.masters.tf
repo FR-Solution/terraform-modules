@@ -18,6 +18,7 @@ resource "yandex_compute_instance" "master" {
   boot_disk {
     initialize_params {
       image_id = "${var.base_os_image}"
+      size = 20
     }
   }
 
@@ -90,6 +91,6 @@ resource "yandex_compute_instance" "master" {
   }
 }
 
-output "cloud_init" {
-    value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
-}
+# output "cloud_init" {
+#     value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
+# }

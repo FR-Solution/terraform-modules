@@ -12,7 +12,7 @@ variable "etcd-image" {
 
 variable "kubernetes-version" {
   type = string
-  default = "v1.23.5"
+  default = "v1.23.10"
 
 }
 
