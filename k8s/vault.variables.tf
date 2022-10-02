@@ -344,25 +344,25 @@ locals {
               }
             }
           },
-          # kubelet-peer-k8s-certmanager = {
-          #   issuer-args = {
-          #     backend   = "clusters/${var.cluster_name}/pki/kubernetes"
-          #     key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
-          #     allowed_domains = [
-          #       "localhost",
-          #       "*.${var.cluster_name}.${var.base_domain}",
-          #       "system:node:*"
-          #     ]
-          #     organization = [
-          #       "system:nodes",
-          #     ]
-          #     server_flag     = true
-          #     client_flag     = true
-          #     allow_ip_sans   = true
-          #     allow_localhost = true
-          #   }
-          #   certificates = {}
-          # }
+          kubelet-peer-k8s-certmanager = {
+            issuer-args = {
+              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
+              allowed_domains = [
+                "localhost",
+                "*.${var.cluster_name}.${var.base_domain}",
+                "system:node:*"
+              ]
+              organization = [
+                "system:nodes",
+              ]
+              server_flag     = true
+              client_flag     = true
+              allow_ip_sans   = true
+              allow_localhost = true
+            }
+            certificates = {}
+          }
           kubelet-server = {
             labels = {
               type = "worker"
