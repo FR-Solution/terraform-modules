@@ -26,11 +26,13 @@ locals {
         base_local_path_certs           = local.base_local_path_certs
         ssl                             = local.ssl
         etcd_server_lb                  = local.etcd_server_lb_access
+        idp_provider_fqdn               = local.idp_provider_fqdn
+        idp_provider_realm              = local.idp_provider_realm
         kube-apiserver-image            = var.kube-apiserver-image
         kubernetes-version              = var.kubernetes-version
         base_path                       = var.base_path
         kube-apiserver-port             = var.kube-apiserver-port
-
+        idp-client-id                   = keycloak_openid_client.kube.name
     })
 
     kube-controller-manager-manifest    = templatefile("templates/manifests/kube-controller-manager.yaml.tftpl", {

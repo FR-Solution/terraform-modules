@@ -57,6 +57,7 @@ spec:
       - --controllers=*,bootstrapsigner,tokencleaner,cloud-node-lifecycle,csrapproving,csrcleaner,csrsigning
       - --authorization-always-allow-paths=/healthz,/metrics
       - --feature-gates=RotateKubeletServerCertificate=true
+      - --cloud-provider=external
     image: ${kube-controller-manager-image}:${kubernetes-version}
     imagePullPolicy: IfNotPresent
     resources:

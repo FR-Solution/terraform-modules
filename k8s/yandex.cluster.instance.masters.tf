@@ -3,27 +3,29 @@
 ##-->
 resource "yandex_compute_instance" "master" {
 
-  for_each    = "${local.master_instance_list_map}"
-  name        = "${each.key}-${var.cluster_name}"
+  for_each    = local.master_instance_list_map
+  name        = each.key
   hostname    = format("%s.%s.%s", each.key ,var.cluster_name, var.base_domain)
   platform_id = "standard-v1"
   zone        = var.master-configs.zone
-
+  labels      = {
+    "node-role.kubernetes.io/master" = ""
+  }
   resources {
-    cores         = "${var.master_flavor.core}"
-    memory        = "${var.master_flavor.memory}"
-    core_fraction = "${var.master_flavor.core_fraction}"
+    cores         = var.master_flavor.core
+    memory        = var.master_flavor.memory
+    core_fraction = var.master_flavor.core_fraction
   }
 
   boot_disk {
     initialize_params {
-      image_id = "${var.base_os_image}"
+      image_id = var.base_os_image
       size = 20
     }
   }
 
   network_interface {
-    subnet_id = "${yandex_vpc_subnet.master-subnets.id}"
+    subnet_id = yandex_vpc_subnet.master-subnets.id
     nat = true
   }
 
@@ -54,6 +56,7 @@ resource "yandex_compute_instance" "master" {
           bootstrap_tokens_kv             = vault_token.kubernetes-kv-login
           availability_zone               = each.key
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
+          external_instance_name          = "${each.key}"
         })
         kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
@@ -91,6 +94,6 @@ resource "yandex_compute_instance" "master" {
   }
 }
 
-# output "cloud_init" {
-#     value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
-# }
+output "cloud_init" {
+    value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
+}

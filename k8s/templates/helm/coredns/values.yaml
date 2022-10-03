@@ -1,0 +1,12 @@
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
+
+fullnameOverride: coredns
+
+replicaCount: 3

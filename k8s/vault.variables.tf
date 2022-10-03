@@ -372,8 +372,9 @@ locals {
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
-                "*.${var.cluster_name}.${var.base_domain}",
-                "system:node:*"
+                local.wildcard_base_cluster_fqdn,
+                "system:node:*",
+                "master-*"  # КОСТЫЛЬ
               ]
               organization = [
                 "system:nodes",
@@ -525,6 +526,7 @@ locals {
                 "custom:etcd-peer",
                 "custom:etcd-server",
                 local.wildcard_base_cluster_fqdn,
+                "master-*" # КОСТЫЛЬ
               ]
               client_flag     = true
               server_flag     = true
