@@ -29,6 +29,12 @@ resource "yandex_compute_instance" "master" {
     nat = true
   }
 
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
+
   metadata = {
     ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
     user-data = templatefile("templates/cloud-init-master.tftpl", {

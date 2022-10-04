@@ -27,9 +27,9 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          token: ${bootstrap_tokens_kv[secret_name].client_token}
+          token: ${bootstrap_tokens_kv[format("%s:%s", secret_name, availability_zone)].client_token}
         appRole:
-          name: ${secret_name}
+          name: ${secret_name}-${availability_zone}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/${secret_name}/secret-id
           roleIDLocalPath: ${base_local_path_vault}/${secret_name}/role-id

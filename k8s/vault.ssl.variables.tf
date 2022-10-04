@@ -694,31 +694,3 @@ locals {
   }
 }
 
-locals {
-  issuers_content = flatten([
-  for name in keys(local.ssl.intermediate) : [
-    for issuer_name,issuer in local.ssl.intermediate[name].issuers : [
-      for master_name in local.master_instance_list:  
-        {"${name}:${issuer_name}:${master_name}" = merge("${local.ssl["global-args"]["issuer-args"]}", issuer["issuer-args"])}
-        ]
-      ]
-    ]
-  )
-  issuers_content_map = { for item in local.issuers_content :
-    keys(item)[0] => values(item)[0]
-  }
-
-  intermediate_content = flatten([
-  for name in keys(local.ssl.intermediate) : [
-      for master_name in local.master_instance_list:  
-        {"${name}:${master_name}" = {}}
-        ]
-      ]
-  )
-  intermediate_content_map = { for item in local.intermediate_content :
-    keys(item)[0] => values(item)[0]
-  }
-
-  access_cidr_availability_zones = flatten([for zone_name in keys(var.availability_zones) : [var.availability_zones[zone_name]]])
-
-}

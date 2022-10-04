@@ -1,7 +1,7 @@
 resource "vault_pki_secret_backend_role" "kubernetes-role" {
     depends_on = [vault_mount.intermediate]
     
-    for_each                            = local.issuers_content_map
+    for_each                            = local.issuers_content_map_only
     
     backend                             = local.ssl.intermediate[split(":","${each.key}")[0]].path
     name                                = split(":","${each.key}")[1]
