@@ -67,7 +67,7 @@ spec:
       - --v=2
       - --cloud-provider=external
       - --oidc-ca-file=${base_local_path_certs}/ca/oidc-ca.pem
-      - --oidc-client-id=kubernetes
+      - --oidc-client-id=kubernetes-${cluster-name}
       - --oidc-username-claim=email
       - --oidc-groups-claim=groups
       - --oidc-username-prefix=-

@@ -1,45 +1,3 @@
-resource "vault_mount" "core_root_ca" {
-  path                      = "pki-root"
-  type                      = "pki"
-  description               = "root infrastruction"
-  default_lease_ttl_seconds = 321408000
-  max_lease_ttl_seconds     = 321408000
-}
-resource "vault_pki_secret_backend_root_cert" "core_root" {
-  backend              = vault_mount.core_root_ca.path
-  type                 = "internal"
-  common_name          = "Root CA"
-  ttl                  = 321408000
-  format               = "pem"
-  private_key_format   = "der"
-  key_type             = "rsa"
-  key_bits             = 4096
-  exclude_cn_from_sans = true
-  province             = "CA"
-}
-
-
-resource "vault_policy" "auth" {
-  name      = "pki-int/keycloak"
-
-  policy = templatefile("templates/keycloak-policy.tftpl", { })
-}
-
-resource "vault_auth_backend" "auth" {
-  type = "approle"
-  path = "pki-root/approle"
-}
-
-resource "vault_approle_auth_backend_role" "auth" {
-  backend                 = "${vault_auth_backend.auth.path}"
-  role_name               = "keycloak"
-  token_policies          = [vault_policy.auth.name]
-  secret_id_bound_cidrs   = []
-  token_bound_cidrs       = []
-}
-
-
-
 resource "vault_pki_secret_backend_role" "keycloak-server" {
 
     backend                             = vault_mount.core_root_ca.path
@@ -82,10 +40,3 @@ resource "vault_pki_secret_backend_role" "keycloak-server" {
         
 }
 
-resource "yandex_dns_recordset" "auth" {
-  zone_id = "dns140h7j2l3gcjchb1v"
-  name    = "auth.dobry-kot.ru"
-  type    = "A"
-  ttl     = 60
-  data    = ["193.32.219.99"]
-}

@@ -33,6 +33,7 @@ locals {
         base_path                       = var.base_path
         kube-apiserver-port             = var.kube-apiserver-port
         idp-client-id                   = keycloak_openid_client.kube.name
+        cluster-name                    = var.cluster_name
     })
 
     kube-controller-manager-manifest    = templatefile("templates/manifests/kube-controller-manager.yaml.tftpl", {

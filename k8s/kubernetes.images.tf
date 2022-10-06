@@ -16,6 +16,13 @@ variable "kubernetes-version" {
 
 }
 
+variable "kubernetes-version-major" {
+  type = string
+  default = "1.23"
+
+}
+
+
 variable "kube-apiserver-image" {
   type = string
   default = "k8s.gcr.io/kube-apiserver"

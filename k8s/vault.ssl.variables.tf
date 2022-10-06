@@ -86,6 +86,7 @@ locals {
         }
         renewBefore   = "5m"
         trigger       = []
+        withUpdate    = true
 
       }
     }
@@ -403,6 +404,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                     ]
                     ipAddresses = {
                       interfaces = [
@@ -549,6 +551,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                       # "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
@@ -580,6 +583,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                     ]
                     ipAddresses = {
                       interfaces = [

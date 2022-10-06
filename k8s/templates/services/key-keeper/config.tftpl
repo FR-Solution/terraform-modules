@@ -195,13 +195,13 @@ certificates:
         - ${hostname}
       %{~ endfor ~}
           %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
-        - "${ external_instance_name }" # КОСТЫЛЬ
         - "${ full_instance_name }"
           %{~ else ~}
           %{~ endif ~}
       %{~ endif ~}
     renewBefore: ${try(certificate["key-keeper-args"].renewBefore, base_certificate_atrs.renewBefore)}
     hostPath: "${certificate["key-keeper-args"].host_path}"
+    withUpdate: ${try(certificate["key-keeper-args"].withUpdate, base_certificate_atrs.withUpdate)}
 
     %{~ endfor ~}
   %{~ endfor ~}

@@ -4,7 +4,9 @@
 resource "yandex_compute_instance" "master" {
 
   for_each    = local.master_instance_list_map
-  name        = each.key
+
+  name        = "${each.key}-${var.cluster_name}"
+
   hostname    = format("%s.%s.%s", each.key ,var.cluster_name, var.base_domain)
   platform_id = "standard-v1"
   zone        = var.master-configs.zone
@@ -45,7 +47,7 @@ resource "yandex_compute_instance" "master" {
         base_path                         = var.base_path
         kube_apiserver_lb_fqdn            = local.kube_apiserver_lb_fqdn
         kube-apiserver-port-lb            = var.kube-apiserver-port-lb
-
+        hostname                          = "${each.key}-${var.cluster_name}"
         key_keeper_config                 = templatefile("templates/services/key-keeper/config.tftpl", {
           availability_zone               = each.key
           intermediates                   = local.ssl.intermediate
@@ -62,7 +64,7 @@ resource "yandex_compute_instance" "master" {
           bootstrap_tokens_kv             = vault_token.kubernetes-kv-login
           availability_zone               = each.key
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
-          external_instance_name          = "${each.key}"
+          external_instance_name          = "${each.key}-${var.cluster_name}"
         })
         kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)

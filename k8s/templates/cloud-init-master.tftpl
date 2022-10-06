@@ -1,6 +1,7 @@
 #cloud-config
 version: v1
 
+hostname: ${hostname}
 users:
   - name: dkot
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -31,7 +32,7 @@ bootcmd:
 
 runcmd:
   # Скачивание базовых бинарей для сетапа кластера
-  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dp14?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20220923%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20220923T132926Z&X-Amz-Expires=2592000&X-Amz-Signature=D57FC7D2F11C53EC60E36273C310793D72F15A2E5DA01EAA3AADCAD1FF08A196&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd14?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221005%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221005T192647Z&X-Amz-Expires=2592000&X-Amz-Signature=323CEDC4608FFE383DAA7B5B83669EB6A8CB501A4C2146727AD08B80DAAAAAA2&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubectl
   - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubelet
   - wget -O /usr/bin/runc          https://github.com/opencontainers/runc/releases/download/v1.0.0-rc93/runc.amd64

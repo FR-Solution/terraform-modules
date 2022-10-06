@@ -1,0 +1,15 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubeadm:bootstrap-signer-clusterinfo
+  namespace: kube-public
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - cluster-info
+  resources:
+  - configmaps
+  verbs:
+  - get

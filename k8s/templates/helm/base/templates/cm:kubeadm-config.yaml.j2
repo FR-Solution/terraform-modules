@@ -1,0 +1,29 @@
+apiVersion: v1
+data:
+  ClusterConfiguration: |
+    apiServer:
+      timeoutForControlPlane: 4m0s
+    apiVersion: kubeadm.k8s.io/v1beta3
+    certificatesDir: ${base_local_path_certs}
+    clusterName: kubernetes
+    controlPlaneEndpoint: {{ .Values.kube_apiserver_lb_access }}
+    controllerManager: {}
+    dns: {}
+    etcd:
+      local:
+        dataDir: {{ .Values.etcd_data_base_dir }}
+    imageRepository: k8s.gcr.io
+    kind: ClusterConfiguration
+    kubernetesVersion: {{ .Values.kubernetes_version }}
+    networking:
+      dnsDomain: cluster.local
+      serviceSubnet: {{ .Values.service_cidr }}
+    scheduler: {}
+  ClusterStatus: |-
+    apiEndpoints: {}
+    apiVersion: kubeadm.k8s.io/v1beta2
+    kind: ClusterStatus
+kind: ConfigMap
+metadata:
+  name: kubeadm-config
+  namespace: kube-system
