@@ -5,5 +5,12 @@ base_local_path_certs:              ${base_local_path_certs}
 service_cidr:                       ${service_cidr}
 etcd_data_base_dir:                 ${etcd_data_base_dir}
 kubernetes_version_major:           ${kubernetes_version_major}
-kubelet_config: | 
-  ${indent(2, kubelet_config)}
+
+vault:
+  approle:
+    secretId: ${vaut_approle_secretid}
+    roleId: ${vaut_approle_roleid}
+    path: ${vaut_approle_path}
+  sign:
+    path: ${vaut_sign_path}
+  server: ${vaut_server}

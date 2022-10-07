@@ -8,12 +8,6 @@ locals {
     key-keeper-service                  = templatefile("templates/services/key-keeper/service.yaml.tftpl", {
         base_local_path_certs           = local.base_local_path_certs
     })
-
-    kubelet-config                      = templatefile("templates/services/kubelet/config.yaml.tftpl", {
-        ssl                             = local.ssl
-        kubelet-config-args             = local.kubelet-config-args
-        base_path                       = var.base_path
-    })
     
     kubelet-service-d-fraima            = templatefile("templates/services/kubelet/service.d/10-fraima.conf.tftpl",{
         base_path                       = var.base_path

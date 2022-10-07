@@ -86,6 +86,12 @@ resource "yandex_compute_instance" "master" {
           etcd-metrics-port               = var.etcd-metrics-port
           etcd-server-port-target-lb      = var.etcd-server-port-target-lb
         })
+        kubelet-config                    = templatefile("templates/services/kubelet/config.yaml.tftpl", {
+            ssl                           = local.ssl
+            kubelet-config-args           = local.kubelet-config-args
+            base_path                     = var.base_path
+            instance_type                 = "master"
+        })
 
         kube-apiserver-manifest           = local.kube-apiserver-manifest
         kube-controller-manager-manifest  = local.kube-controller-manager-manifest 
@@ -94,7 +100,7 @@ resource "yandex_compute_instance" "master" {
         containerd-service                = local.containerd-service
         base-cni                          = local.base-cni
         sysctl-network                    = local.sysctl-network
-        kubelet-config                    = local.kubelet-config
+        # kubelet-config                    = local.kubelet-config
         kubelet-service                   = local.kubelet-service
         key-keeper-service                = local.key-keeper-service
         modules-load-k8s                  = local.modules-load-k8s

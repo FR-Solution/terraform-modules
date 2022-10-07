@@ -5,9 +5,11 @@
 #### MASTERS ######
 ##-->
 resource "yandex_compute_instance" "worker" {
-
-  name        = "worker-1"
-  hostname    = format("%s.%s.%s", "worker-1" ,var.cluster_name, var.base_domain)
+  depends_on = [
+    helm_release.base
+    ]
+  name        = "worker-1-${var.cluster_name}"
+  hostname    = format("%s.%s.%s", each.key ,var.cluster_name, var.base_domain)
   platform_id = "standard-v1"
   zone        = var.master-configs.zone
   labels      = {
@@ -55,11 +57,17 @@ resource "yandex_compute_instance" "worker" {
           base_path                       = var.base_path
           base_domain                     = var.base_domain
         })
+        kubelet-config                      = templatefile("templates/services/kubelet/config.yaml.tftpl", {
+            ssl                             = local.ssl
+            kubelet-config-args             = local.kubelet-config-args
+            base_path                       = var.base_path
+            instance_type                   = "worker"
+        })
         kubelet-service-d-fraima          = local.kubelet-service-d-fraima
         containerd-service                = local.containerd-service
         base-cni                          = local.base-cni
         sysctl-network                    = local.sysctl-network
-        kubelet-config                    = local.kubelet-config
+        # kubelet-config                    = local.kubelet-config
         kubelet-service                   = local.kubelet-service
         modules-load-k8s                  = local.modules-load-k8s
       })

@@ -19,8 +19,9 @@ variable "vault_config" {
 locals {
   base_local_path_certs   = "/etc/kubernetes/pki"
   base_local_path_vault   = "/var/lib/key-keeper/vault"
-  base_vault_path_kv      = "clusters/${var.cluster_name}/kv"
-  base_vault_path_approle = "clusters/${var.cluster_name}/approle"
+  base_vault_path         = "clusters/${var.cluster_name}"
+  base_vault_path_kv      = "${local.base_vault_path}/kv"
+  base_vault_path_approle = "${local.base_vault_path}/approle"
   root_vault_path_pki     = "pki-root"
   
   ssl = {
@@ -79,12 +80,12 @@ locals {
             encoding  = "PKCS1"
             size      = 4096
           }
-          ttl         = "10m"
+          ttl         = "7d"
           ipAddresses = {}
           hostnames   = []
           usages      = []
         }
-        renewBefore   = "5m"
+        renewBefore   = "2d"
         trigger       = []
         withUpdate    = true
 
@@ -349,10 +350,13 @@ locals {
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
+              key_bits  = 0
+              key_type  = "any"
               allowed_domains = [
                 "localhost",
                 "*.${var.cluster_name}.${var.base_domain}",
-                "system:node:*"
+                "system:node:*",
+                "worker-*"
               ]
               organization = [
                 "system:nodes",

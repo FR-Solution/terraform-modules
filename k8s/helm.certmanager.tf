@@ -1,5 +1,5 @@
 resource "helm_release" "certmanager" {
-  depends_on = [null_resource.cluster]
+  depends_on = [helm_release.coredns]
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"

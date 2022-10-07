@@ -1,5 +1,5 @@
 resource "helm_release" "coredns" {
-  depends_on = [null_resource.cluster]
+  depends_on = [helm_release.cilium]
   name       = "coredns"
   repository = "https://coredns.github.io/helm"
   chart      = "coredns"

@@ -1,8 +1,4 @@
 
-locals {
-  idp_provider_realm = "master"
-}
-
 # create groups openid client scope
 resource "keycloak_openid_client_scope" "groups" {
   realm_id               = local.idp_provider_realm

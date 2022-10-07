@@ -33,13 +33,13 @@ resource "yandex_dns_recordset" "api-internal" {
 
 #### INTERNAL DNS FOR ACCESS TO IDP ######
 ##-->
-resource "yandex_dns_recordset" "auth-internal" {
-  zone_id = yandex_dns_zone.cluster-external.id
-  name    = "auth.dobry-kot.ru"
-  type    = "A"
-  ttl     = 60
-  data    = ["193.32.219.99"]
-}
+# resource "yandex_dns_recordset" "auth-internal" {
+#   zone_id = yandex_dns_zone.cluster-external.id
+#   name    = "auth.dobry-kot.ru."
+#   type    = "A"
+#   ttl     = 60
+#   data    = ["193.32.219.99"]
+# }
 
 
 #### INTERNAL DNS FRO ETCD DISCOVERY ######

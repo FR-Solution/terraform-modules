@@ -5,10 +5,12 @@ authentication:
   webhook:
     cacheTTL: 0s
     enabled: true
+%{ if instance_type != "worker"}
   x509:
     clientCAFile: "${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem"
 tlsCertFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server.pem
 tlsPrivateKeyFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server-key.pem
+%{ endif }
 authorization:
   mode: Webhook
   webhook:

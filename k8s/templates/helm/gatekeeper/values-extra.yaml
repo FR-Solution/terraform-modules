@@ -1,13 +1,5 @@
-tolerations:
-  - key: node-role.kubernetes.io/master
-    effect: NoSchedule
-  - key: "CriticalAddonsOnly"
-    operator: "Exists"
-  - key: node.cloudprovider.kubernetes.io/uninitialized
-    value: "true"
-    effect: NoSchedule
 
-webhook:
+postUpgrade:
   tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
@@ -17,7 +9,39 @@ webhook:
     value: "true"
     effect: NoSchedule
 
-cainjector:
+postInstall:
+  probeWebhook:
+    enabled: false
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
+ 
+preUninstall:
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
+ 
+controllerManager:
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
+  
+audit:
   tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
@@ -27,8 +51,7 @@ cainjector:
     value: "true"
     effect: NoSchedule
 
-
-startupapicheck:
+crds:
   tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
@@ -37,6 +60,4 @@ startupapicheck:
   - key: node.cloudprovider.kubernetes.io/uninitialized
     value: "true"
     effect: NoSchedule
-
-featureGates: "ExperimentalCertificateSigningRequestControllers=true"
-installCRDs: true
+ 
