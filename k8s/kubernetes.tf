@@ -30,7 +30,7 @@ resource "null_resource" "cluster" {
     # TODO поправить команду так, что бы не падала сборка
     provisioner "remote-exec" {
         inline = [
-            "curl --retry 99999 --retry-max-time 60 --retry-delay 1 --max-time 2 ${format("https://%s:6443", local.kube_apiserver_lb_fqdn)} -v"
+            "curl --retry 99999 --retry-max-time 60 --retry-delay 1 --max-time 2 ${format("https://%s:6443", local.kube_apiserver_lb_fqdn)} -vk"
         ]
     }
 }

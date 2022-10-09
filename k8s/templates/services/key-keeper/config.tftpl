@@ -8,6 +8,7 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
+          #file: /tmp/key-keeper-tmp.token
           token: ${bootstrap_tokens_ca[format("kubernetes-ca:%s", availability_zone)].client_token}
         appRole:
           name: ${format("kubernetes-ca-%s", availability_zone)}
@@ -27,6 +28,7 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
+          #file: /tmp/key-keeper-tmp.token
           token: ${bootstrap_tokens_kv[format("%s:%s", secret_name, availability_zone)].client_token}
         appRole:
           name: ${secret_name}-${availability_zone}
@@ -46,6 +48,7 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
+          #file: /tmp/key-keeper-tmp.token
           token: ${bootstrap_tokens_ca[format("%s:%s", intermediate_name, availability_zone)].client_token}
         appRole:
           name: ${intermediate_name}-${availability_zone}
@@ -65,6 +68,7 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
+          #file: /tmp/key-keeper-tmp.token
           token: ${bootstrap_tokens_sign[format("%s:%s:%s", intermediate_name, issuer_name, availability_zone)].client_token}
         appRole:
           name: ${issuer_name}-${availability_zone}

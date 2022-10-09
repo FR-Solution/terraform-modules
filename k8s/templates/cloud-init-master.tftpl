@@ -41,6 +41,15 @@ runcmd:
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
   - chmod +x /usr/bin/key-keeper /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc
+  # Настраиваем подключение к Yandex IAM
+  - wget -O /usr/bin/yc           "https://storage.yandexcloud.net/yandexcloud-yc/release/0.96.0/linux/amd64/yc"
+  - chmod +x /usr/bin/yc
+  - yc config profile create my-robot-profile
+  - yc config set cloud-id b1gmn66gvt2idus3kf1g
+  - yc config set folder-id hvs.rrZEynI1NWlZ01DKZ4lplbIO
+  - export IAM_TOKEN=`yc iam create-token`
+  - | # Получаем временный токен для доступа в Vault
+    curl -X GET -H "Authorization: Bearer $IAM_TOKEN" https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/e6qprcqkive849prd1kk/payload | jq .entries[0].textValue | sed 's/"//g' > /tmp/key-keeper-tmp.token
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - mkdir -p /tmp/etcd
@@ -52,12 +61,12 @@ runcmd:
   - cp /tmp/containerd/bin/*   /usr/bin/
   # Старт всех сервисов и автозапуск при старте системы
   - systemctl daemon-reload
-  - systemctl enable kubelet.service
-  - systemctl enable containerd.service
-  - systemctl start kubelet.service
-  - systemctl start containerd.service
-  - systemctl enable key-keeper.service
-  - systemctl start key-keeper.service
+  - systemctl enable  kubelet.service
+  - systemctl enable  containerd.service
+  - systemctl start   kubelet.service
+  - systemctl start   containerd.service
+  - systemctl enable  key-keeper.service
+  - systemctl start   key-keeper.service
 
 write_files:
 
