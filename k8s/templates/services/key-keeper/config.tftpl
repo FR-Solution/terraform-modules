@@ -8,14 +8,13 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          #file: /tmp/key-keeper-tmp.token
-          token: ${bootstrap_tokens_ca[format("kubernetes-ca:%s", availability_zone)].client_token}
+          file: /var/lib/key-keeper/bootstrap.token
         appRole:
           name: ${format("kubernetes-ca-%s", availability_zone)}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/oidc-ca/secret-id
           roleIDLocalPath: ${base_local_path_vault}/oidc-ca/role-id
-      certificate:
+      resource:
         CAPath: "pki-root"
       timeout: 15s
 
@@ -28,15 +27,15 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          #file: /tmp/key-keeper-tmp.token
-          token: ${bootstrap_tokens_kv[format("%s:%s", secret_name, availability_zone)].client_token}
+          file: /var/lib/key-keeper/bootstrap.token
         appRole:
           name: ${secret_name}-${availability_zone}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/${secret_name}/secret-id
           roleIDLocalPath: ${base_local_path_vault}/${secret_name}/role-id
-      kv:
-        path: ${secret.path}
+      resource:
+        kv:
+          path: ${secret.path}
       timeout: 15s
 %{~ endfor ~}
 
@@ -48,14 +47,13 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          #file: /tmp/key-keeper-tmp.token
-          token: ${bootstrap_tokens_ca[format("%s:%s", intermediate_name, availability_zone)].client_token}
+          file: /var/lib/key-keeper/bootstrap.token
         appRole:
           name: ${intermediate_name}-${availability_zone}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/${intermediate_name}/secret-id
           roleIDLocalPath: ${base_local_path_vault}/${intermediate_name}/role-id
-      certificate:
+      resource:
         CAPath: "${intermediate.path}"
         rootCAPath: "${intermediate.root_path}"
       timeout: 15s
@@ -68,14 +66,13 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.tlsInsecure}
         bootstrap:
-          #file: /tmp/key-keeper-tmp.token
-          token: ${bootstrap_tokens_sign[format("%s:%s:%s", intermediate_name, issuer_name, availability_zone)].client_token}
+          file: /var/lib/key-keeper/bootstrap.token
         appRole:
           name: ${issuer_name}-${availability_zone}
           path: "${base_vault_path_approle}"
           secretIDLocalPath: ${base_local_path_vault}/${issuer_name}/secret-id
           roleIDLocalPath: ${base_local_path_vault}/${issuer_name}/role-id
-      certificate:
+      resource:
         role: ${issuer_name}
         CAPath: "${intermediate.path}"
       timeout: 15s
@@ -228,6 +225,7 @@ secrets:
       name: ${secret_name}
     key: ${key_name}  
     hostPath: ${key.host_path}
+
   %{~ endfor ~}
 %{~ endfor ~}
 

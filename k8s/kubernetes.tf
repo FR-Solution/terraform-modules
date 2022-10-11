@@ -1,11 +1,11 @@
 
-resource "vault_pki_secret_backend_cert" "terrafor-kubeconfig" {
+resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
   depends_on = [vault_pki_secret_backend_role.kubernetes-role]
 
   backend = local.ssl.intermediate.kubernetes-ca.path
   name = "kube-apiserver-kubelet-client"
 
-  common_name = "custom:terrafor-kubeconfig"
+  common_name = "custom:terraform-kubeconfig"
 }
 
 
@@ -30,7 +30,7 @@ resource "null_resource" "cluster" {
     # TODO поправить команду так, что бы не падала сборка
     provisioner "remote-exec" {
         inline = [
-            "curl --retry 99999 --retry-max-time 60 --retry-delay 1 --max-time 2 ${format("https://%s:6443", local.kube_apiserver_lb_fqdn)} -vk"
+            "curl --retry 99999 --retry-delay 1 --max-time 2 ${format("https://%s:6443", local.kube_apiserver_lb_fqdn)} -vk"
         ]
     }
 }

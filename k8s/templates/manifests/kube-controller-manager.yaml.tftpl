@@ -53,6 +53,7 @@ spec:
       - --profiling=false
       - --resource-quota-sync-period=5m0s
       - --terminated-pod-gc-threshold=0
+      - --cluster-signing-duration=10m
       - --use-service-account-credentials=true
       - --controllers=*,bootstrapsigner,tokencleaner,cloud-node-lifecycle,csrapproving,csrcleaner,csrsigning
       - --authorization-always-allow-paths=/healthz,/metrics

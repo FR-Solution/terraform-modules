@@ -80,12 +80,12 @@ locals {
             encoding  = "PKCS1"
             size      = 4096
           }
-          ttl         = "7d"
+          ttl         = "10d"
           ipAddresses = {}
           hostnames   = []
           usages      = []
         }
-        renewBefore   = "2d"
+        renewBefore   = "5d"
         trigger       = []
         withUpdate    = true
 
@@ -189,7 +189,7 @@ locals {
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
-                "custom:terrafor-kubeconfig",
+                "custom:terraform-kubeconfig",
               ]
               organization = ["system:masters"]
               client_flag  = true
@@ -379,7 +379,8 @@ locals {
                 "localhost",
                 local.wildcard_base_cluster_fqdn,
                 "system:node:*",
-                "master-*"  # КОСТЫЛЬ
+                "master-*",  # КОСТЫЛЬ
+                "worker-*"   # КОСТЫЛЬ
               ]
               organization = [
                 "system:nodes",
@@ -493,32 +494,6 @@ locals {
               allow_localhost = true
             }
             certificates = {
-              # etcd-server = {
-              #   labels = {
-              #     component = "etcd"
-              #   }
-              #   key-keeper-args = {
-              #     spec = {
-              #       subject = {
-              #         commonName = "system:etcd-server"
-              #       }
-              #       usages = [
-              #         "server auth",
-              #       ]
-              #       hostnames = [
-              #         "localhost",
-              #       ]
-              #       ipAddresses = {
-              #         interfaces = [
-              #           "lo",
-              #           "eth*"
-              #         ]
-              #         dnsLookup = []
-              #       }
-              #     }
-              #     host_path = "${local.base_local_path_certs}/certs/etcd"
-              #   }
-              # }
             }
           },
           etcd-peer = {

@@ -54,8 +54,11 @@ runcmd:
 
 write_files:
 
-#TODO ДОБАВЛЕНИЕ KUBERNETES-CA ДЛЯ KUBELET!
-## ERROR: You must be logged in to the server (the server has asked for the client to provide credentials
+  - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubernetes-ca-bundle)}
 
 ####### Настройка kubelet ##############################
 ###--->
@@ -136,7 +139,7 @@ write_files:
       apiVersion: v1
       clusters:
       - cluster:
-          insecure-skip-tls-verify: true
+          certificate-authority-data: ${kubernetes-ca-bundle-b64}
           server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
         name: kubernetes
       contexts:

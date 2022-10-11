@@ -31,7 +31,7 @@ bootcmd:
 
 runcmd:
   # Скачивание базовых бинарей для сетапа кластера
-  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd14?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221005%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221005T192647Z&X-Amz-Expires=2592000&X-Amz-Signature=323CEDC4608FFE383DAA7B5B83669EB6A8CB501A4C2146727AD08B80DAAAAAA2&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd15?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221010%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221010T142930Z&X-Amz-Expires=2592000&X-Amz-Signature=9BDB6EF39A35FAE2AEDA145D7138962C9A41C64DB668FF3D999F706E764F4909&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubectl
   - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubelet
   - wget -O /usr/bin/runc          https://github.com/opencontainers/runc/releases/download/v1.0.0-rc93/runc.amd64
@@ -41,15 +41,6 @@ runcmd:
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
   - chmod +x /usr/bin/key-keeper /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc
-  # Настраиваем подключение к Yandex IAM
-  - wget -O /usr/bin/yc           "https://storage.yandexcloud.net/yandexcloud-yc/release/0.96.0/linux/amd64/yc"
-  - chmod +x /usr/bin/yc
-  - yc config profile create my-robot-profile
-  - yc config set cloud-id b1gmn66gvt2idus3kf1g
-  - yc config set folder-id hvs.rrZEynI1NWlZ01DKZ4lplbIO
-  - export IAM_TOKEN=`yc iam create-token`
-  - | # Получаем временный токен для доступа в Vault
-    curl -X GET -H "Authorization: Bearer $IAM_TOKEN" https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/e6qprcqkive849prd1kk/payload | jq .entries[0].textValue | sed 's/"//g' > /tmp/key-keeper-tmp.token
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - mkdir -p /tmp/etcd
@@ -83,6 +74,13 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, key_keeper_config)}
+
+  - path: /var/lib/key-keeper/bootstrap.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bootstrap_token_all)}
+
 ###--->
 ####### *** ############################################
 
