@@ -1,6 +1,7 @@
 #cloud-config
 version: v1
 
+hostname: ${hostname}
 users:
   - name: dkot
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -10,7 +11,6 @@ users:
     ssh_authorized_keys:
       - ${ ssh_key }
 
-packages_update: true
 packages:
   - wget
   - jq
@@ -38,6 +38,7 @@ runcmd:
   - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.2/containerd-1.6.2-linux-amd64.tar.gz
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
+  - chmod +x /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
@@ -53,8 +54,11 @@ runcmd:
 
 write_files:
 
-###--->
-####### *** ############################################
+  - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubernetes-ca-bundle)}
 
 ####### Настройка kubelet ##############################
 ###--->
@@ -124,32 +128,33 @@ write_files:
 ###--->
 ####### *** ############################################
 
+
 ####### KUBECONFIGS для подключения к кластеру
 
-  # - path: ${base_path.kubernetes_path}/kubelet/kubeconfig
-  #   owner: root:root
-  #   permissions: '0644'
-  #   content: |
-  #     ---
-  #     apiVersion: v1
-  #     clusters:
-  #     - cluster:
-  #         certificate-authority-data: ${kubernetes-ca-chain}
-  #         server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
-  #       name: kubernetes
-  #     contexts:
-  #     - context:
-  #         cluster: kubernetes
-  #         namespace: default
-  #         user: kubelet
-  #       name: kubelet@kubernetes
-  #     current-context: kubelet@kubernetes
-  #     kind: Config
-  #     preferences: {}
-  #     users:
-  #     - name: kubelet
-  #       user:
-  #         token: ${kubernetes-bootstrap-token}
+  - path: ${base_path.kubernetes_path}/kubelet/bootstrap-kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ---
+      apiVersion: v1
+      clusters:
+      - cluster:
+          certificate-authority-data: ${kubernetes-ca-bundle-b64}
+          server: https://${kube_apiserver_lb_fqdn}:${kube-apiserver-port-lb}
+        name: kubernetes
+      contexts:
+      - context:
+          cluster: kubernetes
+          namespace: default
+          user: kubelet
+        name: kubelet@kubernetes
+      current-context: kubelet@kubernetes
+      kind: Config
+      preferences: {}
+      users:
+      - name: kubelet
+        user:
+          token: 255120.2e8de3467d070f20
 
 ####### Второстепенная настройка
 

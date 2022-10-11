@@ -37,6 +37,13 @@ variable "master-instance-count" {
   default = 3
 }
 
+
+variable "etcd-data-base-dir" {
+  type = string
+  default = "/var/lib/etcd"
+}
+
+
 locals {
   list_masters                  = formatlist("master-%s.${var.cluster_name}.${var.base_domain}", 
                                             range(var.master-instance-count))

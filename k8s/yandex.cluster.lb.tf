@@ -39,5 +39,5 @@ resource "yandex_lb_network_load_balancer" "api-internal" {
 }
 
 output "lb" {
-    value = "${yandex_lb_network_load_balancer.api-internal.listener[*].external_address_spec[*].address}"
+    value = yandex_lb_network_load_balancer.api-internal.listener[*].external_address_spec[*].address
 }

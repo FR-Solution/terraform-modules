@@ -8,12 +8,6 @@ locals {
     key-keeper-service                  = templatefile("templates/services/key-keeper/service.yaml.tftpl", {
         base_local_path_certs           = local.base_local_path_certs
     })
-
-    kubelet-config                      = templatefile("templates/services/kubelet/config.yaml.tftpl", {
-        ssl                             = local.ssl
-        kubelet-config-args             = local.kubelet-config-args
-        base_path                       = var.base_path
-    })
     
     kubelet-service-d-fraima            = templatefile("templates/services/kubelet/service.d/10-fraima.conf.tftpl",{
         base_path                       = var.base_path
@@ -33,6 +27,7 @@ locals {
         base_path                       = var.base_path
         kube-apiserver-port             = var.kube-apiserver-port
         idp-client-id                   = keycloak_openid_client.kube.name
+        cluster-name                    = var.cluster_name
     })
 
     kube-controller-manager-manifest    = templatefile("templates/manifests/kube-controller-manager.yaml.tftpl", {

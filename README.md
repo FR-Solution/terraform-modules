@@ -4,7 +4,7 @@
 cd vault && terraform init && cd -
 cd k8s   && terraform init && cd -
 
-terraform -chdir=k8s apply -var cluster_name="cluster-1" -var vault_server="http://vault.example.com" -auto-approve
+CLUSTER_NAME="cluster-2" terraform -chdir=k8s apply -var cluster_name="$CLUSTER_NAME" -var vault_server="http:/auth.example.com"  -auto-approve  -state states/$CLUSTER_NAME
 ```
 
 ```

@@ -19,8 +19,9 @@ variable "vault_config" {
 locals {
   base_local_path_certs   = "/etc/kubernetes/pki"
   base_local_path_vault   = "/var/lib/key-keeper/vault"
-  base_vault_path_kv      = "clusters/${var.cluster_name}/kv"
-  base_vault_path_approle = "clusters/${var.cluster_name}/approle"
+  base_vault_path         = "clusters/${var.cluster_name}"
+  base_vault_path_kv      = "${local.base_vault_path}/kv"
+  base_vault_path_approle = "${local.base_vault_path}/approle"
   root_vault_path_pki     = "pki-root"
   
   ssl = {
@@ -79,13 +80,14 @@ locals {
             encoding  = "PKCS1"
             size      = 4096
           }
-          ttl         = "10m"
+          ttl         = "10d"
           ipAddresses = {}
           hostnames   = []
           usages      = []
         }
-        renewBefore   = "5m"
+        renewBefore   = "5d"
         trigger       = []
+        withUpdate    = true
 
       }
     }
@@ -187,7 +189,7 @@ locals {
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
-                "custom:terrafor-kubeconfig",
+                "custom:terraform-kubeconfig",
               ]
               organization = ["system:masters"]
               client_flag  = true
@@ -348,10 +350,13 @@ locals {
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
+              key_bits  = 0
+              key_type  = "any"
               allowed_domains = [
                 "localhost",
                 "*.${var.cluster_name}.${var.base_domain}",
-                "system:node:*"
+                "system:node:*",
+                "worker-*"
               ]
               organization = [
                 "system:nodes",
@@ -374,7 +379,8 @@ locals {
                 "localhost",
                 local.wildcard_base_cluster_fqdn,
                 "system:node:*",
-                "master-*"  # КОСТЫЛЬ
+                "master-*",  # КОСТЫЛЬ
+                "worker-*"   # КОСТЫЛЬ
               ]
               organization = [
                 "system:nodes",
@@ -403,6 +409,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                     ]
                     ipAddresses = {
                       interfaces = [
@@ -487,32 +494,6 @@ locals {
               allow_localhost = true
             }
             certificates = {
-              # etcd-server = {
-              #   labels = {
-              #     component = "etcd"
-              #   }
-              #   key-keeper-args = {
-              #     spec = {
-              #       subject = {
-              #         commonName = "system:etcd-server"
-              #       }
-              #       usages = [
-              #         "server auth",
-              #       ]
-              #       hostnames = [
-              #         "localhost",
-              #       ]
-              #       ipAddresses = {
-              #         interfaces = [
-              #           "lo",
-              #           "eth*"
-              #         ]
-              #         dnsLookup = []
-              #       }
-              #     }
-              #     host_path = "${local.base_local_path_certs}/certs/etcd"
-              #   }
-              # }
             }
           },
           etcd-peer = {
@@ -549,6 +530,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                       # "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
@@ -580,6 +562,7 @@ locals {
                     ]
                     hostnames = [
                       "localhost",
+                      "$HOSTNAME"
                     ]
                     ipAddresses = {
                       interfaces = [

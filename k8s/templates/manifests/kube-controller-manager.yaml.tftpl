@@ -48,11 +48,12 @@ spec:
       - --node-cidr-mask-size=24
       - --node-monitor-grace-period=40s
       - --node-monitor-period=5s
-      - --node-startup-grace-period=1m0s
+      - --node-startup-grace-period=10s
       - --pod-eviction-timeout=30s
       - --profiling=false
       - --resource-quota-sync-period=5m0s
       - --terminated-pod-gc-threshold=0
+      - --cluster-signing-duration=10m
       - --use-service-account-credentials=true
       - --controllers=*,bootstrapsigner,tokencleaner,cloud-node-lifecycle,csrapproving,csrcleaner,csrsigning
       - --authorization-always-allow-paths=/healthz,/metrics
