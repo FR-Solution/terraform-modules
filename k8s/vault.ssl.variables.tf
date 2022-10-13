@@ -356,7 +356,8 @@ locals {
                 "localhost",
                 "*.${var.cluster_name}.${var.base_domain}",
                 "system:node:*",
-                "worker-*"
+                "worker-*",
+                "master-*"
               ]
               organization = [
                 "system:nodes",

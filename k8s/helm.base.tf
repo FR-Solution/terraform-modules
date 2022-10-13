@@ -40,6 +40,7 @@ resource "helm_release" "base" {
         vaut_sign_path:                     "${local.ssl.intermediate.kubernetes-ca.path}/sign/kubelet-peer-k8s-certmanager"
         vaut_server:                        "http://193.32.219.99:9200"
         vaut_approle_path:                  local.base_vault_path_approle
+        yandex_cloud_controller_sa:         local.yandex-cloud-controller-sa
     })
   ]
 }

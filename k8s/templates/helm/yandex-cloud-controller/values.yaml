@@ -1,0 +1,14 @@
+yccm:
+  cloud_secret:
+    id: ${ yandex_cloud_controller_sa.id }
+    service_account_id: ${ yandex_cloud_controller_sa.service_account_id }
+    created_at: ${ yandex_cloud_controller_sa.created_at }
+    key_algorithm: ${ yandex_cloud_controller_sa.key_algorithm }
+    public_key: |-
+      ${ indent(6 ,yandex_cloud_controller_sa.public_key) }
+    private_key: |-
+      ${ indent(6 ,yandex_cloud_controller_sa.private_key) }
+  folder_id: ${ yandex_cloud_controller_sa.folder_id }
+  vpc_id: ${ yandex_cloud_controller_sa.vpc_id }
+
+cluster_name: ${cluster_name}

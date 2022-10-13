@@ -14,3 +14,4 @@ vault:
   sign:
     path: ${vaut_sign_path}
   server: ${vaut_server}
+  
