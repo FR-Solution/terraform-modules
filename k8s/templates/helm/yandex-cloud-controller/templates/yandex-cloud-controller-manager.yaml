@@ -61,8 +61,14 @@ spec:
                   name: yandex-cloud
                   key: folder-id
             - name: YANDEX_CLOUD_DEFAULT_LB_TARGET_GROUP_NETWORK_ID
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: yandex-cloud
+                  key: vpc-id
             - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: yandex-cloud
+                  key: vpc-id
             - name: YANDEX_CLUSTER_NAME
               value: {{ .Values.cluster_name }}

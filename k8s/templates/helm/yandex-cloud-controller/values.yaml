@@ -9,5 +9,6 @@ yccm:
     private_key: |-
       ${ indent(6 ,yandex_cloud_controller_sa.private_key) }
   folder_id: ${ yandex_cloud_controller_sa.folder_id }
+  vpc_id: ${ yandex_cloud_controller_sa.vpc_id }
 
 cluster_name: ${cluster_name}
