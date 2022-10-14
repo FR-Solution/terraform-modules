@@ -49,9 +49,10 @@ resource "yandex_compute_instance" "master" {
         kube_apiserver_lb_fqdn            = local.kube_apiserver_lb_fqdn
         kube-apiserver-port-lb            = var.kube-apiserver-port-lb
         hostname                          = "${each.key}-${var.cluster_name}"
-        bootstrap_token_all               = vault_token.kubernetes-all-login-bootstrap[each.key].client_token
+        bootstrap_token_all               = vault_token.kubernetes-all-login-bootstrap-master[each.key].client_token
         key_keeper_config                 = templatefile("templates/services/key-keeper/config.tftpl", {
           intermediates                   = local.ssl.intermediate
+          external_intermediates          = local.ssl.external_intermediate
           secrets                         = local.secrets
           base_local_path_vault           = local.base_local_path_vault
           base_vault_path_approle         = local.base_vault_path_approle
@@ -60,10 +61,11 @@ resource "yandex_compute_instance" "master" {
           base_domain                     = var.base_domain
           vault_config                    = var.vault_config
           vault_server                    = var.vault_server
-          bootstrap_token_all             = vault_token.kubernetes-all-login-bootstrap[each.key].client_token
+          bootstrap_token_all             = vault_token.kubernetes-all-login-bootstrap-master[each.key].client_token
           availability_zone               = each.key
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
           external_instance_name          = "${each.key}-${var.cluster_name}"
+          instance_type                   = "master"
         })
         kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)

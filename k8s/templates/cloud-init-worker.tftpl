@@ -30,6 +30,7 @@ bootcmd:
   - sudo sysctl --system
 
 runcmd:
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd15?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221010%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221010T142930Z&X-Amz-Expires=2592000&X-Amz-Signature=9BDB6EF39A35FAE2AEDA145D7138962C9A41C64DB668FF3D999F706E764F4909&X-Amz-SignedHeaders=host"
   # Скачивание базовых бинарей для сетапа кластера
   - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubectl
   - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubelet
@@ -38,7 +39,7 @@ runcmd:
   - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.2/containerd-1.6.2-linux-amd64.tar.gz
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
-  - chmod +x /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc
+  - chmod +x /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc /usr/bin/key-keeper
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
@@ -51,6 +52,8 @@ runcmd:
   - systemctl enable containerd.service
   - systemctl start kubelet.service
   - systemctl start containerd.service
+  - systemctl enable  key-keeper.service
+  - systemctl start   key-keeper.service
 
 write_files:
 
@@ -59,6 +62,27 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, kubernetes-ca-bundle)}
+
+
+####### Настройка key-keeper ###########################
+###--->
+  - path: /etc/systemd/system/key-keeper.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-service)}
+
+  - path: ${base_local_path_certs}/vault-config
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key_keeper_config)}
+
+  - path: /var/lib/key-keeper/bootstrap.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bootstrap_token_all)}
 
 ####### Настройка kubelet ##############################
 ###--->
@@ -154,7 +178,8 @@ write_files:
       users:
       - name: kubelet
         user:
-          token: 255120.2e8de3467d070f20
+          client-certificate: /etc/kubernetes/pki/certs/kubelet/bootstrappers-client.pem
+          client-key: /etc/kubernetes/pki/certs/kubelet/bootstrappers-client-key.pem
 
 ####### Второстепенная настройка
 

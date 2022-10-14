@@ -11,19 +11,30 @@ locals {
         ]
       ]
     ]
-  )
+  ) 
   issuers_content_map = { for item in local.issuers_content :
     keys(item)[0] => values(item)[0]
   }
 
   intermediate_content = flatten([
   for name in keys(local.ssl.intermediate) : [
-      for master_name in local.master_instance_list:  
+      for master_name in local.master_instance_list:
         {"${name}:${master_name}" = {}}
         ]
       ]
   )
   intermediate_content_map = { for item in local.intermediate_content :
+    keys(item)[0] => values(item)[0]
+  }
+
+  external_intermediate_content = flatten([
+  for name in keys(local.ssl.external_intermediate) : [
+      for master_name in local.master_instance_list:
+        {"${name}:${master_name}" = {}}
+        ]
+      ]
+  )
+  external_intermediate_content_map = { for item in local.external_intermediate_content :
     keys(item)[0] => values(item)[0]
   }
 
@@ -67,8 +78,6 @@ locals {
     keys(item)[0] => values(item)[0]
   }
 
-  access_cidr_availability_zones = flatten([for zone_name in keys(var.availability_zones) : [var.availability_zones[zone_name]]])
-
   secret_content_only = flatten([
   for secret_name in keys(local.secrets) : 
         {"${secret_name}" = {}}
@@ -81,3 +90,34 @@ locals {
 
 }
 
+locals {
+  issuers_content_labels_master = flatten([
+  for intermediate_name in keys(local.ssl.intermediate) : [
+    for issuer_name,issuer in local.ssl.intermediate[intermediate_name].issuers : [
+      for master_name in local.master_instance_list:  
+          {
+            "${intermediate_name}:${issuer_name}:${master_name}" = try(issuer.labels, {})
+          }
+        ]
+      ]
+    ]
+  ) 
+  issuers_content_map_master = { for item in local.issuers_content_labels_master :
+    keys(item)[0] => values(item)[0] if try(values(item)[0].instance-master, false) == true
+  }
+
+  issuers_content_labels_worker = flatten([
+  for intermediate_name in keys(local.ssl.intermediate) : [
+    for issuer_name,issuer in local.ssl.intermediate[intermediate_name].issuers : [
+      for worker_name in local.worker_instance_list:  
+          {
+            "${intermediate_name}:${issuer_name}:${worker_name}" = try(issuer.labels, {})
+          }
+        ]
+      ]
+    ]
+  ) 
+  issuers_content_map_worker = { for item in local.issuers_content_labels_worker :
+    keys(item)[0] => values(item)[0] if try(values(item)[0].instance-worker, false) == true
+  }
+}
