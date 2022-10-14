@@ -94,7 +94,8 @@ locals {
     intermediate = {
       kubernetes-ca = {
         labels = {
-          type = "worker"
+          instance-master = true
+          instance-worker = true
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
@@ -108,7 +109,48 @@ locals {
         default_lease_ttl_seconds = 321408000
         max_lease_ttl_seconds     = 321408000
         issuers = {
+          bootstrappers-client = {
+            labels = {
+              instance-worker = true
+            }
+            issuer-args = {
+              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              allowed_domains = [
+                "custom:bootstrappers:*"
+                
+              ]
+              organization = [
+                "system:bootstrappers"
+              ]
+              client_flag = true
+            }
+            certificates = {
+              bootstrappers-client = {
+                labels = {
+                  instance-worker = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonNamePrefix = "custom:bootstrappers"
+                      organization = [
+                        "system:bootstrappers"
+                      ]
+                    }
+                    usages = [
+                      "client auth"
+                    ]
+                  }
+                  host_path = "${local.base_local_path_certs}/certs/kubelet"
+                }
+              }
+            }
+          },
           kube-controller-manager-client = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
@@ -119,6 +161,9 @@ locals {
             }
             certificates = {
               kube-controller-manager-client = {
+                labels = {
+                  instance-master = true
+                }
                 key-keeper-args = {
                   spec = {
                     subject = {
@@ -135,6 +180,9 @@ locals {
             }
           },
           kube-controller-manager-server = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
@@ -153,7 +201,7 @@ locals {
             certificates = {
               kube-controller-manager-server = {
                 labels = {
-                  component = "kube-controller-manager" 
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
@@ -184,6 +232,9 @@ locals {
             }
           },
           kube-apiserver-kubelet-client = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
@@ -196,6 +247,9 @@ locals {
             }
             certificates = {
               kube-apiserver-kubelet-client = {
+                labels = {
+                  instance-master = true
+                }
                 key-keeper-args = {
                   spec = {
                     subject = {
@@ -214,6 +268,9 @@ locals {
             }
           },
           kube-apiserver = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
@@ -225,8 +282,8 @@ locals {
                 "kubernetes.default.svc.cluster",
                 "kubernetes.default.svc.cluster.local",
                 "custom:kube-apiserver",
-                "${local.kube_apiserver_lb_fqdn}",
-                "${local.kube_apiserver_lb_fqdn_local}"
+                local.kube_apiserver_lb_fqdn,
+                local.kube_apiserver_lb_fqdn_local
               ]
               server_flag     = true
               allow_ip_sans   = true
@@ -235,7 +292,7 @@ locals {
             certificates = {
               kube-apiserver = {
                 labels = {
-                  component = "kube-apiserver" 
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
@@ -252,8 +309,8 @@ locals {
                       "kubernetes.default.svc",
                       "kubernetes.default.svc.cluster",
                       "kubernetes.default.svc.cluster.local",
-                      "${local.kube_apiserver_lb_fqdn}",
-                      "${local.kube_apiserver_lb_fqdn_local}"
+                      local.kube_apiserver_lb_fqdn,
+                      local.kube_apiserver_lb_fqdn_local
                     ]
                     ipAddresses = {
                       static = [
@@ -274,6 +331,9 @@ locals {
             }
           },
           kube-scheduler-server = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
@@ -292,7 +352,7 @@ locals {
             certificates = {
               kube-scheduler-server = {
                 labels = {
-                  component = "kube-scheduler" 
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
@@ -322,6 +382,12 @@ locals {
             }
           },
           kube-scheduler-client = {
+            labels = {
+              instance-master = true
+            }
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
@@ -332,6 +398,9 @@ locals {
             }
             certificates = {
               kube-scheduler-client = {
+                labels = {
+                  instance-master = true
+                }
                 key-keeper-args = {
                   spec = {
                     subject = {
@@ -371,7 +440,7 @@ locals {
           }
           kubelet-server = {
             labels = {
-              type = "worker"
+              instance-master = true
             }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
@@ -394,13 +463,12 @@ locals {
             certificates = {
               kubelet-server = {
                 labels = {
-                  component = "kubelet"
-                  trigger-command = "['systemctl','restart','kubelet']"
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "default:key-keeper"
+                      commonNamePrefix = "system:node"
                       organizations = [
                         "system:nodes"
                       ]
@@ -429,7 +497,7 @@ locals {
           }
           kubelet-client = {
             labels = {
-              type = "worker"
+              instance-master = true
             }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/kubernetes"
@@ -445,13 +513,12 @@ locals {
             certificates = {
               kubelet-client = {
                 labels = {
-                  component = "kubelet"
-                  trigger-command = "['systemctl','restart','kubelet']"
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "default:key-keeper"
+                      commonNamePrefix = "system:node"
                       organization = [
                         "system:nodes"
                       ]
@@ -468,6 +535,9 @@ locals {
         }
       }
       etcd-ca = {
+        labels = {
+          instance-master = true
+        }
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
         path         = "clusters/${var.cluster_name}/pki/etcd"
@@ -498,6 +568,9 @@ locals {
             }
           },
           etcd-peer = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth", "ClientAuth"]
@@ -518,7 +591,7 @@ locals {
             certificates = {
               etcd-server = {
                 labels = {
-                  component = "etcd"
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
@@ -550,7 +623,7 @@ locals {
               }
               etcd-peer = {
                 labels = {
-                  component = "etcd"
+                  instance-master = true
                 }
                 key-keeper-args = {
                   spec = {
@@ -579,6 +652,9 @@ locals {
             }
           },
           etcd-client = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
@@ -591,6 +667,9 @@ locals {
             }
             certificates = {
               kube-apiserver-etcd-client = {
+                labels = {
+                  instance-master = true
+                }
                 key-keeper-args = {
                   spec = {
                     subject = {
@@ -608,6 +687,9 @@ locals {
         }
       }
       front-proxy-ca = {
+        labels = {
+          instance-master = true
+        }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
         path         = "clusters/${var.cluster_name}/pki/front-proxy"
@@ -621,6 +703,9 @@ locals {
         max_lease_ttl_seconds     = 321408000
         issuers = {
           front-proxy-client = {
+            labels = {
+              instance-master = true
+            }
             issuer-args = {
               backend   = "clusters/${var.cluster_name}/pki/front-proxy"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
@@ -632,6 +717,9 @@ locals {
             }
             certificates = {
               front-proxy-client = {
+                labels = {
+                  instance-master = true
+                }
                 key-keeper-args = {
                   spec = {
                     subject = {
@@ -661,10 +749,25 @@ locals {
         max_lease_ttl_seconds     = 321408000
       }
     }
+    external_intermediate = {
+      oidc-ca = {
+        labels = {
+          instance-master = true
+        }
+        description   = "OIDC CA"
+        path          = "pki-root"
+        exportedKey   = false
+        generate      = false
+        host_path     = "${local.base_local_path_certs}/ca"
+      }
+    }
   }
   
   secrets = {
     kube-apiserver-sa = {
+      labels = {
+        instance-master = true
+      }
       path = local.base_vault_path_kv
       keys = {
         public = {

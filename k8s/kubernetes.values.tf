@@ -32,9 +32,26 @@ variable "master-configs" {
   }
 }
 
+variable "worker-configs" {
+  type = object({
+    group = string
+    zone = string
+  })
+  default = {
+    group = "master"
+    zone  = "ru-central1-a"
+
+  }
+}
+
 variable "master-instance-count" {
   type = number
   default = 3
+}
+
+variable "worker-instance-count" {
+  type = number
+  default = 2
 }
 
 
@@ -78,6 +95,17 @@ locals {
   ])
 
   master_instance_list_map = { for item in local.master_instance_list :
+    item => {}
+  }
+
+
+  worker_instance_list        = flatten([
+    for worker-index in range(var.worker-instance-count): [
+     "worker-${worker-index}"
+    ]
+  ])
+
+  worker_instance_list_map = { for item in local.worker_instance_list :
     item => {}
   }
 

@@ -1,25 +1,8 @@
 ---
 issuers:
 
-  - name: oidc-ca
-    vault:
-      server: ${vault_server}
-      auth:
-        caBundle: ${vault_config.caBundle}
-        tlsInsecure: ${vault_config.tlsInsecure}
-        bootstrap:
-          file: /var/lib/key-keeper/bootstrap.token
-        appRole:
-          name: ${format("kubernetes-ca-%s", availability_zone)}
-          path: "${base_vault_path_approle}"
-          secretIDLocalPath: ${base_local_path_vault}/oidc-ca/secret-id
-          roleIDLocalPath: ${base_local_path_vault}/oidc-ca/role-id
-      resource:
-        CAPath: "pki-root"
-      timeout: 15s
-
-
-%{ for secret_name, secret in secrets }
+%{ for secret_name, secret in secrets ~}
+  %{~ if try(secret.labels["instance-${instance_type}"], false) == true ~}
   - name: ${secret_name}
     vault:
       server: ${vault_server}
@@ -37,9 +20,32 @@ issuers:
         kv:
           path: ${secret.path}
       timeout: 15s
+  %{~ endif ~}
 %{~ endfor ~}
 
-%{ for intermediate_name, intermediate in intermediates }
+%{ for external_intermediate_name, external_intermediate in external_intermediates ~}
+  %{~ if try(external_intermediate.labels["instance-${instance_type}"], false) == true ~}
+  - name: ${external_intermediate_name}
+    vault:
+      server: ${vault_server}
+      auth:
+        caBundle: ${vault_config.caBundle}
+        tlsInsecure: ${vault_config.tlsInsecure}
+        bootstrap:
+          file: /var/lib/key-keeper/bootstrap.token
+        appRole:
+          name: ${external_intermediate_name}-${availability_zone}
+          path: "${base_vault_path_approle}"
+          secretIDLocalPath: ${base_local_path_vault}/${external_intermediate_name}/secret-id
+          roleIDLocalPath: ${base_local_path_vault}/${external_intermediate_name}/role-id
+      resource:
+        CAPath: "pki-root"
+      timeout: 15s
+  %{~ endif ~}
+%{~ endfor ~}
+
+%{ for intermediate_name, intermediate in intermediates ~}
+  %{~ if try(intermediate.labels["instance-${instance_type}"], false) == true ~}
   - name: ${intermediate_name}
     vault:
       server: ${vault_server}
@@ -57,8 +63,10 @@ issuers:
         CAPath: "${intermediate.path}"
         rootCAPath: "${intermediate.root_path}"
       timeout: 15s
+  %{~ endif ~}
 
   %{~ for issuer_name, issuers in intermediate.issuers ~}
+    %{~ if try(issuers.labels["instance-${instance_type}"], false) == true ~}
   - name: ${issuer_name}
     vault:
       server: ${vault_server}
@@ -77,12 +85,14 @@ issuers:
         CAPath: "${intermediate.path}"
       timeout: 15s
 
+    %{~ endif ~}
   %{~ endfor ~}
 %{~ endfor ~}
 
 certificates:
 
-%{ for intermediate_name, intermediate in intermediates }
+%{ for intermediate_name, intermediate in intermediates ~}
+  %{~ if try(intermediate.labels["instance-${instance_type}"], false) == true ~}
   - name: ${intermediate_name}
     issuerRef:
       name: ${intermediate_name}
@@ -91,20 +101,22 @@ certificates:
       exportedKey: ${intermediate.exportedKey}
       generate: ${intermediate.generate}
     hostPath: "${intermediate.host_path}"
+  %{~ endif ~}
 
   %{~ for issuer_name, issuers in intermediate.issuers ~}
     %{~ for certificate_name, certificate in issuers.certificates ~}
+      %{~ if try(certificate.labels["instance-${instance_type}"], false) == true ~}
   - name: ${certificate_name}
     issuerRef:
       name: ${issuer_name}
     spec:
       subject:
-        %{~ if try(certificate["key-keeper-args"].spec.subject.commonName, "") != "" ~}
-          %{~ if contains(["kubelet-server", "kubelet-client"], issuer_name) == true ~}
-        commonName: "system:node:${ external_instance_name }"
-          %{~ else ~}
-        commonName: "${certificate["key-keeper-args"].spec.subject.commonName}"
+        %{~ if try(certificate["key-keeper-args"].spec.subject.commonName, "") == "" ~}
+          %{~ if try(certificate["key-keeper-args"].spec.subject.commonNamePrefix, "") != "" ~}
+        commonName: "${certificate["key-keeper-args"].spec.subject.commonNamePrefix}:${ external_instance_name }"
           %{~ endif ~}
+        %{~ else ~}
+        commonName: "${certificate["key-keeper-args"].spec.subject.commonName}"
         %{~ endif ~}
         %{~ if try(certificate["key-keeper-args"].spec.subject.country, []) != [] ~}
           %{~ for country in certificate["key-keeper-args"].spec.subject.country ~}
@@ -204,28 +216,35 @@ certificates:
     hostPath: "${certificate["key-keeper-args"].host_path}"
     withUpdate: ${try(certificate["key-keeper-args"].withUpdate, base_certificate_atrs.withUpdate)}
 
+      %{~ endif ~}
     %{~ endfor ~}
   %{~ endfor ~}
 %{~ endfor ~}
 
-  - name: oidc-ca
+%{ for external_intermediate_name, external_intermediate in external_intermediates ~}
+  %{~ if try(external_intermediate.labels["instance-${instance_type}"], false) == true ~}
+  - name: ${external_intermediate_name}
     issuerRef:
-      name: oidc-ca
+      name: ${external_intermediate_name}
     isCa: true
     ca:
-      exportedKey: false
-      generate: false
-    hostPath: "/etc/kubernetes/pki/ca"
+      exportedKey: ${external_intermediate.exportedKey}
+      generate: ${external_intermediate.generate}
+    hostPath: "${external_intermediate.host_path}"
+  %{~ endif ~}
+%{~ endfor ~}
 
 secrets:
-%{ for secret_name, secret in secrets }
-  %{~ for key_name, key in secret.keys ~}
+%{ for secret_name, secret in secrets ~}
+  %{~ if try(secret.labels["instance-${instance_type}"], false) == true ~}
+    %{~ for key_name, key in secret.keys ~}
   - name: ${secret_name}
     issuerRef:
       name: ${secret_name}
     key: ${key_name}  
     hostPath: ${key.host_path}
 
-  %{~ endfor ~}
+    %{~ endfor ~}
+  %{~ endif ~}
 %{~ endfor ~}
 

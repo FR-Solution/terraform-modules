@@ -1,9 +1,8 @@
-
-path "${pki_path}/sign/${issuer_name}" {
+path "${intermediate.path}/sign/${issuer_name}" {
     capabilities = ["update"]
 }
 
-path "${pki_path}/${issuer_name}/certs" {
+path "${intermediate.path}/${issuer_name}/certs" {
     capabilities = ["list"]
 }
 
