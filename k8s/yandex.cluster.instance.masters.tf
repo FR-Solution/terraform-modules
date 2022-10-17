@@ -57,6 +57,8 @@ resource "yandex_compute_instance" "master" {
         kube-apiserver-port-lb            = var.kube-apiserver-port-lb
         hostname                          = "${each.key}-${var.cluster_name}"
         bootstrap_token_all               = vault_token.kubernetes-all-login-bootstrap-master[each.key].client_token
+        release-vars                      = local.release-vars
+        actual-release                    = var.actual-release
         key_keeper_config                 = templatefile("templates/services/key-keeper/config.tftpl", {
           intermediates                   = local.ssl.intermediate
           external_intermediates          = local.ssl.external_intermediate
@@ -86,8 +88,8 @@ resource "yandex_compute_instance" "master" {
           ssl                             = local.ssl
           cluster_name                    = var.cluster_name
           base_domain                     = var.base_domain
-          etcd-image                      = var.etcd-image.repository
-          etcd-version                    = var.etcd-image.version
+          etcd-image                      = local.release-vars[var.actual-release].etcd.registry
+          etcd-version                    = local.release-vars[var.actual-release].etcd.version
           full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
           etcd-peer-port                  = var.etcd-peer-port
           etcd-server-port                = var.etcd-server-port

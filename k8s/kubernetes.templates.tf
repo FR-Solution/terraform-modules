@@ -22,28 +22,29 @@ locals {
         etcd_server_lb                  = local.etcd_server_lb_access
         idp_provider_fqdn               = local.idp_provider_fqdn
         idp_provider_realm              = local.idp_provider_realm
-        kube-apiserver-image            = var.kube-apiserver-image
-        kubernetes-version              = var.kubernetes-version
+        kube-apiserver-image            = local.release-vars[var.actual-release].kube-apiserver.registry
+        kubernetes-version              = local.release-vars[var.actual-release].kube-apiserver.version
         base_path                       = var.base_path
         kube-apiserver-port             = var.kube-apiserver-port
         idp-client-id                   = keycloak_openid_client.kube.name
         cluster-name                    = var.cluster_name
+
     })
 
     kube-controller-manager-manifest    = templatefile("templates/manifests/kube-controller-manager.yaml.tftpl", {
         service_cidr                    = local.service_cidr
         base_local_path_certs           = local.base_local_path_certs
         ssl                             = local.ssl
-        kube-controller-manager-image   = var.kube-controller-manager-image
-        kubernetes-version              = var.kubernetes-version
+        kube-controller-manager-image   = local.release-vars[var.actual-release].kube-controller-manager.registry
+        kubernetes-version              = local.release-vars[var.actual-release].kube-controller-manager.version
         base_path                       = var.base_path
     })
     
     kube-scheduler-manifest             = templatefile("templates/manifests/kube-scheduler.yaml.tftpl", {
         base_local_path_certs           = local.base_local_path_certs
         ssl                             = local.ssl
-        kube-scheduler-image            = var.kube-scheduler-image
-        kubernetes-version              = var.kubernetes-version
+        kube-scheduler-image            = local.release-vars[var.actual-release].kube-scheduler.registry
+        kubernetes-version              = local.release-vars[var.actual-release].kube-scheduler.version
         base_path                       = var.base_path
     })
 }
