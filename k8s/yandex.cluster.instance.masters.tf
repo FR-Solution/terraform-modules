@@ -25,6 +25,13 @@ resource "yandex_compute_instance" "master" {
     }
   }
 
+  secondary_disk {
+    disk_id = yandex_compute_disk.etcd[each.key].id
+    auto_delete = false
+    mode = "READ_WRITE"
+    device_name = "etcd-data"
+  }
+
   service_account_id = yandex_iam_service_account.master-sa[each.key].id
 
   network_interface {

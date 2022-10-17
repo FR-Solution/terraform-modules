@@ -29,8 +29,33 @@ bootcmd:
   - sudo modprobe br_netfilter
   - sudo sysctl --system
 
+# Проверялось только для Yandex Cloud
+# device_aliases: {'etcd-data': '/dev/disk/by-id/virtio-etcd-data'}
+
+disk_setup:
+  /dev/disk/by-id/virtio-etcd-data:
+    table_type: 'mbr'
+    overwrite: true
+
+fs_setup:
+  - label: None
+    filesystem: 'ext4'
+    device: /dev/disk/by-id/virtio-etcd-data
+    partition: auto
+    overwrite: true
+
+### TODO 
+### {"level":"warn","ts":"2022-10-17T00:44:38.354Z","caller":"etcdmain/etcd.go:446","msg":"found invalid file under data directory","filename":"lost+found","data-dir":"/var/lib/etcd"}
+### {"level":"warn","ts":"2022-10-17T00:44:38.354Z","caller":"embed/config.go:848","msg":"ignoring peer auto TLS since certs given"}
+### {"level":"warn","ts":1665967478.3572063,"caller":"fileutil/fileutil.go:57","msg":"check file permission","error":"directory \"/var/lib/etcd\" exist, but the permission is \"drwxr-xr-x\". The recommended permission is \"-rwx------\" to prevent possible unprivileged access to the data"}
+
+mounts:
+  - [ "/dev/disk/by-id/virtio-etcd-data", "/var/lib/etcd"]
+
+
 runcmd:
   # Скачивание базовых бинарей для сетапа кластера
+  - chmod -R 700 /var/lib/etcd
   - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd15?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221010%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221010T142930Z&X-Amz-Expires=2592000&X-Amz-Signature=9BDB6EF39A35FAE2AEDA145D7138962C9A41C64DB668FF3D999F706E764F4909&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubectl
   - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.10/bin/linux/amd64/kubelet
@@ -40,7 +65,10 @@ runcmd:
   - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.2/containerd-1.6.2-linux-amd64.tar.gz
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
-  - chmod +x /usr/bin/key-keeper /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc
+  - chmod +x /usr/bin/key-keeper 
+  - chmod +x /usr/bin/kubelet 
+  - chmod +x /usr/bin/kubectl 
+  - chmod +x /usr/bin/runc
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - mkdir -p /tmp/etcd
@@ -58,6 +86,9 @@ runcmd:
   - systemctl start   containerd.service
   - systemctl enable  key-keeper.service
   - systemctl start   key-keeper.service
+  # Fix kubelet.config:resolvConf
+  - systemctl enable  systemd-resolved.service
+  - systemctl start   systemd-resolved.service
 
 write_files:
 
