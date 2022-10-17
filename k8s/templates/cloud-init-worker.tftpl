@@ -39,7 +39,10 @@ runcmd:
   - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.2/containerd-1.6.2-linux-amd64.tar.gz
   - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
   # Раскидывание бинарей по диррректориям
-  - chmod +x /usr/bin/kubelet /usr/bin/kubectl /usr/bin/runc /usr/bin/key-keeper
+  - chmod +x /usr/bin/kubelet 
+  - chmod +x /usr/bin/kubectl 
+  - chmod +x /usr/bin/runc 
+  - chmod +x /usr/bin/key-keeper
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
@@ -54,6 +57,9 @@ runcmd:
   - systemctl start containerd.service
   - systemctl enable  key-keeper.service
   - systemctl start   key-keeper.service
+  # Fix kubelet.config:resolvConf
+  - systemctl enable --now systemd-resolved.service
+  - systemctl start  --now systemd-resolved.service
 
 write_files:
 
