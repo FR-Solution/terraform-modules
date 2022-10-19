@@ -57,7 +57,7 @@ mounts:
 runcmd:
   # Скачивание базовых бинарей для сетапа кластера
   - chmod -R 700 /var/lib/etcd
-  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-dd15?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221010%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221010T142930Z&X-Amz-Expires=2592000&X-Amz-Signature=9BDB6EF39A35FAE2AEDA145D7138962C9A41C64DB668FF3D999F706E764F4909&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221018%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221018T160637Z&X-Amz-Expires=2592000&X-Amz-Signature=E974B1554F29CCC12E95B8C5C9AA7BE6E1039873CA5D5213D01961D66C1BFAAF&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       ${release-vars[actual-release].kubectl.url}
   - wget -O /usr/bin/kubelet       ${release-vars[actual-release].kubelet.url}
   - wget -O /usr/bin/runc          ${release-vars[actual-release].runc.url}

@@ -64,7 +64,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: yandex-cloud
-                  key: vpc-id
+                  key: vpc-id    
             - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
               valueFrom:
                 secretKeyRef:
