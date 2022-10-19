@@ -34,7 +34,7 @@ locals {
 }
 
 resource "helm_release" "ycc" {
-
+  depends_on = [helm_release.coredns]
   name       = "ycc"
   chart      = "templates/helm/yandex-cloud-controller"
   namespace  = "fraima-cloud-controllers"
