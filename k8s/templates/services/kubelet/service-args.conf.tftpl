@@ -1,9 +1,5 @@
 KUBELET_HOSTNAME="
-%{~ if instance_type == "master" ~}
-    --node-labels=node.kubernetes.io/${instance_type},node.kubernetes.io/exclude-from-external-load-balancers
-%{~ else ~}
     --node-labels=node.kubernetes.io/${instance_type}
-%{~ endif ~}
 "
 
 KUBELET_BASIC_ARGS="
