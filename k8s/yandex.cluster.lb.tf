@@ -1,7 +1,7 @@
 #### LB ######
 ##-->
 resource "yandex_lb_target_group" "master-tg" {
-  name        = "${var.master-configs.group}-target-group-${var.cluster_name}"
+  name        = "${var.cluster_name}${yandex_vpc_network.cluster-vpc.id}"
   region_id   = "ru-central1"
 
   dynamic "target" {
