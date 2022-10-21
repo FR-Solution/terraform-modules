@@ -51,7 +51,7 @@ variable "master-instance-count" {
 
 variable "worker-instance-count" {
   type = number
-  default = 2
+  default = 0
 }
 
 

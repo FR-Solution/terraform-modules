@@ -1,0 +1,98 @@
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: csi-controller
+spec:
+  serviceName: dummy
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csi-controller
+  template:
+    metadata:
+      labels:
+        app: csi-controller
+    spec:
+      tolerations:
+        - operator: Exists
+      serviceAccountName: csi-controller
+      containers:
+      - name: csi-provisioner
+        image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+        args:
+        - "--v=5"
+        - "--csi-address=/csi/csi.sock"
+        - "--feature-gates=Topology=true"
+        - "--strict-topology"
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      - name: csi-attacher
+        image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+        args:
+        - "--v=5"
+        - "--csi-address=/csi/csi.sock"
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      - name: csi-resizer
+        image: k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
+        args:
+        - "--v=5"
+        - "--csi-address=/csi/csi.sock"
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      - name: csi-snapshotter
+        image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+        args:
+        - "--v=5"
+        - "--csi-address=/csi/csi.sock"
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      - name: csi-controller
+        image: registry.deckhouse.io/yandex-csi-driver/yandex-csi-driver:v0.9.11
+        args:
+        - "--address=$(MY_POD_IP):12302"
+        - "--endpoint=unix:/csi/csi.sock"
+        - "--folder-id=$(YANDEX_FOLDER_ID)"
+        ports:
+          - name: healthz
+            containerPort: 12302
+            protocol: TCP
+        env:
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: YANDEX_AUTH_KEYS
+            valueFrom:
+              secretKeyRef:
+                name: csi-credentials
+                key: service-account-json
+          - name: YANDEX_FOLDER_ID
+            valueFrom:
+              secretKeyRef:
+                name: csi-credentials
+                key: folder-id
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 12302
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      - name: liveness-probe
+        image: quay.io/k8scsi/livenessprobe:v2.0.0
+        args:
+        - --csi-address=/csi/csi.sock
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+      volumes:
+        - name: socket-dir
+          emptyDir: {}
