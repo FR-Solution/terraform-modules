@@ -80,12 +80,12 @@ locals {
             encoding  = "PKCS1"
             size      = 4096
           }
-          ttl         = "1d"
+          ttl         = "10m"
           ipAddresses = {}
           hostnames   = []
           usages      = []
         }
-        renewBefore   = "12h"
+        renewBefore   = "7m"
         trigger       = []
         withUpdate    = true
 

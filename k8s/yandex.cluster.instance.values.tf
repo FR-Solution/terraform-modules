@@ -3,14 +3,16 @@
 ##-->
 variable "master_flavor" {
   type = object({
-    core          = string
-    memory        = string
-    core_fraction = string
+    core            = string
+    memory          = string
+    core_fraction   = string
+    secondary_disk  = string
   })
   default = {
-    core          = 4
-    memory        = 8
-    core_fraction = 100
+    core            = 2
+    memory          = 6
+    core_fraction   = 100
+    secondary_disk  = 60
   }
 }
 

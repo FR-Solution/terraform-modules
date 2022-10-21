@@ -10,3 +10,6 @@ tolerations:
 fullnameOverride: coredns
 
 replicaCount: 3
+service:
+  # TODO вывести в переменную под указанную подсеть
+  clusterIP: 29.64.0.10
