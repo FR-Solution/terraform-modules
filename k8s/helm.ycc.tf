@@ -37,7 +37,7 @@ resource "helm_release" "ycc" {
   depends_on = [helm_release.coredns]
   name       = "ycc"
   chart      = "templates/helm/yandex-cloud-controller"
-  namespace  = "fraima-cloud-controllers"
+  namespace  = "fraima-ccm"
   create_namespace  = true
   values = [
     templatefile("templates/helm/yandex-cloud-controller/values.yaml", {

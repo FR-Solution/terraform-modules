@@ -1,71 +1,178 @@
----
-kind: StatefulSet
 apiVersion: apps/v1
+kind: Deployment
 metadata:
+  labels:
   name: csi-controller
 spec:
-  serviceName: dummy
+  progressDeadlineSeconds: 600
   replicas: 1
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: csi-controller
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: csi-controller
     spec:
-      tolerations:
-        - operator: Exists
-      serviceAccountName: csi-controller
       containers:
-      - name: csi-provisioner
+      - args:
+        - --timeout=600s
+        - --v=5
+        - --csi-address=$(ADDRESS)
+        - --feature-gates=Topology=true
+        - --strict-topology
+        - --default-fstype=ext4
+        - --leader-election=true
+        - --leader-election-namespace=$(NAMESPACE)
+        - --enable-capacity
+        - --capacity-ownerref-level=2
+        - --worker-threads=10
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
-        args:
-        - "--v=5"
-        - "--csi-address=/csi/csi.sock"
-        - "--feature-gates=Topology=true"
-        - "--strict-topology"
+        imagePullPolicy: IfNotPresent
+        name: csi-provisioner
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
-      - name: csi-attacher
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --timeout=600s
+        - --v=5
+        - --csi-address=$(ADDRESS)
+        - --leader-election=true
+        - --leader-election-namespace=$(NAMESPACE)
+        - --worker-threads=10
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
-        args:
-        - "--v=5"
-        - "--csi-address=/csi/csi.sock"
+        imagePullPolicy: IfNotPresent
+        name: csi-attacher
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
-      - name: csi-resizer
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --timeout=600s
+        - --v=5
+        - --csi-address=$(ADDRESS)
+        - --leader-election=true
+        - --leader-election-namespace=$(NAMESPACE)
+        - --workers=10
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         image: k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
-        args:
-        - "--v=5"
-        - "--csi-address=/csi/csi.sock"
+        imagePullPolicy: IfNotPresent
+        name: csi-resizer
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
-      - name: csi-snapshotter
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --timeout=600s
+        - --v=5
+        - --csi-address=$(ADDRESS)
+        - --leader-election=true
+        - --leader-election-namespace=$(NAMESPACE)
+        - --worker-threads=10
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
-        args:
-        - "--v=5"
-        - "--csi-address=/csi/csi.sock"
+        imagePullPolicy: IfNotPresent
+        name: csi-snapshotter
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
-      - name: csi-controller
-        image: registry.deckhouse.io/yandex-csi-driver/yandex-csi-driver:v0.9.11
-        args:
-        - "--address=$(MY_POD_IP):12302"
-        - "--endpoint=unix:/csi/csi.sock"
-        - "--folder-id=$(YANDEX_FOLDER_ID)"
-        ports:
-          - name: healthz
-            containerPort: 12302
-            protocol: TCP
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --csi-address=$(ADDRESS)
+        - --health-port=9809
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        image: k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
+        imagePullPolicy: IfNotPresent
+        name: livenessprobe
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --address=$(MY_POD_IP):12302
+        - --endpoint=unix:///csi/csi.sock
+        - --folder-id=$(YANDEX_FOLDER_ID)
         env:
           - name: MY_POD_IP
             valueFrom:
               fieldRef:
+                apiVersion: v1
                 fieldPath: status.podIP
           - name: YANDEX_AUTH_KEYS
             valueFrom:
@@ -77,22 +184,48 @@ spec:
               secretKeyRef:
                 name: csi-credentials
                 key: folder-id
-        readinessProbe:
+        image: registry.deckhouse.io/yandex-csi-driver/yandex-csi-driver:v0.9.11
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
           httpGet:
-            path: /health
-            port: 12302
-          initialDelaySeconds: 10
-          periodSeconds: 15
+            path: /healthz
+            port: 9809
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: csi-controller
+        resources:
+          requests:
+            ephemeral-storage: 60Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
-      - name: liveness-probe
-        image: quay.io/k8scsi/livenessprobe:v2.0.0
-        args:
-        - --csi-address=/csi/csi.sock
-        volumeMounts:
-          - name: socket-dir
-            mountPath: /csi
+        - mountPath: /csi
+          name: socket-dir
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      priorityClassName: system-cluster-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccount: csi-controller
+      serviceAccountName: csi-controller
+      terminationGracePeriodSeconds: 30
+      tolerations:
+        - key: node-role.kubernetes.io/master
+        - key: node-role.kubernetes.io/control-plane
+        - key: node.kubernetes.io/not-ready
+        - key: node.kubernetes.io/out-of-disk
+        - key: node.kubernetes.io/memory-pressure
+        - key: node.kubernetes.io/disk-pressure
       volumes:
-        - name: socket-dir
-          emptyDir: {}
+      - emptyDir: {}
+        name: socket-dir

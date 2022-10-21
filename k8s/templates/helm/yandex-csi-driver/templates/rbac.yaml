@@ -19,7 +19,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-node
-    namespace: {{ .Release.Name }}
+    namespace: fraima-csi-driver
 roleRef:
   kind: ClusterRole
   name: csi-driver-registrar
@@ -59,6 +59,19 @@ rules:
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents"]
     verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csistoragecapacities"]
+    verbs: ["get", "list", "watch"]
+
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -67,7 +80,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: {{ .Release.Name }}
+    namespace: fraima-csi-driver
 roleRef:
   kind: ClusterRole
   name: csi-external-provisioner
@@ -98,7 +111,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: {{ .Release.Name }}
+    namespace: fraima-csi-driver
 roleRef:
   kind: ClusterRole
   name: csi-external-attacher
@@ -132,7 +145,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: {{ .Release.Name }}
+    namespace: fraima-csi-driver
 roleRef:
   kind: ClusterRole
   name: csi-external-resizer
@@ -178,7 +191,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: {{ .Release.Name }}
+    namespace: fraima-csi-driver
 roleRef:
   kind: ClusterRole
   name: csi-external-snapshotter
