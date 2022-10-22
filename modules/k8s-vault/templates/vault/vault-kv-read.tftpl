@@ -1,0 +1,15 @@
+path "${base_vault_path_kv}/data/${secret_name}" {
+    capabilities = ["read"]
+}
+
+path "auth/clusters/${cluster_name}/approle/login" {
+  capabilities = [ "update" ]
+}
+
+path "auth/token/renew" {
+    capabilities = ["update"]
+}
+
+path "auth/token/renew-self" {
+    capabilities = ["update"]
+}
