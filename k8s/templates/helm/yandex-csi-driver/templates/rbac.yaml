@@ -19,7 +19,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-node
-    namespace: fraima-csi-driver
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: csi-driver-registrar
@@ -67,7 +67,7 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "list", "watch", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
   - apiGroups: ["storage.k8s.io"]
     resources: ["csistoragecapacities"]
     verbs: ["get", "list", "watch"]
@@ -80,7 +80,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: fraima-csi-driver
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: csi-external-provisioner
@@ -111,7 +111,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: fraima-csi-driver
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: csi-external-attacher
@@ -145,7 +145,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: fraima-csi-driver
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: csi-external-resizer
@@ -191,7 +191,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: csi-controller
-    namespace: fraima-csi-driver
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: csi-external-snapshotter
