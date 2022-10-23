@@ -24,25 +24,3 @@ module "k8s-vault" {
     cluster_name          = "osetr"
 
 }
-
-# module "k8s-master-cloud-init" {
-#     source = "../../modules/k8s-vault"
-# }
-
-# module "k8s-worker-cloud-init" {
-#     source = "../../modules/k8s-vault"
-# }
-
-
-# module "k8s-control-plane" {
-#     source = "../../modules/k8s-vault"
-# }
-
-# module "k8s-helm" {
-#     source = "../../modules/k8s-vault"
-# }
-
-# module "k8s-workers" {
-#     source = "../../modules/k8s-vault"
-# }
-
