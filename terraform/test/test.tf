@@ -1,10 +1,10 @@
 
-variable "master-instance-count" {
+variable "master_instance_count" {
   type = number
-  default = 3
+  default = 0
 }
 
-variable "worker-instance-count" {
+variable "worker_instance_count" {
   type = number
   default = 0
 }
@@ -19,8 +19,30 @@ module "certificate-vars" {
 module "k8s-vault" {
     source = "../../modules/k8s-vault"
     k8s_certificate_vars  = module.certificate-vars
-    master-instance-count = var.master-instance-count
-    worker-instance-count = var.worker-instance-count
-    cluster_name          = "treska"
+    master_instance_count = var.master_instance_count
+    worker_instance_count = var.worker_instance_count
+    cluster_name          = "osetr"
 
 }
+
+# module "k8s-master-cloud-init" {
+#     source = "../../modules/k8s-vault"
+# }
+
+# module "k8s-worker-cloud-init" {
+#     source = "../../modules/k8s-vault"
+# }
+
+
+# module "k8s-control-plane" {
+#     source = "../../modules/k8s-vault"
+# }
+
+# module "k8s-helm" {
+#     source = "../../modules/k8s-vault"
+# }
+
+# module "k8s-workers" {
+#     source = "../../modules/k8s-vault"
+# }
+

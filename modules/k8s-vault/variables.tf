@@ -4,30 +4,20 @@ variable "k8s_certificate_vars" {
   default     = {}
 }
 
-variable "master_instance_list" {
-  description = "module:K8S-CERTIFICATE-VARS: base certificate vars"
-  type        = any
-  default     = []
-}
-
-variable "worker_instance_list" {
-  description = "module:K8S-CERTIFICATE-VARS: base certificate vars"
-  type        = any
-  default     = []
-}
-
 variable "cluster_name" {
   description = "K8S: cluster name"
   type        = string
   default     = null
 }
 
-variable "master-instance-count" {
+variable "master_instance_count" {
+  description = "K8S: masters number"
   type = number
   default = 0
 }
 
-variable "worker-instance-count" {
+variable "worker_instance_count" {
+  description = "K8S: workers number"
   type = number
   default = 0
 }

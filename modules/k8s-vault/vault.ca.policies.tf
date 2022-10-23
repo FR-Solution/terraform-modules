@@ -7,7 +7,7 @@ resource "vault_policy" "kubernetes-ca-approle" {
     pki_path              = var.k8s_certificate_vars.ssl.intermediate[split(":","${each.key}")[0]].path
     cluster_name          = var.cluster_name
     ca_name               = split(":","${each.key}")[0]
-    master_instance_list  = var.master_instance_list
+    master_instance_list  = local.master_instance_list
     }
   )
 }
@@ -21,7 +21,7 @@ resource "vault_policy" "external-ca-approle" {
     pki_path              = var.k8s_certificate_vars.ssl.external_intermediate[split(":","${each.key}")[0]].path
     cluster_name          = var.cluster_name
     ca_name               = split(":","${each.key}")[0]
-    master_instance_list  = var.master_instance_list
+    master_instance_list  = local.master_instance_list
     }
   )
 }
