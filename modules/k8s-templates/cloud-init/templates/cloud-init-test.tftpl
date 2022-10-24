@@ -102,3 +102,29 @@ write_files:
     content: |
       ${indent(6, bootstrap_token_all)}
       
+
+
+####### KUBECONFIGS для подключения к кластеру
+  - path: ${base_path.kubernetes_path}/kube-scheduler/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-scheduler-kubeconfig)}
+
+  - path: ${base_path.kubernetes_path}/kube-controller-manager/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-controller-manager-kubeconfig)}
+
+  - path: ${base_path.kubernetes_path}/kube-apiserver/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-apiserver-kubeconfig)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-kubeconfig)}

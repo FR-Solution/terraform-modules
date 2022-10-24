@@ -39,10 +39,10 @@ module "k8s-master-cloud-init" {
     master_instance_list_map = module.k8s-vault.master_instance_list_map
 }
 
-output "name" {
-  value = module.k8s-master-cloud-init
-  sensitive = true
-}
+# output "name" {
+#   value = module.k8s-master-cloud-init.kubeconfig
+#   sensitive = true
+# }
 
 # module "k8s-worker-cloud-init" {
 #     source = "../../modules/k8s-vault"
