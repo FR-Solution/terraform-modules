@@ -3,7 +3,7 @@ resource "vault_policy" "kubernetes-all-bootstrap-master" {
 
   name      = "clusters/${var.cluster_name}/bootstrap-all-${each.key}"
 
-  policy = templatefile("../../modules/k8s-vault/templates/vault/vault-bootstarp-approle-all.tftpl", { 
+  policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-all.tftpl", { 
     cluster_name            = var.cluster_name
     intermediates           = var.k8s_certificate_vars.ssl.intermediate
     external_intermediates  = var.k8s_certificate_vars.ssl.external_intermediate
@@ -19,7 +19,7 @@ resource "vault_policy" "kubernetes-all-bootstrap-worker" {
 
   name      = "clusters/${var.cluster_name}/bootstrap-all-${each.key}"
 
-  policy = templatefile("../../modules/k8s-vault/templates/vault/vault-bootstarp-approle-all.tftpl", { 
+  policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-all.tftpl", { 
     cluster_name            = var.cluster_name
     intermediates           = var.k8s_certificate_vars.ssl.intermediate
     external_intermediates  = var.k8s_certificate_vars.ssl.external_intermediate

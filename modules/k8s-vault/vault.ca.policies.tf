@@ -3,7 +3,7 @@ resource "vault_policy" "kubernetes-ca-approle" {
   
   name      = "clusters/${var.cluster_name}/ca/${split(":","${each.key}")[0]}"
 
-  policy = templatefile("../../modules/k8s-vault/templates/vault/vault-intermediate-read-role.tftpl", { 
+  policy = templatefile("${path.module}/templates/vault/vault-intermediate-read-role.tftpl", { 
     pki_path              = var.k8s_certificate_vars.ssl.intermediate[split(":","${each.key}")[0]].path
     cluster_name          = var.cluster_name
     ca_name               = split(":","${each.key}")[0]
@@ -17,7 +17,7 @@ resource "vault_policy" "external-ca-approle" {
   
   name      = "clusters/${var.cluster_name}/external-ca/${split(":","${each.key}")[0]}"
 
-  policy = templatefile("../../modules/k8s-vault/templates/vault/vault-intermediate-read-role.tftpl", { 
+  policy = templatefile("${path.module}/templates/vault/vault-intermediate-read-role.tftpl", { 
     pki_path              = var.k8s_certificate_vars.ssl.external_intermediate[split(":","${each.key}")[0]].path
     cluster_name          = var.cluster_name
     ca_name               = split(":","${each.key}")[0]
