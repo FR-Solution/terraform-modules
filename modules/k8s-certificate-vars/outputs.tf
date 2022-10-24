@@ -46,8 +46,3 @@ output "wildcard_base_cluster_fqdn" {
 output "k8s_service_kube_apiserver_address_int" {
   value         = local.k8s_service_kube_apiserver_address_int
 }
-
-
-
-
-
