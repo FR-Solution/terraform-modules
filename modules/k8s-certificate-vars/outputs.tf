@@ -18,3 +18,36 @@ output "base_vault_path_approle" {
   value         = local.base_vault_path_approle
 }
 
+
+output "base_local_path_certs" {
+  value         = local.base_local_path_certs
+}
+
+output "base_local_path_vault" {
+  value         = local.base_local_path_vault
+}
+
+output "base_vault_path" {
+  value         = local.base_vault_path
+}
+
+output "kube_apiserver_lb_fqdn" {
+  value         = local.kube_apiserver_lb_fqdn
+}
+
+output "kube_apiserver_lb_fqdn_local" {
+  value         = local.kube_apiserver_lb_fqdn_local
+}
+
+output "wildcard_base_cluster_fqdn" {
+  value         = local.wildcard_base_cluster_fqdn
+}
+
+output "k8s_service_kube_apiserver_address_int" {
+  value         = local.k8s_service_kube_apiserver_address_int
+}
+
+
+
+
+
