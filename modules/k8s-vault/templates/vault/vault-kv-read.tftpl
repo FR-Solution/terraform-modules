@@ -2,7 +2,7 @@ path "${base_vault_path_kv}/data/${secret_name}" {
     capabilities = ["read"]
 }
 
-path "auth/clusters/${cluster_name}/approle/login" {
+path "auth/${base_vault_path_approle}/login" {
   capabilities = [ "update" ]
 }
 

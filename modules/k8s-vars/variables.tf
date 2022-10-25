@@ -76,4 +76,47 @@ variable "root_vault_path_pki" {
   default     = null
 }
 
+variable "base_static_pod_path" {
+  description = "K8S: base path for static pods"
+  type        = string
+  default     = null
+}
 
+variable "base_kubernetes_path" {
+  description = "VAULT: base path for k8s"
+  type        = string
+  default     = null
+}
+
+
+
+
+
+variable "master_instance_count" {
+  description = "K8S: masters number"
+  type = number
+  default = 0
+}
+
+variable "worker_instance_count" {
+  description = "K8S: workers number"
+  type = number
+  default = 0
+}
+
+
+
+variable "vault_server" {
+  type = string
+  default = ""
+}
+
+variable "vault_server_insecure" {
+  type = bool
+  default = true
+}
+
+variable "caBundle" {
+  type = string
+  default = ""
+}

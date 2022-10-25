@@ -102,7 +102,17 @@ write_files:
     content: |
       ${indent(6, bootstrap_token_all)}
       
+  - path: /etc/systemd/system/key-keeper.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-service)}
 
+  - path: ${base_local_path_certs}/vault-config
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-config)}
 
 ####### KUBECONFIGS для подключения к кластеру
   - path: ${base_path.kubernetes_path}/kube-scheduler/kubeconfig
@@ -128,3 +138,31 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, kubelet-kubeconfig)}
+
+####### Настройка kubelet ##############################
+###--->
+  - path: /etc/systemd/system/kubelet.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service)}
+
+  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-d-fraima)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/service/kubelet-args.env
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-args)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/config.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-config)}
+###--->
+####### *** ############################################

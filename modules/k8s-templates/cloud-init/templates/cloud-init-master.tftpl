@@ -95,17 +95,17 @@ write_files:
 
 ####### Настройка key-keeper ###########################
 ###--->
-  - path: /etc/systemd/system/key-keeper.service
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, key-keeper-service)}
+  # - path: /etc/systemd/system/key-keeper.service
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, key-keeper-service)}
 
-  - path: ${base_local_path_certs}/vault-config
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, key_keeper_config)}
+  # - path: ${base_local_path_certs}/vault-config
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, key_keeper_config)}
 
   # - path: /var/lib/key-keeper/bootstrap.token
   #   owner: root:root
@@ -118,29 +118,29 @@ write_files:
 
 ####### Настройка kubelet ##############################
 ###--->
-  - path: /etc/systemd/system/kubelet.service
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kubelet-service)}
+  # - path: /etc/systemd/system/kubelet.service
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kubelet-service)}
 
-  - path: ${base_path.kubernetes_path}/kubelet/service/kubelet-args.env
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kubelet-service-args)}
+  # - path: ${base_path.kubernetes_path}/kubelet/service/kubelet-args.env
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kubelet-service-args)}
 
-  - path: ${base_path.kubernetes_path}/kubelet/config.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kubelet-config)}
+  # - path: ${base_path.kubernetes_path}/kubelet/config.yaml
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kubelet-config)}
 
-  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kubelet-service-d-fraima)}
+  # - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kubelet-service-d-fraima)}
 ###--->
 ####### *** ############################################
 

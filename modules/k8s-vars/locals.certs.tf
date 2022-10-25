@@ -1,11 +1,5 @@
 
 locals {
-  base_local_path_certs   = var.base_local_path_certs   == null ? "/etc/kubernetes/pki"               : var.base_local_path_certs
-  base_local_path_vault   = var.base_local_path_vault   == null ? "/var/lib/key-keeper/vault"         : var.base_local_path_vault
-  base_vault_path         = var.base_vault_path         == null ? "clusters/${var.cluster_name}"      : var.base_vault_path
-  base_vault_path_kv      = var.base_vault_path_kv      == null ? "${local.base_vault_path}/kv"       : var.base_vault_path_kv
-  base_vault_path_approle = var.base_vault_path_approle == null ? "${local.base_vault_path}/approle"  : var.base_vault_path_approle
-  root_vault_path_pki     = var.root_vault_path_pki     == null ? "pki-root"                          : var.root_vault_path_pki
 
   base_cluster_fqdn                      = format("%s.%s", var.cluster_name, var.base_domain)
   default_kube_apiserver_lb_fqdn         = format("%s.%s", "api",      local.base_cluster_fqdn)
@@ -96,9 +90,9 @@ locals {
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
-        path          = "clusters/${var.cluster_name}/pki/kubernetes"
-        root_path     = "clusters/${var.cluster_name}/pki/root"
-        host_path     = "${local.base_local_path_certs}/ca"
+        path          = "${local.global_path.base_local_path_certs}/kubernetes"
+        root_path     = "${local.global_path.base_local_path_certs}/root"
+        host_path     = "${local.global_path.base_local_path_certs}/ca"
         type          = "internal"
         organization  = "Kubernetes"
         exportedKey  = false
@@ -111,7 +105,7 @@ locals {
               instance-worker = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:bootstrappers:*"
@@ -139,7 +133,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kubelet"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kubelet"
                 }
               }
             }
@@ -149,7 +143,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-controller-manager"
@@ -170,7 +164,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path     = "${local.base_local_path_certs}/certs/kube-controller-manager"
+                  host_path     = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
                 }
               }
 
@@ -181,7 +175,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -222,7 +216,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-controller-manager"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
                 }
               }
 
@@ -233,7 +227,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
@@ -259,7 +253,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -269,7 +263,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -322,7 +316,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -332,7 +326,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -373,7 +367,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-scheduler"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-scheduler"
                 }
               }
             }
@@ -386,7 +380,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-scheduler"
@@ -407,14 +401,14 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-scheduler"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-scheduler"
                 }
               }
             }
           },
           kubelet-peer-k8s-certmanager = {
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
               key_bits  = 0
               key_type  = "any"
@@ -440,7 +434,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -486,7 +480,7 @@ locals {
                     }
                     # ttl = "200h"
                   }
-                  host_path     = "${local.base_local_path_certs}/certs/kubelet"
+                  host_path     = "${local.global_path.base_local_path_certs}/certs/kubelet"
                   # renewBefore   = "100h"
                 }
               }
@@ -497,7 +491,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/kubernetes"
+              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:node:*",
@@ -524,7 +518,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kubelet"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kubelet"
                 }
               }
             }
@@ -537,9 +531,9 @@ locals {
         }
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
-        path         = "clusters/${var.cluster_name}/pki/etcd"
-        root_path    = "clusters/${var.cluster_name}/pki/root"
-        host_path    = "${local.base_local_path_certs}/ca"
+        path         = "${local.global_path.base_local_path_certs}/etcd"
+        root_path    = "${local.global_path.base_local_path_certs}/root"
+        host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
         exportedKey  = false
@@ -549,7 +543,7 @@ locals {
         issuers = {
           etcd-server = {
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/etcd"
+              backend   = "${local.global_path.base_local_path_certs}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "system:etcd-server",
@@ -569,7 +563,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/etcd"
+              backend   = "${local.global_path.base_local_path_certs}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth", "ClientAuth"]
               allowed_domains = [
                 "system:etcd-peer",
@@ -615,7 +609,7 @@ locals {
                       dnsLookup = []
                     }
                   }
-                  host_path = "${local.base_local_path_certs}/certs/etcd"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/etcd"
                 }
               }
               etcd-peer = {
@@ -643,7 +637,7 @@ locals {
                       dnsLookup = []
                     }
                   }
-                  host_path = "${local.base_local_path_certs}/certs/etcd"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/etcd"
                 }
               }
             }
@@ -653,7 +647,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/etcd"
+              backend   = "${local.global_path.base_local_path_certs}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-etcd-client",
@@ -676,7 +670,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -689,9 +683,9 @@ locals {
         }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
-        path         = "clusters/${var.cluster_name}/pki/front-proxy"
-        root_path    = "clusters/${var.cluster_name}/pki/root"
-        host_path    = "${local.base_local_path_certs}/ca"
+        path         = "${local.global_path.base_local_path_certs}/front-proxy"
+        root_path    = "${local.global_path.base_local_path_certs}/root"
+        host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
         exportedKey  = false
@@ -704,7 +698,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "clusters/${var.cluster_name}/pki/front-proxy"
+              backend   = "${local.global_path.base_local_path_certs}/front-proxy"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-front-proxy-client",
@@ -726,7 +720,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -738,8 +732,8 @@ locals {
       root = {
         CN          = "root",
         description = "root-ca"
-        path        = "clusters/${var.cluster_name}/pki/root"
-        root_path   = "${local.root_vault_path_pki}"
+        path        = "${local.global_path.base_local_path_certs}/root"
+        root_path   = "${local.global_path.root_vault_path_pki}"
         common_name = "Kubernetes Root CA"
         type        = "internal"
         default_lease_ttl_seconds = 321408000
@@ -755,7 +749,7 @@ locals {
         path          = "pki-root"
         exportedKey   = false
         generate      = false
-        host_path     = "${local.base_local_path_certs}/ca"
+        host_path     = "${local.global_path.base_local_path_certs}/ca"
       }
     }
   }
@@ -765,13 +759,13 @@ locals {
       labels = {
         instance-master = true
       }
-      path = local.base_vault_path_kv
+      path = local.global_path.base_vault_path_kv
       keys = {
         public = {
-          host_path = "${local.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pub"
+          host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pub"
         }
         private = {
-          host_path = "${local.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem"
+          host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem"
         }
       }
     }

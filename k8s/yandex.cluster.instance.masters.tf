@@ -50,7 +50,7 @@ resource "yandex_compute_instance" "master" {
     user-data = templatefile("templates/cloud-init-master.tftpl", {
 
         ssh_key                           = file("~/.ssh/id_rsa.pub")
-        base_local_path_certs             = local.base_local_path_certs
+        base_local_path_certs             = local.global_path.base_local_path_certs
         ssl                               = local.ssl
         base_path                         = var.base_path
         kube_apiserver_lb_fqdn            = local.kube_apiserver_lb_fqdn
@@ -65,7 +65,7 @@ resource "yandex_compute_instance" "master" {
           external_intermediates          = local.ssl.external_intermediate
           secrets                         = local.secrets
           base_local_path_vault           = local.base_local_path_vault
-          base_vault_path_approle         = local.base_vault_path_approle
+          base_vault_path_approle         = local.global_path.base_vault_path_approle
           base_certificate_atrs           = local.ssl.global-args.key-keeper-args
           cluster_name                    = var.cluster_name
           base_domain                     = var.base_domain
@@ -77,15 +77,10 @@ resource "yandex_compute_instance" "master" {
           external_instance_name          = "${each.key}-${var.cluster_name}"
           instance_type                   = "master"
         })
-        kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
-          full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
-          instance_type                   = var.master-configs.group
-          base_path                       = var.base_path
-          base_domain                     = var.base_domain
-        })
+
         etcd-manifest                     = templatefile("templates/manifests/etcd.yaml.tftpl", {
           etcd_initial_cluster            = local.etcd_initial_cluster
-          base_local_path_certs           = local.base_local_path_certs
+          base_local_path_certs           = local.global_path.base_local_path_certs
           ssl                             = local.ssl
           cluster_name                    = var.cluster_name
           base_domain                     = var.base_domain
@@ -103,15 +98,22 @@ resource "yandex_compute_instance" "master" {
             base_path                     = var.base_path
             instance_type                 = "master"
         })
-
+        kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {
+          full_instance_name              = format("%s.%s", each.key ,local.base_cluster_fqdn)
+          instance_type                   = var.master-configs.group
+          base_path                       = var.base_path
+          base_domain                     = var.base_domain
+        })
+        kubelet-service                   = local.kubelet-service
+        kubelet-service-d-fraima          = local.kubelet-service-d-fraima
         kube-apiserver-manifest           = local.kube-apiserver-manifest
         kube-controller-manager-manifest  = local.kube-controller-manager-manifest 
         kube-scheduler-manifest           = local.kube-scheduler-manifest
-        kubelet-service-d-fraima          = local.kubelet-service-d-fraima
+        
         containerd-service                = local.containerd-service
         base-cni                          = local.base-cni
         sysctl-network                    = local.sysctl-network
-        kubelet-service                   = local.kubelet-service
+        
         key-keeper-service                = local.key-keeper-service
         modules-load-k8s                  = local.modules-load-k8s
       })

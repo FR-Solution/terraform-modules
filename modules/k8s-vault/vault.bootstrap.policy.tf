@@ -1,13 +1,13 @@
 resource "vault_policy" "kubernetes-all-bootstrap-master" {
-  for_each  = local.master_instance_list_map
+  for_each  = var.k8s_global_vars.ssl_for_each_map.master_instance_list_map
 
-  name      = "clusters/${var.cluster_name}/bootstrap-all-${each.key}"
+  name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-all-${each.key}"
 
   policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-all.tftpl", { 
-    cluster_name            = var.cluster_name
-    intermediates           = var.k8s_certificate_vars.ssl.intermediate
-    external_intermediates  = var.k8s_certificate_vars.ssl.external_intermediate
-    secrets                 = var.k8s_certificate_vars.secrets
+    base_vault_path_approle = var.k8s_global_vars.global_path.base_vault_path_approle
+    intermediates           = var.k8s_global_vars.ssl.intermediate
+    external_intermediates  = var.k8s_global_vars.ssl.external_intermediate
+    secrets                 = var.k8s_global_vars.secrets
     zone_name               = each.key
     instance_type           = "master"
     }
@@ -15,15 +15,15 @@ resource "vault_policy" "kubernetes-all-bootstrap-master" {
 }
 
 resource "vault_policy" "kubernetes-all-bootstrap-worker" {
-  for_each  = local.worker_instance_list_map
+  for_each  = var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map
 
-  name      = "clusters/${var.cluster_name}/bootstrap-all-${each.key}"
+  name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-all-${each.key}"
 
   policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-all.tftpl", { 
-    cluster_name            = var.cluster_name
-    intermediates           = var.k8s_certificate_vars.ssl.intermediate
-    external_intermediates  = var.k8s_certificate_vars.ssl.external_intermediate
-    secrets                 = var.k8s_certificate_vars.secrets
+    base_vault_path_approle = var.k8s_global_vars.global_path.base_vault_path_approle
+    intermediates           = var.k8s_global_vars.ssl.intermediate
+    external_intermediates  = var.k8s_global_vars.ssl.external_intermediate
+    secrets                 = var.k8s_global_vars.secrets
     zone_name               = each.key
     instance_type           = "worker"
     }

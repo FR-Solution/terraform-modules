@@ -1,7 +1,7 @@
 
 variable "master-instance-count" {
   type = number
-  default = 1
+  default = 2
 }
 
 variable "worker-instance-count" {
@@ -14,19 +14,18 @@ variable "cluster_name" {
   default = "treska"
 }
 
-module "certificate-vars" {
-    source = "../../modules/k8s-certificate-vars"
-    cluster_name    = var.cluster_name
-    base_domain     = "dobry-kot.ru"
+module "k8s-global-vars" {
+    source = "../../modules/k8s-vars"
+    cluster_name          = var.cluster_name
+    base_domain           = "dobry-kot.ru"
+    master_instance_count = var.master-instance-count
+    worker_instance_count = var.worker-instance-count
 
 }
 
 module "k8s-vault" {
-    source = "../../modules/k8s-vault"
-    k8s_certificate_vars  = module.certificate-vars
-    master_instance_count = var.master-instance-count
-    worker_instance_count = var.worker-instance-count
-    cluster_name          = var.cluster_name
+    source            = "../../modules/k8s-vault"
+    k8s_global_vars   = module.k8s-global-vars
 
 }
 
@@ -34,30 +33,17 @@ module "k8s-master-cloud-init" {
     
     source                = "../../modules/k8s-templates/cloud-init"
     ssh_key_path          = "~/.ssh/id_rsa.pub"
-    k8s_certificate_vars  = module.certificate-vars
-    vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
-    master_instance_list_map = module.k8s-vault.master_instance_list_map
+    k8s_global_vars       = module.k8s-global-vars
+    # vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
+    vault-bootstrap-master-token = {
+      "master-0": {"client_token": "$TOKEN"}
+      "master-1": {"client_token": "$TOKEN"}
+      "master-2": {"client_token": "$TOKEN"}
+    }
 }
 
-# output "name" {
-#   value = module.k8s-master-cloud-init.kubeconfig
-#   sensitive = true
-# }
+output "name" {
+  value = module.k8s-master-cloud-init
 
-# module "k8s-worker-cloud-init" {
-#     source = "../../modules/k8s-vault"
-# }
-
-
-# module "k8s-control-plane" {
-#     source = "../../modules/k8s-vault"
-# }
-
-# module "k8s-helm" {
-#     source = "../../modules/k8s-vault"
-# }
-
-# module "k8s-workers" {
-#     source = "../../modules/k8s-vault"
-# }
+}
 

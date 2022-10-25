@@ -12,9 +12,6 @@ locals {
       ]
     ]
   ) 
-  issuers_content_map = { for item in local.issuers_content :
-    keys(item)[0] => values(item)[0]
-  }
 
   intermediate_content = flatten([
   for name in keys(local.ssl.intermediate) : [
@@ -23,9 +20,6 @@ locals {
         ]
       ]
   )
-  intermediate_content_map = { for item in local.intermediate_content :
-    keys(item)[0] => values(item)[0]
-  }
 
   external_intermediate_content = flatten([
   for name in keys(local.ssl.external_intermediate) : [
@@ -34,9 +28,6 @@ locals {
         ]
       ]
   )
-  external_intermediate_content_map = { for item in local.external_intermediate_content :
-    keys(item)[0] => values(item)[0]
-  }
 
   secret_content = flatten([
   for secret_name in keys(local.secrets) : [
@@ -45,9 +36,6 @@ locals {
         ]
       ]
   )
-  secret_content_map = { for item in local.secret_content :
-    keys(item)[0] => values(item)[0]
-  }
 
 }
 
@@ -64,10 +52,6 @@ locals {
     ]
   )
 
-  issuers_content_map_only = { for item in local.issuers_content_only :
-    keys(item)[0] => values(item)[0]
-  }
-
   intermediate_content_only = flatten([
   for name in keys(local.ssl.intermediate) : [
       for master_name in local.master_instance_list:  
@@ -76,20 +60,11 @@ locals {
       ]
   )
 
-  intermediate_content_map_only = { for item in local.intermediate_content_only :
-    keys(item)[0] => values(item)[0]
-  }
-
   secret_content_only = flatten([
   for secret_name in keys(local.secrets) : 
         {"${secret_name}" = {}}
         ]
-  )
-
-  secret_content_map_only = { for item in local.secret_content_only :
-    keys(item)[0] => values(item)[0]
-  }
-
+  )  
 }
 
 locals {
@@ -104,9 +79,6 @@ locals {
       ]
     ]
   ) 
-  issuers_content_map_master = { for item in local.issuers_content_labels_master :
-    keys(item)[0] => values(item)[0] if try(values(item)[0].instance-master, false) == true
-  }
 
   issuers_content_labels_worker = flatten([
   for intermediate_name in keys(local.ssl.intermediate) : [
@@ -119,7 +91,69 @@ locals {
       ]
     ]
   ) 
-  issuers_content_map_worker = { for item in local.issuers_content_labels_worker :
-    keys(item)[0] => values(item)[0] if try(values(item)[0].instance-worker, false) == true
+
+}
+
+locals {
+
+  master_instance_list        = flatten([
+    for master-index in range(var.master_instance_count): [
+     "master-${master-index}"
+    ]
+  ])
+
+  worker_instance_list        = flatten([
+    for worker-index in range(var.worker_instance_count): [
+     "worker-${worker-index}"
+    ]
+  ])
+
+}
+
+locals {
+
+  ssl_for_each_map = {
+    intermediate_content_map = { for item in local.intermediate_content :
+      keys(item)[0] => values(item)[0]
+    }
+    issuers_content_map = { for item in local.issuers_content :
+    keys(item)[0] => values(item)[0]
+    }
+    
+    secret_content_map = { for item in local.secret_content :
+      keys(item)[0] => values(item)[0]
+    }
+
+    external_intermediate_content_map = { for item in local.external_intermediate_content :
+      keys(item)[0] => values(item)[0]
+    }
+
+    master_instance_list_map = { for item in local.master_instance_list :
+      item => {}
+    }
+
+    worker_instance_list_map = { for item in local.worker_instance_list :
+      item => {}
+    }
+
+    intermediate_content_map_only = { for item in local.intermediate_content_only :
+      keys(item)[0] => values(item)[0]
+    }
+
+    secret_content_map_only = { for item in local.secret_content_only :
+      keys(item)[0] => values(item)[0]
+    }
+
+    issuers_content_map_only = { for item in local.issuers_content_only :
+      keys(item)[0] => values(item)[0]
+    }
+
+    issuers_content_map_worker = { for item in local.issuers_content_labels_worker :
+      keys(item)[0] => values(item)[0] if try(values(item)[0].instance-worker, false) == true
+    }
+    issuers_content_map_master = { for item in local.issuers_content_labels_master :
+      keys(item)[0] => values(item)[0] if try(values(item)[0].instance-master, false) == true
+    }
   }
+
 }
