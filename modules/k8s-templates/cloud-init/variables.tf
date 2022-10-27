@@ -131,29 +131,3 @@ variable "actual-release" {
   type = string
   default = "v0_1"
 }
-
-# key-keeper-service
-# key_keeper_config
-
-# kubelet-service
-# kubelet-service-args
-# kubelet-config
-# kubelet-service-d-fraima
-
-# containerd-service
-
-# base-cni
-
-# sysctl-network
-
-# modules-load-k8s
-
-# etcd-manifest
-# kube-apiserver-manifest
-# kube-controller-manager-manifest
-# kube-scheduler-manifest
-
-# kube-apiserver-kubeconfig
-# kube-controller-manager-kubeconfig
-# kube-scheduler-kubeconfig
-# kubelet-kubeconfig

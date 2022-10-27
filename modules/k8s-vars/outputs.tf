@@ -45,6 +45,10 @@ output "base_domain" {
   value         = var.base_domain
 }
 
+output "cluster_name" {
+  value         = var.cluster_name
+}
+
 output "base_cluster_fqdn" {
   value         = local.base_cluster_fqdn
 }
@@ -55,4 +59,12 @@ output "k8s-addresses" {
 
 output "vault-config" {
   value         = local.vault-config
+}
+
+output "kubernetes-ports" {
+  value         = local.kubernetes-ports
+}
+
+output "service-cidr" {
+  value         = var.service_cidr
 }

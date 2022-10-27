@@ -20,7 +20,6 @@ module "k8s-global-vars" {
     base_domain           = "dobry-kot.ru"
     master_instance_count = var.master-instance-count
     worker_instance_count = var.worker-instance-count
-
 }
 
 module "k8s-vault" {

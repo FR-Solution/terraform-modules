@@ -188,17 +188,17 @@ write_files:
 
 ####### Статик поды для создания контрол плейна ########
 ###--->
-  - path: ${base_path.static_pod_path}/etcd.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, etcd-manifest)}
+  # - path: ${base_path.static_pod_path}/etcd.yaml
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, etcd-manifest)}
 
-  - path: ${base_path.static_pod_path}/kube-apiserver.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-apiserver-manifest)}
+  # - path: ${base_path.static_pod_path}/kube-apiserver.yaml
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kube-apiserver-manifest)}
 
   - path: ${base_path.static_pod_path}/kube-controller-manager.yaml
     owner: root:root

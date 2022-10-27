@@ -1,0 +1,196 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-apiserver
+    tier: control-plane
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-apiserver
+    command:
+    - kube-apiserver     
+    args:
+      - --etcd-servers=${etcd_advertise_client_urls}
+    %{~ for intermediate_name, intermediate_content in ssl.intermediate ~}
+      %{~ if  try(intermediate_content.labels.static-pod-kube-apiserver-args, {}) != {} ~}
+        %{~ for key, value in intermediate_content.labels.static-pod-kube-apiserver-args ~}
+          %{~ if value == "cert-public-arg" ~}
+      - --${key}=${intermediate_content.host_path}/${intermediate_name}.pem
+          %{~ endif ~}
+          %{~ if value == "cert-private-arg" ~}
+      - --${key}=${intermediate_content.host_path}/${intermediate_name}-key.pem
+          %{~ endif ~}
+        %{~ endfor ~}
+      %{~ endif ~}
+      %{~ for issuer_name, issuer_content in intermediate_content.issuers ~}
+        %{~ for certificate_name, certificate_content in issuer_content.certificates ~}
+          %{~ if  try(certificate_content.labels.static-pod-kube-apiserver-args, {}) != {} ~}
+            %{~ for key, value in certificate_content.labels.static-pod-kube-apiserver-args ~}
+              %{~ if value == "cert-public-arg" ~}
+      - --${key}=${certificate_content.key-keeper-args.host_path}/${certificate_name}.pem
+              %{~ endif ~}
+              %{~ if value == "cert-private-arg" ~}
+      - --${key}=${certificate_content.key-keeper-args.host_path}/${certificate_name}-key.pem
+              %{~ endif ~}
+            %{~ endfor ~}
+          %{~ endif ~}
+        %{~ endfor ~}
+      %{~ endfor ~}
+    %{~ endfor ~}
+
+      - --service-account-key-file=${secrets["kube-apiserver-sa"].keys["public"].host_path}
+      - --service-account-signing-key-file=${secrets["kube-apiserver-sa"].keys["private"].host_path}
+      
+      - --service-cluster-ip-range=${service_cidr}
+      - --secure-port=${kube_apiserver_port}
+      # - --advertise-address=29.64.0.1
+      - --bind-address=0.0.0.0 # Нужно научить выставлять на адреса интерфейсов
+      - --audit-policy-file=${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+      - --audit-log-path=/var/log/kubernetes/audit/audit.log
+      - --event-ttl=1h0m0s
+      - --kubernetes-service-node-port=0
+      - --master-service-namespace=default
+      - --max-connection-bytes-per-sec=0
+      - --max-requests-inflight=400
+      - --min-request-timeout=1800
+      - --profiling=false
+      - --feature-gates=RotateKubeletServerCertificate=true
+      - --anonymous-auth=true
+      - --audit-log-maxage=30
+      - --audit-log-maxbackup=10
+      - --audit-log-maxsize=1000
+      - --audit-log-mode=batch
+      - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction
+      - --enable-bootstrap-token-auth=true
+      - --runtime-config=api/all=true
+      - --enable-aggregator-routing=true
+      - --api-audiences=konnectivity-server
+      - --requestheader-allowed-names=front-proxy-client
+      - --requestheader-extra-headers-prefix=X-Remote-Extra-
+      - --requestheader-group-headers=X-Remote-Group
+      - --requestheader-username-headers=X-Remote-User
+      - --requestheader-allowed-names=aggregator
+      - --allow-privileged=true
+      - --authorization-mode=Node,RBAC
+      - --service-account-issuer=https://kubernetes.default.svc.cluster.local
+      - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+      - --kubelet-timeout=5s
+      - --v=2
+      - --cloud-provider=external
+      - --oidc-ca-file=${base_path.base_local_path_certs}/ca/oidc-ca.pem
+
+      - --oidc-client-id=${oidc_client_id}
+      - --oidc-username-claim=email
+      - --oidc-groups-claim=groups
+      - --oidc-username-prefix=-
+      - --oidc-issuer-url=${oidc_issuer_url}
+
+    image: ${kube_apiserver_image}:${kube_apiserver_image_version}
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 250m
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /livez
+        port: ${kube_apiserver_port}
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        host: 127.0.0.1
+        path: /readyz
+        port: ${kube_apiserver_port}
+        scheme: HTTPS
+      periodSeconds: 1
+      timeoutSeconds: 15
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /livez
+        port: ${kube_apiserver_port}
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+      name: audit
+      readOnly: true
+    - mountPath: /var/log/kubernetes/audit/
+      name: audit-log
+      readOnly: false
+    - mountPath: /etc/ssl/certs
+      name: ca-certs
+      readOnly: true
+    - mountPath: /etc/ca-certificates
+      name: etc-ca-certificates
+      readOnly: true
+    - mountPath: ${base_path.base_local_path_certs}/certs
+      name: k8s-certs
+      readOnly: true
+    - mountPath: ${base_path.base_local_path_certs}/ca
+      name: k8s-ca
+      readOnly: true
+    - mountPath: ${base_path.base_kubernetes_path}/kube-apiserver
+      name: k8s-kube-apiserver-configs
+      readOnly: true
+    - mountPath: /usr/local/share/ca-certificates
+      name: usr-local-share-ca-certificates
+      readOnly: true
+    - mountPath: /usr/share/ca-certificates
+      name: usr-share-ca-certificates
+      readOnly: true
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+      seccompProfile:
+        type: RuntimeDefault 
+  volumes:
+  - hostPath:
+      path: /etc/ssl/certs
+      type: DirectoryOrCreate
+    name: ca-certs
+  - hostPath:
+      path: /etc/ca-certificates
+      type: DirectoryOrCreate
+    name: etc-ca-certificates
+  - hostPath:
+      path: ${base_path.base_local_path_certs}/certs
+      type: DirectoryOrCreate
+    name: k8s-certs
+  - hostPath:
+      path: ${base_path.base_local_path_certs}/ca
+      type: DirectoryOrCreate
+    name: k8s-ca
+  - hostPath:
+      path: ${base_path.base_kubernetes_path}/kube-apiserver
+      type: DirectoryOrCreate
+    name: k8s-kube-apiserver-configs
+  - hostPath:
+      path: /usr/local/share/ca-certificates
+      type: DirectoryOrCreate
+    name: usr-local-share-ca-certificates
+  - hostPath:
+      path: /usr/share/ca-certificates
+      type: DirectoryOrCreate
+    name: usr-share-ca-certificates
+  - name: audit
+    hostPath:
+      path: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+      type: File
+  - name: audit-log
+    hostPath:
+      path: /var/log/kubernetes/audit/
+      type: DirectoryOrCreate
+status: {}

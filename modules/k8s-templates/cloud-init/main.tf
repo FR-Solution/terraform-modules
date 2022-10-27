@@ -55,7 +55,25 @@ module "key-keeper-service" {
     source = "../services/key-keeper"
     instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
-    cluster_name = var.cluster_name
+
+}
+
+module "static-pod-etcd" {
+    source = "../static-pods/etcd"
+    instance_type = "master"
+    k8s_global_vars = var.k8s_global_vars
+    etcd_image    = local.release-vars["v0_1"].etcd.registry
+    etcd_version  = local.release-vars["v0_1"].etcd.version
+}
+
+module "static-pod-kube-apiserver" {
+    source = "../static-pods/kube-apiserver"
+    instance_type = "master"
+    k8s_global_vars = var.k8s_global_vars
+    kube_apiserver_image          = local.release-vars["v0_1"].kube-apiserver.registry
+    kube_apiserver_image_version  = local.release-vars["v0_1"].kube-apiserver.version
+    oidc_issuer_url = "https://auth.dobry-kot.ru/auth"
+    oidc_client_id  = "kubernetes-master"
 }
 
 

@@ -11,7 +11,7 @@ locals {
             vault_config                    = var.k8s_global_vars.vault-config
             availability_zone               = node_name
             full_instance_name              = "${node_name}.${var.k8s_global_vars.base_cluster_fqdn}"
-            external_instance_name          = "${node_name}-${var.cluster_name}"
+            external_instance_name          = "${node_name}-${var.k8s_global_vars.cluster_name}"
             instance_type                   = var.instance_type
     })}
     ])

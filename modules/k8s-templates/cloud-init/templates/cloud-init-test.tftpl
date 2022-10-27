@@ -45,11 +45,6 @@ fs_setup:
     partition: auto
     overwrite: true
 
-### TODO 
-### {"level":"warn","ts":"2022-10-17T00:44:38.354Z","caller":"etcdmain/etcd.go:446","msg":"found invalid file under data directory","filename":"lost+found","data-dir":"/var/lib/etcd"}
-### {"level":"warn","ts":"2022-10-17T00:44:38.354Z","caller":"embed/config.go:848","msg":"ignoring peer auto TLS since certs given"}
-### {"level":"warn","ts":1665967478.3572063,"caller":"fileutil/fileutil.go:57","msg":"check file permission","error":"directory \"/var/lib/etcd\" exist, but the permission is \"drwxr-xr-x\". The recommended permission is \"-rwx------\" to prevent possible unprivileged access to the data"}
-
 mounts:
   - [ "/dev/disk/by-id/virtio-etcd-data", "/var/lib/etcd"]
 
@@ -166,3 +161,20 @@ write_files:
       ${indent(6, kubelet-config)}
 ###--->
 ####### *** ############################################
+
+
+####### Статик поды для создания контрол плейна ########
+###--->
+  - path: ${base_path.static_pod_path}/etcd.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-etcd)}
+
+  - path: ${base_path.static_pod_path}/kube-apiserver.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-kube-apiserver)}
+
+       

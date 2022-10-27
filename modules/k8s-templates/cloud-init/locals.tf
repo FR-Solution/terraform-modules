@@ -92,6 +92,9 @@ locals {
 
         key-keeper-config                   = module.key-keeper-service.key-keeper-config[master_name]
         key-keeper-service                  = module.key-keeper-service.key-keeper-service
+
+        static-pod-etcd                     = module.static-pod-etcd.manifest[master_name]
+        static-pod-kube-apiserver                     = module.static-pod-kube-apiserver.manifest[master_name]
       })}
     ])
   }

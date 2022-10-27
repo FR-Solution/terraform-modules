@@ -87,6 +87,9 @@ locals {
         labels = {
           instance-master = true
           instance-worker = true
+          static-pod-kube-apiserver-args = {
+            client-ca-file   = "cert-public-arg"
+          }
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
@@ -240,6 +243,10 @@ locals {
               kube-apiserver-kubelet-client = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-apiserver-args = {
+                    kubelet-client-certificate   = "cert-public-arg"
+                    kubelet-client-key           = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -284,6 +291,10 @@ locals {
               kube-apiserver = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-apiserver-args = {
+                    tls-cert-file   = "cert-public-arg"
+                    tls-private-key = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -528,6 +539,13 @@ locals {
       etcd-ca = {
         labels = {
           instance-master = true
+          static-pod-etcd-args = {
+            peer-trusted-ca = "cert-public-arg"
+            trusted-ca-file = "cert-public-arg"
+          }
+          static-pod-kube-apiserver-args = {
+            etcd-cafile   = "cert-public-arg"
+          }
         }
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
@@ -583,6 +601,10 @@ locals {
               etcd-server = {
                 labels = {
                   instance-master = true
+                  static-pod-etcd-args = {
+                    cert-file = "cert-public-arg"
+                    key-file  = "cert-private-arg"
+                    }
                 }
                 key-keeper-args = {
                   spec = {
@@ -615,6 +637,10 @@ locals {
               etcd-peer = {
                 labels = {
                   instance-master = true
+                  static-pod-etcd-args = {
+                    peer-cert-file  = "cert-public-arg"
+                    peer-key-file   = "cert-private-arg"
+                    }
                 }
                 key-keeper-args = {
                   spec = {
@@ -660,6 +686,10 @@ locals {
               kube-apiserver-etcd-client = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-apiserver-args = {
+                    etcd-certfile   = "cert-public-arg"
+                    etcd-keyfile    = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -680,6 +710,9 @@ locals {
       front-proxy-ca = {
         labels = {
           instance-master = true
+          static-pod-kube-apiserver-args = {
+            requestheader-client-ca-file   = "cert-public-arg"
+          }
         }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
@@ -710,6 +743,10 @@ locals {
               front-proxy-client = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-apiserver-args = {
+                    proxy-client-cert-file   = "cert-public-arg"
+                    proxy-client-key-file    = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
