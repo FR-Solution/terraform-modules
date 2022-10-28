@@ -41,6 +41,7 @@ module "k8s-master-cloud-init" {
     }
 }
 
+  
 output "name" {
   value = module.k8s-master-cloud-init
   # sensitive = true
