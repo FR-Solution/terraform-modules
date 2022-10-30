@@ -94,7 +94,16 @@ locals {
         key-keeper-service                  = module.key-keeper-service.key-keeper-service
 
         static-pod-etcd                     = module.static-pod-etcd.manifest[master_name]
-        static-pod-kube-apiserver                     = module.static-pod-kube-apiserver.manifest[master_name]
+        static-pod-kube-apiserver           = module.static-pod-kube-apiserver.manifest[master_name]
+        static-pod-kube-controller-manager  = module.static-pod-kube-controller-manager.manifest[master_name]
+        static-pod-kube-scheduler           = module.static-pod-kube-scheduler.manifest[master_name]
+
+        containerd-service                  = module.containerd-service.service
+        sysctl-network                      = module.sysctl.network
+        modprobe-k8s                        = module.modprobe.k8s
+        cni-base                            = module.cni.base
+        bashrc-k8s                          = module.bashrc.k8s
+        kube-apiserver-audit                = module.k8s-kube-apiserver.audit
       })}
     ])
   }

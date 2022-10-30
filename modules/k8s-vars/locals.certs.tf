@@ -90,6 +90,10 @@ locals {
           static-pod-kube-apiserver-args = {
             client-ca-file   = "cert-public-arg"
           }
+          static-pod-kube-controller-manager-args = {
+            client-ca-file  = "cert-public-arg"
+            root-ca-file    = "cert-public-arg"
+          }
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
@@ -196,6 +200,10 @@ locals {
               kube-controller-manager-server = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-controller-manager-args = {
+                    tls-cert-file         = "cert-public-arg"
+                    tls-private-key-file  = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -355,6 +363,10 @@ locals {
               kube-scheduler-server = {
                 labels = {
                   instance-master = true
+                  static-pod-kube-scheduler-args = {
+                    tls-cert-file         = "cert-public-arg"
+                    tls-private-key-file  = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -713,6 +725,9 @@ locals {
           static-pod-kube-apiserver-args = {
             requestheader-client-ca-file   = "cert-public-arg"
           }
+          static-pod-kube-controller-manager-args = {
+            requestheader-client-ca-file  = "cert-public-arg"
+          }
         }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
@@ -795,6 +810,9 @@ locals {
     kube-apiserver-sa = {
       labels = {
         instance-master = true
+        static-pod-kube-controller-manager-args = {
+          service-account-private-key-file  = "cert-private-arg"
+        }
       }
       path = local.global_path.base_vault_path_kv
       keys = {

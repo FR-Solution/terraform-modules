@@ -1,18 +1,4 @@
 
-
-resource "vault_kv_secret_v2" "kube_apiserver_sa" {
-  mount = "clusters/treska/kv/"
-  name                       = "cloud-init"
-  cas                        = 1
-  delete_all_versions        = true
-  data_json = jsonencode(
-    {
-      private = local.cloud-init-template 
-    }
-  )
-}
-
-
 module "kube-apiserver-kubeconfig" {
     source = "../kubeconfig"
       component-name        = "kube-apiserver"
@@ -43,6 +29,32 @@ module "kube-controller-manager-kubeconfig" {
       certificate-authority = local.kube-controller-manager-kubeconfig-certificate-authority
       client-certificate    = local.kube-controller-manager-kubeconfig-client-certificate
       client-key            = local.kube-controller-manager-kubeconfig-client-key
+}
+
+module "containerd-service" {
+    source = "../services/containerd"
+}
+
+module "sysctl" {
+    source = "../sysctl"
+}
+
+module "modprobe" {
+    source = "../modprobe"
+}
+
+module "cni" {
+    source = "../cni"
+}
+
+module "k8s-kube-apiserver" {
+    source = "../k8s/kube-apiserver"
+}
+
+module "bashrc" {
+    source = "../bashrc"
+    k8s_global_vars = var.k8s_global_vars
+
 }
 
 module "kubelet-service" {
@@ -76,5 +88,20 @@ module "static-pod-kube-apiserver" {
     oidc_client_id  = "kubernetes-master"
 }
 
+module "static-pod-kube-controller-manager" {
+    source = "../static-pods/kube-controller-manager"
+    instance_type = "master"
+    k8s_global_vars = var.k8s_global_vars
+    kube_controller_manager_image    = local.release-vars["v0_1"].kube-controller-manager.registry
+    kube_controller_manager_version  = local.release-vars["v0_1"].kube-controller-manager.version
 
+}
 
+module "static-pod-kube-scheduler" {
+    source = "../static-pods/kube-scheduler"
+    instance_type = "master"
+    k8s_global_vars = var.k8s_global_vars
+    kube_scheduler_image    = local.release-vars["v0_1"].kube-scheduler.registry
+    kube_scheduler_version  = local.release-vars["v0_1"].kube-scheduler.version
+
+}

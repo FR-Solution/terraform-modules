@@ -177,4 +177,71 @@ write_files:
     content: |
       ${indent(6, static-pod-kube-apiserver)}
 
+  - path: ${base_path.static_pod_path}/kube-controller-manager.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-kube-controller-manager)}
        
+  - path: ${base_path.static_pod_path}/kube-scheduler.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-kube-scheduler)}
+###--->
+####### *** ############################################    
+
+
+####### Настройка containerd ##############################
+###--->
+  - path: /etc/systemd/system/containerd.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, containerd-service)}
+
+###--->
+####### *** ############################################
+
+####### Настройка sysctl ##############################
+###--->
+  - path: /etc/sysctl.d/99-network.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, sysctl-network )}
+###--->
+####### *** ############################################
+
+####### Настройка modprobe ##############################
+###--->
+  - path: /etc/modules-load.d/k8s.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, modprobe-k8s  )}
+###--->
+####### *** ############################################
+
+####### Настройка cni ##############################
+###--->
+  - path: /etc/cni/net.d/99-loopback.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, cni-base )}
+###--->
+####### *** ############################################
+
+
+  - path: /root/.bashrc
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bashrc-k8s )}
+
+  - path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-apiserver-audit )}

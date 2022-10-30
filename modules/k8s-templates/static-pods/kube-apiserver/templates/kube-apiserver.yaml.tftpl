@@ -41,10 +41,8 @@ spec:
         %{~ endfor ~}
       %{~ endfor ~}
     %{~ endfor ~}
-
       - --service-account-key-file=${secrets["kube-apiserver-sa"].keys["public"].host_path}
       - --service-account-signing-key-file=${secrets["kube-apiserver-sa"].keys["private"].host_path}
-      
       - --service-cluster-ip-range=${service_cidr}
       - --secure-port=${kube_apiserver_port}
       # - --advertise-address=29.64.0.1

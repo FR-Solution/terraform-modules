@@ -146,41 +146,41 @@ write_files:
 
 ####### Настройка containerd ##############################
 ###--->
-  - path: /etc/systemd/system/containerd.service
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, containerd-service )}
+  # - path: /etc/systemd/system/containerd.service
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, containerd-service )}
 ###--->
 ####### *** ############################################
 
 ####### Настройка cni ##############################
 ###--->
-  - path: /etc/cni/net.d/99-loopback.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, base-cni )}
+  # - path: /etc/cni/net.d/99-loopback.conf
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, base-cni )}
 ###--->
 ####### *** ############################################
 
 ####### Настройка sysctl ##############################
 ###--->
-  - path: /etc/sysctl.d/99-network.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, sysctl-network )}
+  # - path: /etc/sysctl.d/99-network.conf
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, sysctl-network )}
 ###--->
 ####### *** ############################################
 
 ####### Настройка modprobe ##############################
 ###--->
-  - path: /etc/modules-load.d/k8s.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, modules-load-k8s )}
+  # - path: /etc/modules-load.d/k8s.conf
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, modules-load-k8s )}
 ###--->
 ####### *** ############################################
 
@@ -200,17 +200,17 @@ write_files:
   #   content: |
   #     ${indent(6, kube-apiserver-manifest)}
 
-  - path: ${base_path.static_pod_path}/kube-controller-manager.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-controller-manager-manifest)}
+  # - path: ${base_path.static_pod_path}/kube-controller-manager.yaml
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kube-controller-manager-manifest)}
 
-  - path: ${base_path.static_pod_path}/kube-scheduler.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-scheduler-manifest)}
+  # - path: ${base_path.static_pod_path}/kube-scheduler.yaml
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     ${indent(6, kube-scheduler-manifest)}
 
 
 # ####### KUBECONFIGS для подключения к кластеру
@@ -327,77 +327,77 @@ write_files:
     owner: root:root
     permissions: '0644'
     content: |
-      ---
-      apiVersion: audit.k8s.io/v1
-      kind: Policy
-      rules:
-      - level: Metadata
-      - level: RequestResponse
+---
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+- level: Metadata
+- level: RequestResponse
 
 
-  - path: /root/.bashrc
-    owner: root:root
-    permissions: '0644'
-    content: |
-      # .bashrc
+  # - path: /root/.bashrc
+  #   owner: root:root
+  #   permissions: '0644'
+  #   content: |
+  #     # .bashrc
 
-      # User specific aliases and functions
+  #     # User specific aliases and functions
 
-      PROMPT_COMMAND='history -a'
-      export HISTCONTROL="ignoreboth"
-      export HISTIGNORE=""
-      shopt -s cmdhist
+  #     PROMPT_COMMAND='history -a'
+  #     export HISTCONTROL="ignoreboth"
+  #     export HISTIGNORE=""
+  #     shopt -s cmdhist
 
-      alias rm='rm -i'
-      alias cp='cp -i'
-      alias mv='mv -i'
+  #     alias rm='rm -i'
+  #     alias cp='cp -i'
+  #     alias mv='mv -i'
 
-      alias kg='kubectl get'
-      alias ka='kubectl apply'
-      alias kd='kubectl delete'
-      alias ki='kubectl describe'
-      alias ke='kubectl edit'
-      alias k='kubectl '
-      alias kl='kubectl logs '
+  #     alias kg='kubectl get'
+  #     alias ka='kubectl apply'
+  #     alias kd='kubectl delete'
+  #     alias ki='kubectl describe'
+  #     alias ke='kubectl edit'
+  #     alias k='kubectl '
+  #     alias kl='kubectl logs '
 
-      alias crictl='crictl  --runtime-endpoint unix:///run/containerd/containerd.sock '
+  #     alias crictl='crictl  --runtime-endpoint unix:///run/containerd/containerd.sock '
 
-      new_kubeconfig () {
-        SRC_SSH_PORT=$(env | grep SSH_CONNECTION | awk '{print $2}')
-        cp -uf ${base_path.kubernetes_path}/kube-apiserver/kubeconfig /tmp/kubeconfig
-        export KUBECONFIG=/tmp/kubeconfig
-      }
-      new_kubeconfig
+  #     new_kubeconfig () {
+  #       SRC_SSH_PORT=$(env | grep SSH_CONNECTION | awk '{print $2}')
+  #       cp -uf ${base_path.kubernetes_path}/kube-apiserver/kubeconfig /tmp/kubeconfig
+  #       export KUBECONFIG=/tmp/kubeconfig
+  #     }
+  #     new_kubeconfig
 
-      kns () {
-        kubectl config set-context --current --namespace=$1
-      }
+  #     kns () {
+  #       kubectl config set-context --current --namespace=$1
+  #     }
 
 
-      export ETCDCTL_CERT=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
-      export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
-      export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
+  #     export ETCDCTL_CERT=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
+  #     export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
+  #     export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
 
-      etcd_endpoints () {
-        export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:2379
-        etcdctl \
-        --endpoints=$ENDPOINTS \
-        member list |
-        awk '{print $5}' |
-        sed "s/,//") | sed "s/ /,/g")
-      }
+  #     etcd_endpoints () {
+  #       export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:2379
+  #       etcdctl \
+  #       --endpoints=$ENDPOINTS \
+  #       member list |
+  #       awk '{print $5}' |
+  #       sed "s/,//") | sed "s/ /,/g")
+  #     }
 
-      etcd_endpoints
+  #     etcd_endpoints
 
-      estat () {
-        etcdctl \
-        --write-out=table \
-        --endpoints=$ENDPOINTS \
-        endpoint status
-      }
+  #     estat () {
+  #       etcdctl \
+  #       --write-out=table \
+  #       --endpoints=$ENDPOINTS \
+  #       endpoint status
+  #     }
 
-      # Source global definitions
-      if [ -f /etc/bashrc ]; then
-              . /etc/bashrc
-      fi
+  #     # Source global definitions
+  #     if [ -f /etc/bashrc ]; then
+  #             . /etc/bashrc
+  #     fi
 
