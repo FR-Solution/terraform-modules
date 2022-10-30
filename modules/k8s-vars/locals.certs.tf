@@ -97,8 +97,8 @@ locals {
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
-        path          = "${local.global_path.base_local_path_certs}/kubernetes"
-        root_path     = "${local.global_path.base_local_path_certs}/root"
+        path          = "${local.global_path.base_vault_path}/kubernetes"
+        root_path     = "${local.global_path.base_vault_path}/root"
         host_path     = "${local.global_path.base_local_path_certs}/ca"
         type          = "internal"
         organization  = "Kubernetes"
@@ -112,7 +112,7 @@ locals {
               instance-worker = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:bootstrappers:*"
@@ -150,7 +150,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-controller-manager"
@@ -182,7 +182,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -238,7 +238,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
@@ -278,7 +278,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -345,7 +345,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -403,7 +403,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-scheduler"
@@ -431,7 +431,7 @@ locals {
           },
           kubelet-peer-k8s-certmanager = {
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
               key_bits  = 0
               key_type  = "any"
@@ -457,7 +457,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -514,7 +514,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/kubernetes"
+              backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:node:*",
@@ -561,8 +561,8 @@ locals {
         }
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
-        path         = "${local.global_path.base_local_path_certs}/etcd"
-        root_path    = "${local.global_path.base_local_path_certs}/root"
+        path         = "${local.global_path.base_vault_path}/etcd"
+        root_path    = "${local.global_path.base_vault_path}/root"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
@@ -573,7 +573,7 @@ locals {
         issuers = {
           etcd-server = {
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/etcd"
+              backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "system:etcd-server",
@@ -593,7 +593,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/etcd"
+              backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth", "ClientAuth"]
               allowed_domains = [
                 "system:etcd-peer",
@@ -685,7 +685,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/etcd"
+              backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-etcd-client",
@@ -731,8 +731,8 @@ locals {
         }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
-        path         = "${local.global_path.base_local_path_certs}/front-proxy"
-        root_path    = "${local.global_path.base_local_path_certs}/root"
+        path         = "${local.global_path.base_vault_path}/front-proxy"
+        root_path    = "${local.global_path.base_vault_path}/root"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
@@ -746,7 +746,7 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              backend   = "${local.global_path.base_local_path_certs}/front-proxy"
+              backend   = "${local.global_path.base_vault_path}/front-proxy"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-front-proxy-client",
