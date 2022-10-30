@@ -1,6 +1,6 @@
 
 resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
-#   depends_on = [vault_pki_secret_backend_role.kubernetes-role]
+  depends_on = [module.k8s-vault]
 
   backend = local.ssl.intermediate.kubernetes-ca.path
   name = "kube-apiserver-kubelet-client"
@@ -30,7 +30,9 @@ resource "null_resource" "cluster" {
     # TODO поправить команду так, что бы не падала сборка
     provisioner "remote-exec" {
         inline = [
-            "curl --retry 99999 --retry-delay 1 --max-time 2 ${format("https://%s:6443", local.kube_apiserver_lb_fqdn)} -vk"
+            "until cloud-init status | grep -i done; do sleep 1s; done",
+            "until netstat -tulpn | grep 443; do sleep 1s; done",
+            "sudo kubectl --request-timeout=5m cluster-info  --kubeconfig=/etc/kubernetes/kube-apiserver/kubeconfig"
         ]
     }
 }
