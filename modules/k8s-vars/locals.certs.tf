@@ -300,8 +300,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
-                    tls-cert-file   = "cert-public-arg"
-                    tls-private-key = "cert-private-arg"
+                    tls-cert-file         = "cert-public-arg"
+                    tls-private-key-file  = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
