@@ -45,10 +45,10 @@ resource "yandex_compute_instance" "master" {
     ]
   }
 
-  metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
-    user-data = module.k8s-master-cloud-init.cloud-init[each.key]
-  }
+ metadata = {
+   ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+   user-data = module.k8s-master-cloud-init.cloud-init[each.key]
+ }
 }
 
 output "cloud_init" {
