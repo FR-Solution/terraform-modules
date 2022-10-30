@@ -5,8 +5,7 @@ locals {
             intermediates                   = var.k8s_global_vars.ssl.intermediate
             external_intermediates          = var.k8s_global_vars.ssl.external_intermediate
             secrets                         = var.k8s_global_vars.secrets
-            base_local_path_vault           = var.k8s_global_vars.global_path.base_local_path_vault
-            base_vault_path_approle         = var.k8s_global_vars.global_path.base_vault_path_approle
+            base_path                       = var.k8s_global_vars.global_path
             base_certificate_atrs           = var.k8s_global_vars.ssl.global-args.key-keeper-args
             vault_config                    = var.k8s_global_vars.vault-config
             availability_zone               = node_name
