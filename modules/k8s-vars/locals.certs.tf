@@ -784,7 +784,7 @@ locals {
       root = {
         CN          = "root",
         description = "root-ca"
-        path        = "${local.global_path.base_vault_path}/root"
+        path        = "${local.global_path.base_vault_path_pki}/root"
         root_path   = "${local.global_path.root_vault_path_pki}"
         common_name = "Kubernetes Root CA"
         type        = "internal"
