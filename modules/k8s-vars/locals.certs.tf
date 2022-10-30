@@ -97,8 +97,8 @@ locals {
         }
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
-        path          = "${local.global_path.base_vault_path}/kubernetes"
-        root_path     = "${local.global_path.base_vault_path}/root"
+        path          = "${local.global_path.base_vault_path_pki}/kubernetes"
+        root_path     = "${local.global_path.base_vault_path_pki}/root"
         host_path     = "${local.global_path.base_local_path_certs}/ca"
         type          = "internal"
         organization  = "Kubernetes"
@@ -561,8 +561,8 @@ locals {
         }
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
-        path         = "${local.global_path.base_vault_path}/etcd"
-        root_path    = "${local.global_path.base_vault_path}/root"
+        path         = "${local.global_path.base_vault_path_pki}/etcd"
+        root_path    = "${local.global_path.base_vault_path_pki}/root"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
@@ -731,8 +731,8 @@ locals {
         }
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
-        path         = "${local.global_path.base_vault_path}/front-proxy"
-        root_path    = "${local.global_path.base_vault_path}/root"
+        path         = "${local.global_path.base_vault_path_pki}/front-proxy"
+        root_path    = "${local.global_path.base_vault_path_pki}/root"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
