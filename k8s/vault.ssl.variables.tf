@@ -20,8 +20,8 @@ locals {
   base_local_path_certs   = "/etc/kubernetes/pki"
   base_local_path_vault   = "/var/lib/key-keeper/vault"
   base_vault_path         = "clusters/${var.cluster_name}"
-  base_vault_path_kv      = "${local.global_path.base_vault_path}/kv"
-  base_vault_path_approle = "${local.global_path.base_vault_path}/approle"
+  base_vault_path_kv      = "${local.base_vault_path}/kv"
+  base_vault_path_approle = "${local.base_vault_path}/approle"
   root_vault_path_pki     = "pki-root"
   
   ssl = {
@@ -101,7 +101,7 @@ locals {
         description   = "Kubernetes Intermediate CA"
         path          = "clusters/${var.cluster_name}/pki/kubernetes"
         root_path     = "clusters/${var.cluster_name}/pki/root"
-        host_path     = "${local.global_path.base_local_path_certs}/ca"
+        host_path     = "${local.base_local_path_certs}/ca"
         type          = "internal"
         organization  = "Kubernetes"
         exportedKey  = false
@@ -142,7 +142,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kubelet"
+                  host_path = "${local.base_local_path_certs}/certs/kubelet"
                 }
               }
             }
@@ -173,7 +173,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path     = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
+                  host_path     = "${local.base_local_path_certs}/certs/kube-controller-manager"
                 }
               }
 
@@ -225,7 +225,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
+                  host_path = "${local.base_local_path_certs}/certs/kube-controller-manager"
                 }
               }
 
@@ -262,7 +262,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -325,7 +325,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -376,7 +376,7 @@ locals {
                       ]
                     }
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-scheduler"
+                  host_path = "${local.base_local_path_certs}/certs/kube-scheduler"
                 }
               }
             }
@@ -410,7 +410,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-scheduler"
+                  host_path = "${local.base_local_path_certs}/certs/kube-scheduler"
                 }
               }
             }
@@ -489,7 +489,7 @@ locals {
                     }
                     # ttl = "200h"
                   }
-                  host_path     = "${local.global_path.base_local_path_certs}/certs/kubelet"
+                  host_path     = "${local.base_local_path_certs}/certs/kubelet"
                   # renewBefore   = "100h"
                 }
               }
@@ -527,7 +527,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kubelet"
+                  host_path = "${local.base_local_path_certs}/certs/kubelet"
                 }
               }
             }
@@ -542,7 +542,7 @@ locals {
         description  = "ETCD Intermediate CA"
         path         = "clusters/${var.cluster_name}/pki/etcd"
         root_path    = "clusters/${var.cluster_name}/pki/root"
-        host_path    = "${local.global_path.base_local_path_certs}/ca"
+        host_path    = "${local.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
         exportedKey  = false
@@ -618,7 +618,7 @@ locals {
                       dnsLookup = []
                     }
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/etcd"
+                  host_path = "${local.base_local_path_certs}/certs/etcd"
                 }
               }
               etcd-peer = {
@@ -646,7 +646,7 @@ locals {
                       dnsLookup = []
                     }
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/etcd"
+                  host_path = "${local.base_local_path_certs}/certs/etcd"
                 }
               }
             }
@@ -679,7 +679,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -694,7 +694,7 @@ locals {
         description  = "Front-proxy Intermediate CA"
         path         = "clusters/${var.cluster_name}/pki/front-proxy"
         root_path    = "clusters/${var.cluster_name}/pki/root"
-        host_path    = "${local.global_path.base_local_path_certs}/ca"
+        host_path    = "${local.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
         exportedKey  = false
@@ -729,7 +729,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+                  host_path = "${local.base_local_path_certs}/certs/kube-apiserver"
                 }
               }
             }
@@ -742,7 +742,7 @@ locals {
         CN          = "root",
         description = "root-ca"
         path        = "clusters/${var.cluster_name}/pki/root"
-        root_path   = "${local.global_path.root_vault_path_pki}"
+        root_path   = "${local.root_vault_path_pki}"
         common_name = "Kubernetes Root CA"
         type        = "internal"
         default_lease_ttl_seconds = 321408000
@@ -758,7 +758,7 @@ locals {
         path          = "pki-root"
         exportedKey   = false
         generate      = false
-        host_path     = "${local.global_path.base_local_path_certs}/ca"
+        host_path     = "${local.base_local_path_certs}/ca"
       }
     }
   }
@@ -768,13 +768,13 @@ locals {
       labels = {
         instance-master = true
       }
-      path = local.global_path.base_vault_path_kv
+      path = local.base_vault_path_kv
       keys = {
         public = {
-          host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pub"
+          host_path = "${local.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pub"
         }
         private = {
-          host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem"
+          host_path = "${local.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem"
         }
       }
     }

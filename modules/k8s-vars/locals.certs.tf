@@ -552,7 +552,7 @@ locals {
         labels = {
           instance-master = true
           static-pod-etcd-args = {
-            peer-trusted-ca = "cert-public-arg"
+            peer-trusted-ca-file = "cert-public-arg"
             trusted-ca-file = "cert-public-arg"
           }
           static-pod-kube-apiserver-args = {

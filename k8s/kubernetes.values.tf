@@ -44,17 +44,6 @@ variable "worker-configs" {
   }
 }
 
-variable "master-instance-count" {
-  type = number
-  default = 3
-}
-
-variable "worker-instance-count" {
-  type = number
-  default = 0
-}
-
-
 variable "etcd-data-base-dir" {
   type = string
   default = "/var/lib/etcd"

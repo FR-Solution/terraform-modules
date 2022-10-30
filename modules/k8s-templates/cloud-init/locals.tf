@@ -74,7 +74,7 @@ locals {
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                               = var.k8s_global_vars.ssl
         base_path                         = var.base_path
-        hostname                          = "${master_name}-${var.cluster_name}"
+        hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
         actual_release                    = var.actual-release
         release_vars                      = local.release-vars
         kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
@@ -106,4 +106,8 @@ locals {
         kube-apiserver-audit                = module.k8s-kube-apiserver.audit
       })}
     ])
-  }
+  cloud-init-template-map = { for item in local.cloud-init-template :
+    keys(item)[0] => values(item)[0]}
+
+}
+

@@ -1,4 +1,15 @@
 
+variable "master-instance-count" {
+  type = number
+  default = 3
+}
+
+variable "worker-instance-count" {
+  type = number
+  default = 0
+}
+
+
 #### CONFIGS ######
 ##-->
 variable "master_flavor" {
@@ -9,8 +20,8 @@ variable "master_flavor" {
     secondary_disk  = string
   })
   default = {
-    core            = 2
-    memory          = 6
+    core            = 4
+    memory          = 8
     core_fraction   = 100
     secondary_disk  = 60
   }
