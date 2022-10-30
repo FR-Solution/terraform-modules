@@ -1,38 +1,49 @@
 
-# #### CONFIGS ######
-# ##-->
-# variable "master_flavor" {
-#   type = object({
-#     core            = string
-#     memory          = string
-#     core_fraction   = string
-#     secondary_disk  = string
-#   })
-#   default = {
-#     core            = 2
-#     memory          = 6
-#     core_fraction   = 100
-#     secondary_disk  = 60
-#   }
-# }
+variable "master-instance-count" {
+  type = number
+  default = 3
+}
 
-# variable "worker_flavor" {
-#   type = object({
-#     core          = string
-#     memory        = string
-#     core_fraction = string
-#   })
-#   default = {
-#     core          = 2
-#     memory        = 4
-#     core_fraction = 20
-#   }
-# }
+variable "worker-instance-count" {
+  type = number
+  default = 0
+}
 
-# variable "base_os_image" {
-#   type = string
-#   default = "fd8kdq6d0p8sij7h5qe3"
-# }
+
+#### CONFIGS ######
+##-->
+variable "master_flavor" {
+  type = object({
+    core            = string
+    memory          = string
+    core_fraction   = string
+    secondary_disk  = string
+  })
+  default = {
+    core            = 4
+    memory          = 8
+    core_fraction   = 100
+    secondary_disk  = 60
+  }
+}
+
+variable "worker_flavor" {
+  type = object({
+    core          = string
+    memory        = string
+    core_fraction = string
+  })
+  default = {
+    core          = 2
+    memory        = 4
+    core_fraction = 20
+  }
+}
+
+variable "base_os_image" {
+  type = string
+  default = "fd8kdq6d0p8sij7h5qe3"
+}
 
 # # проверен переход
 # # fd8dl9ahl649kf31vp4o | debian-10-v20220117

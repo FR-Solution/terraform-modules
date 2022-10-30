@@ -43,7 +43,7 @@
 #         user-data = templatefile("templates/cloud-init-worker.tftpl", {
 
 #         ssh_key                           = file("~/.ssh/id_rsa.pub")
-#         base_local_path_certs             = local.base_local_path_certs
+#         base_local_path_certs             = local.global_path.base_local_path_certs
 #         ssl                               = local.ssl
 #         base_path                         = var.base_path
 #         kube_apiserver_lb_fqdn            = local.kube_apiserver_lb_fqdn
@@ -59,7 +59,7 @@
 #           intermediates                   = local.ssl.intermediate
 #           external_intermediates          = local.ssl.external_intermediate
 #           base_local_path_vault           = local.base_local_path_vault
-#           base_vault_path_approle         = local.base_vault_path_approle
+#           base_vault_path_approle         = local.global_path.base_vault_path_approle
 #           base_certificate_atrs           = local.ssl.global-args.key-keeper-args
 #           secrets                         = local.secrets
 #           cluster_name                    = var.cluster_name
@@ -70,7 +70,7 @@
 #           availability_zone               = "${each.key}"
 #           full_instance_name              = format("%s.%s", "${each.key}" ,local.base_cluster_fqdn)
 #           external_instance_name          = "${each.key}-${var.cluster_name}"
-#           base_local_path_certs           = local.base_local_path_certs
+#           base_local_path_certs           = local.global_path.base_local_path_certs
 #           instance_type                   = "worker"
 #         })
 #         kubelet-service-args              = templatefile("templates/services/kubelet/service-args.conf.tftpl", {

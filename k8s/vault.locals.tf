@@ -63,6 +63,7 @@ locals {
       ]
     ]
   )
+
   issuers_content_map_only = { for item in local.issuers_content_only :
     keys(item)[0] => values(item)[0]
   }
@@ -74,6 +75,7 @@ locals {
         ]
       ]
   )
+
   intermediate_content_map_only = { for item in local.intermediate_content_only :
     keys(item)[0] => values(item)[0]
   }

@@ -1,10 +1,10 @@
 %{~for external_intermediate_name, external_intermediate_content in external_intermediates ~}
   %{~ if try(external_intermediate_content.labels["instance-${instance_type}"], false) == true ~}
-path "auth/clusters/${cluster_name}/approle/role/${external_intermediate_name}-${zone_name}/role-id" {
+path "auth/${base_vault_path_approle}/role/${external_intermediate_name}-${zone_name}/role-id" {
   capabilities = [ "read" ]
 }
 
-path "auth/clusters/${cluster_name}/approle/role/${external_intermediate_name}-${zone_name}/secret-id" {
+path "auth/${base_vault_path_approle}/role/${external_intermediate_name}-${zone_name}/secret-id" {
   capabilities = [ "update" ]
 }
   %{~ endif ~}
@@ -12,21 +12,21 @@ path "auth/clusters/${cluster_name}/approle/role/${external_intermediate_name}-$
 
 %{~for intermediate_name, intermediate_content in intermediates ~}
   %{~ if try(intermediate_content.labels["instance-${instance_type}"], false) == true ~}
-path "auth/clusters/${cluster_name}/approle/role/${intermediate_name}-${zone_name}/role-id" {
+path "auth/${base_vault_path_approle}/role/${intermediate_name}-${zone_name}/role-id" {
   capabilities = [ "read" ]
 }
 
-path "auth/clusters/${cluster_name}/approle/role/${intermediate_name}-${zone_name}/secret-id" {
+path "auth/${base_vault_path_approle}/role/${intermediate_name}-${zone_name}/secret-id" {
   capabilities = [ "update" ]
 }
   %{~ endif ~}
   %{~for issuer_name, issuer_content in intermediate_content.issuers ~}
     %{~ if try(issuer_content.labels["instance-${instance_type}"], false) == true ~}
-path "auth/clusters/${cluster_name}/approle/role/${issuer_name}-${zone_name}/role-id" {
+path "auth/${base_vault_path_approle}/role/${issuer_name}-${zone_name}/role-id" {
   capabilities = [ "read" ]
 }
 
-path "auth/clusters/${cluster_name}/approle/role/${issuer_name}-${zone_name}/secret-id" {
+path "auth/${base_vault_path_approle}/role/${issuer_name}-${zone_name}/secret-id" {
   capabilities = [ "update" ]
 }
     %{~ endif ~}
@@ -35,11 +35,11 @@ path "auth/clusters/${cluster_name}/approle/role/${issuer_name}-${zone_name}/sec
 
 %{for secret_name, secret_content in secrets }
   %{~ if try(secret_content.labels["instance-${instance_type}"], false) == true ~}
-path "auth/clusters/${cluster_name}/approle/role/${secret_name}-${zone_name}/role-id" {
+path "auth/${base_vault_path_approle}/role/${secret_name}-${zone_name}/role-id" {
   capabilities = [ "read" ]
 }
 
-path "auth/clusters/${cluster_name}/approle/role/${secret_name}-${zone_name}/secret-id" {
+path "auth/${base_vault_path_approle}/role/${secret_name}-${zone_name}/secret-id" {
   capabilities = [ "update" ]
 }
   %{~ endif ~}

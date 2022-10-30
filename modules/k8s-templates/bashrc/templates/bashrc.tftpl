@@ -1,0 +1,62 @@
+# .bashrc
+
+# User specific aliases and functions
+
+PROMPT_COMMAND='history -a'
+export HISTCONTROL="ignoreboth"
+export HISTIGNORE=""
+shopt -s cmdhist
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+alias kg='kubectl get'
+alias ka='kubectl apply'
+alias kd='kubectl delete'
+alias ki='kubectl describe'
+alias ke='kubectl edit'
+alias k='kubectl '
+alias kl='kubectl logs '
+
+alias crictl='crictl  --runtime-endpoint unix:///run/containerd/containerd.sock '
+
+new_kubeconfig () {
+SRC_SSH_PORT=$(env | grep SSH_CONNECTION | awk '{print $2}')
+cp -uf ${base_path.base_kubernetes_path}/kube-apiserver/kubeconfig /tmp/kubeconfig
+export KUBECONFIG=/tmp/kubeconfig
+}
+new_kubeconfig
+
+kns () {
+kubectl config set-context --current --namespace=$1
+}
+
+
+export ETCDCTL_CERT=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
+export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
+export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
+
+etcd_endpoints () {
+export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:2379
+etcdctl \
+--endpoints=$ENDPOINTS \
+member list |
+awk '{print $5}' |
+sed "s/,//") | sed "s/ /,/g")
+}
+
+etcd_endpoints
+
+estat () {
+etcdctl \
+--write-out=table \
+--endpoints=$ENDPOINTS \
+endpoint status
+}
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
