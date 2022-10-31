@@ -8,3 +8,6 @@ output "bootstrap-worker-token" {
     value = vault_token.kubernetes-all-login-bootstrap-worker
 }
 
+output "k8s-cluster-admin-certs" {
+    value = vault_pki_secret_backend_cert.terraform-kubeconfig
+}

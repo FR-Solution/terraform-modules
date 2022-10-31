@@ -120,3 +120,16 @@ variable "caBundle" {
   type = string
   default = ""
 }
+
+
+variable "ssh_username" {
+  description = "module:K8S "
+  type        = string
+  default     = "dkot"
+}
+
+variable "ssh_rsa_path" {
+  description = "module:K8S "
+  type        = string
+  default     = "~/.ssh/id_rsa.pub"
+}

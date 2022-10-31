@@ -35,3 +35,15 @@ variable "base_domain" {
 }
 
 
+variable "yandex_cloud_name" {
+  description = "module:K8S "
+  type        = string
+  default     = "cloud-uid-vf465ie7"
+}
+
+variable "yandex_folder_name" {
+  description = "module:K8S "
+  type        = string
+  default     = "example"
+}
+

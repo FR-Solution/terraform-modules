@@ -1,6 +1,6 @@
 
 module "k8s-global-vars" {
-    source = "../modules/k8s-vars"
+    source = "../modules/k8s-config-vars"
     cluster_name          = var.cluster_name
     base_domain           = var.base_domain
     master_instance_count = var.master-instance-count
@@ -14,10 +14,8 @@ module "k8s-vault" {
 
 }
 
-module "k8s-master-cloud-init" {
-    
+module "k8s-cloud-init" {
     source                       = "../modules/k8s-templates/cloud-init"
-    ssh_key_path                 = "~/.ssh/id_rsa.pub"
     k8s_global_vars              = module.k8s-global-vars
     vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
 }
@@ -26,10 +24,7 @@ module "k8s-infrastructure" {
     
     source                  = "../modules/k8s-yandex-infrastructure"
     k8s_global_vars         = module.k8s-global-vars
-    cloud_init_template     = module.k8s-master-cloud-init.cloud-init
-
-    yandex_folder_name = "example"
-    yandex_cloud_name  = "cloud-uid-vf465ie7"
+    cloud_init_template     = module.k8s-cloud-init.master
 
     master_availability_zones = {
         ru-central1-a = "10.100.0.0/24"
@@ -48,3 +43,8 @@ module "k8s-infrastructure" {
         master-2 = "ru-central1-c"
     }
 }
+
+locals {
+    lb-kube-apiserver-ip = module.k8s-infrastructure.kube-apiserver-lb
+}
+

@@ -20,16 +20,6 @@ variable "etcd-data-base-dir" {
   default = "/var/lib/etcd"
 }
 
-variable "ssh_key_path" {
-  type = string
-  default = "~/.ssh/id_rsa.pub"
-}
-
-variable "ssh_user" {
-  type = string
-  default = null
-}
-
 variable "vault_bootstrap_token_all" {
   type = string
   default = null
