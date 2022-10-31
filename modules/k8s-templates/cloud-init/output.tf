@@ -1,3 +1,3 @@
-output "cloud-init" {
-  value = local.cloud-init-template-map
+output "master" {
+  value = local.cloud-init-master-map
 }

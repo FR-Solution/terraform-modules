@@ -68,3 +68,11 @@ output "kubernetes-ports" {
 output "service-cidr" {
   value         = var.service_cidr
 }
+
+output "ssh_username" {
+  value =var.ssh_username
+}
+
+output "ssh_rsa_path" {
+  value = var.ssh_rsa_path
+}
