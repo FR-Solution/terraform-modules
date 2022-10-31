@@ -2,13 +2,13 @@
 ##-->
 resource "yandex_compute_instance" "master" {
 
-  for_each    = local.master_instance_list_map
+  for_each    = var.k8s_global_vars.ssl_for_each_map.master_instance_list_map
 
-  name        = "${each.key}-${var.cluster_name}"
+  name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
 
-  hostname    = format("%s.%s.%s", each.key ,var.cluster_name, var.base_domain)
+  hostname    = format("%s.%s.%s", each.key ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
   platform_id = "standard-v1"
-  zone        = var.master-configs.zone
+  zone        = try(var.master_zones[each.key], var.default_master_zone)
   labels      = {
     "node-role.kubernetes.io/master" = ""
   }
@@ -35,7 +35,7 @@ resource "yandex_compute_instance" "master" {
   service_account_id = yandex_iam_service_account.master-sa[each.key].id
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.master-subnets.id
+    subnet_id = yandex_vpc_subnet.master-subnets[try(var.master_zones[each.key], var.default_master_zone)].id
     nat = true
   }
 
@@ -47,11 +47,11 @@ resource "yandex_compute_instance" "master" {
 
  metadata = {
    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
-   user-data = module.k8s-master-cloud-init.cloud-init[each.key]
+   user-data = var.cloud_init_template[each.key]
  }
 
 }
 
-output "cloud_init" {
-    value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
-}
+# output "cloud_init" {
+#     value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
+# }

@@ -1,15 +1,4 @@
 
-variable "master-instance-count" {
-  type = number
-  default = 3
-}
-
-variable "worker-instance-count" {
-  type = number
-  default = 0
-}
-
-
 #### CONFIGS ######
 ##-->
 variable "master_flavor" {
