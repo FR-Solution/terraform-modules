@@ -49,6 +49,7 @@ resource "yandex_compute_instance" "master" {
    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
    user-data = module.k8s-master-cloud-init.cloud-init[each.key]
  }
+
 }
 
 output "cloud_init" {

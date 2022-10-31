@@ -10,8 +10,6 @@ resource "yandex_iam_service_account_key" "cloud-controller-key" {
 
 }
 
-
-
 resource "yandex_resourcemanager_folder_iam_binding" "admin-account-iam" {
   folder_id   = data.yandex_resourcemanager_folder.current.id
   role        = "admin"
