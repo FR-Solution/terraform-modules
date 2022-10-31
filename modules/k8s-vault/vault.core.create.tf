@@ -1,17 +1,3 @@
-##### ROOT #####################
-### ->
-# resource "vault_pki_secret_backend_root_cert" "core_root" {
-#   backend              = vault_mount.core_root_ca.path
-#   type                 = "internal"
-#   common_name          = "Root CA"
-#   ttl                  = 321408000
-#   format               = "pem"
-#   private_key_format   = "der"
-#   key_type             = "rsa"
-#   key_bits             = 4096
-#   exclude_cn_from_sans = true
-#   province             = "CA"
-# }
 
 ##### K8S INTERMEDIATE ROOT #####################
 ### ->

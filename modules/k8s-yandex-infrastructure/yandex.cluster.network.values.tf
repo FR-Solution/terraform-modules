@@ -27,3 +27,14 @@ variable "worker_availability_zones"{
     ru-central1-c = "10.33.0.0/16"
   }
 }
+
+variable "default_master_zone" {
+  description = "module:K8S "
+  type        = string
+  default     = "ru-central1-a"
+}
+
+variable "master_zones"{
+  type = any
+  default = {}
+}
