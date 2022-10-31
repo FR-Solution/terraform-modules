@@ -31,17 +31,6 @@ resource "yandex_dns_recordset" "api-internal" {
   data    = "${(tolist(yandex_lb_network_load_balancer.api-internal.listener)[0].external_address_spec)[*].address}"
 }
 
-#### INTERNAL DNS FOR ACCESS TO IDP ######
-##-->
-# resource "yandex_dns_recordset" "auth-internal" {
-#   zone_id = yandex_dns_zone.cluster-external.id
-#   name    = "auth.dobry-kot.ru."
-#   type    = "A"
-#   ttl     = 60
-#   data    = ["193.32.219.99"]
-# }
-
-
 #### INTERNAL DNS FRO ETCD DISCOVERY ######
 ##-->
 resource "yandex_dns_recordset" "etcd-srv-server" {

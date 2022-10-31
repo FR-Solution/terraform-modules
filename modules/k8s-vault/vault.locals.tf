@@ -2,11 +2,11 @@
 locals {
 
   issuers_content = flatten([
-  for intermediate_name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
-    for issuer_name,issuer in var.k8s_certificate_vars.ssl.intermediate[intermediate_name].issuers : [
+  for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
+    for issuer_name,issuer in var.k8s_global_vars.ssl.intermediate[intermediate_name].issuers : [
       for master_name in local.master_instance_list:  
           {
-            "${intermediate_name}:${issuer_name}:${master_name}" = merge(var.k8s_certificate_vars.ssl["global-args"]["issuer-args"], issuer["issuer-args"]) 
+            "${intermediate_name}:${issuer_name}:${master_name}" = merge(var.k8s_global_vars.ssl["global-args"]["issuer-args"], issuer["issuer-args"]) 
           }
         ]
       ]
@@ -17,7 +17,7 @@ locals {
   }
 
   intermediate_content = flatten([
-  for name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
+  for name in keys(var.k8s_global_vars.ssl.intermediate) : [
       for master_name in local.master_instance_list:
         {"${name}:${master_name}" = {}}
         ]
@@ -28,7 +28,7 @@ locals {
   }
 
   external_intermediate_content = flatten([
-  for name in keys(var.k8s_certificate_vars.ssl.external_intermediate) : [
+  for name in keys(var.k8s_global_vars.ssl.external_intermediate) : [
       for master_name in local.master_instance_list:
         {"${name}:${master_name}" = {}}
         ]
@@ -39,7 +39,7 @@ locals {
   }
 
   secret_content = flatten([
-  for secret_name in keys(var.k8s_certificate_vars.secrets) : [
+  for secret_name in keys(var.k8s_global_vars.secrets) : [
       for master_name in local.master_instance_list:  
         {"${secret_name}:${master_name}" = {}}
         ]
@@ -54,10 +54,10 @@ locals {
 # Формируется массивы для будущих for_each с маской "${intermediate_name}:${issuer_name}"
 locals {
   issuers_content_only = flatten([
-  for intermediate_name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
-    for issuer_name,issuer in var.k8s_certificate_vars.ssl.intermediate[intermediate_name].issuers : 
+  for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
+    for issuer_name,issuer in var.k8s_global_vars.ssl.intermediate[intermediate_name].issuers : 
           {
-            "${intermediate_name}:${issuer_name}" = merge(var.k8s_certificate_vars.ssl["global-args"]["issuer-args"], issuer["issuer-args"]) 
+            "${intermediate_name}:${issuer_name}" = merge(var.k8s_global_vars.ssl["global-args"]["issuer-args"], issuer["issuer-args"]) 
           }
 
       ]
@@ -68,7 +68,7 @@ locals {
   }
 
   intermediate_content_only = flatten([
-  for name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
+  for name in keys(var.k8s_global_vars.ssl.intermediate) : [
       for master_name in local.master_instance_list:  
         {"${name}:${master_name}" = {}}
         ]
@@ -79,7 +79,7 @@ locals {
   }
 
   secret_content_only = flatten([
-  for secret_name in keys(var.k8s_certificate_vars.secrets) : 
+  for secret_name in keys(var.k8s_global_vars.secrets) : 
         {"${secret_name}" = {}}
         ]
   )
@@ -92,8 +92,8 @@ locals {
 
 locals {
   issuers_content_labels_master = flatten([
-  for intermediate_name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
-    for issuer_name,issuer in var.k8s_certificate_vars.ssl.intermediate[intermediate_name].issuers : [
+  for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
+    for issuer_name,issuer in var.k8s_global_vars.ssl.intermediate[intermediate_name].issuers : [
       for master_name in local.master_instance_list:  
           {
             "${intermediate_name}:${issuer_name}:${master_name}" = try(issuer.labels, {})
@@ -107,8 +107,8 @@ locals {
   }
 
   issuers_content_labels_worker = flatten([
-  for intermediate_name in keys(var.k8s_certificate_vars.ssl.intermediate) : [
-    for issuer_name,issuer in var.k8s_certificate_vars.ssl.intermediate[intermediate_name].issuers : [
+  for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
+    for issuer_name,issuer in var.k8s_global_vars.ssl.intermediate[intermediate_name].issuers : [
       for worker_name in local.worker_instance_list:  
           {
             "${intermediate_name}:${issuer_name}:${worker_name}" = try(issuer.labels, {})
@@ -122,26 +122,3 @@ locals {
   }
 }
 
-locals {
-
-  master_instance_list        = flatten([
-    for master-index in range(var.master_instance_count): [
-     "master-${master-index}"
-    ]
-  ])
-
-  worker_instance_list        = flatten([
-    for worker-index in range(var.worker_instance_count): [
-     "worker-${worker-index}"
-    ]
-  ])
-
-  master_instance_list_map = { for item in local.master_instance_list :
-    item => {}
-  }
-
-  worker_instance_list_map = { for item in local.worker_instance_list :
-    item => {}
-  }
-
-}
