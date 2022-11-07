@@ -73,20 +73,20 @@ locals {
 }
 
 locals {
-  cloud-init-master = flatten([
+  cloud-init-template = flatten([
     for master_name, master_content in  var.k8s_global_vars.ssl_for_each_map.master_instance_list_map:
-      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm.tftpl", {
+      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-test.tftpl", {
 
-        ssh_key                             = file(var.k8s_global_vars.ssh_rsa_path)
-        base_local_path_certs               = var.k8s_global_vars.global_path.base_local_path_certs
-        ssl                                 = var.k8s_global_vars.ssl
-        base_path                           = var.base_path
-        hostname                            = "${master_name}-${var.k8s_global_vars.cluster_name}"
-        actual_release                      = var.actual-release
-        release_vars                        = local.release-vars
-        kube_apiserver_lb_fqdn              = var.kube-apiserver-lb-fqdn
-        kube_apiserver_port_lb              = var.kube-apiserver-port-lb
-        bootstrap_token_all                 = var.vault-bootstrap-master-token[master_name].client_token
+        ssh_key                           = file(var.ssh_key_path)
+        base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
+        ssl                               = var.k8s_global_vars.ssl
+        base_path                         = var.base_path
+        hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
+        actual_release                    = var.actual-release
+        release_vars                      = local.release-vars
+        kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
+        kube_apiserver_port_lb            = var.kube-apiserver-port-lb
+        bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
 
         kube-apiserver-kubeconfig           = module.kube-apiserver-kubeconfig.kubeconfig
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig
@@ -114,7 +114,7 @@ locals {
         kube-apiserver-audit                = module.k8s-kube-apiserver.audit
       })}
     ])
-  cloud-init-master-map = { for item in local.cloud-init-master :
+  cloud-init-template-map = { for item in local.cloud-init-template :
     keys(item)[0] => values(item)[0]}
 
 }
