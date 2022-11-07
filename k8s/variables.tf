@@ -16,7 +16,7 @@ variable "vault_config" {
 
 variable "master-instance-count" {
   type = number
-  default = 3
+  default = 1
 }
 
 variable "worker-instance-count" {
