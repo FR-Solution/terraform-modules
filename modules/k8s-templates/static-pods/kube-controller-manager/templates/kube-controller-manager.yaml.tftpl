@@ -43,7 +43,7 @@ spec:
         %{~ endfor ~}
       %{~ endfor ~}
     %{~ endfor ~}
-      - --service-account-private-key-file=${base_path.base_local_path_certs}/certs/kube-apiserver/kube-apiserver-sa.pem
+      - --service-account-private-key-file=${secrets["kube-apiserver-sa"].keys["private"].host_path}
       - --kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
       - --authentication-kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
       - --authorization-kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig

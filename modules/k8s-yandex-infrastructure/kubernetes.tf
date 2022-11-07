@@ -17,7 +17,6 @@ resource "null_resource" "cluster" {
     provisioner "remote-exec" {
         inline = [
             "until cloud-init status | grep -i done; do sleep 1s; done",
-            "until netstat -tulpn | grep 443; do sleep 1s; done",
             "sudo kubectl --request-timeout=5m cluster-info  --kubeconfig=/etc/kubernetes/kube-apiserver/kubeconfig"
         ]
     }

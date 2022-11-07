@@ -2,28 +2,35 @@
 locals {
   release-vars = {
     v0_1 = {
+      kubernetes = {
+        version = "v1.23.12"
+      }
       etcd = {
         registry = "k8s.gcr.io/etcd"
         version = "3.5.3-0"
       }
       kube-apiserver = {
         registry = "k8s.gcr.io/kube-apiserver"
-        version = "v1.22.7"
+        version = "v1.23.12"
       }
       kube-controller-manager = {
         registry = "k8s.gcr.io/kube-controller-manager"
-        version = "v1.22.7"
+        version = "v1.23.12"
       }
       kube-scheduler = {
         registry = "k8s.gcr.io/kube-scheduler"
-        version = "v1.22.7"
+        version = "v1.23.12"
       }
       kubectl = {
-        url = "https://storage.googleapis.com/kubernetes-release/release/v1.22.7/bin/linux/amd64/kubectl"
+        url = "https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl"
+      
+      }
+      kubeadm = {
+        url = "https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubeadm"
       
       }
       kubelet = {
-        url = "https://storage.googleapis.com/kubernetes-release/release/v1.22.7/bin/linux/amd64/kubelet"
+        url = "https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet"
         
       }
       runc = {
@@ -66,20 +73,20 @@ locals {
 }
 
 locals {
-  cloud-init-master = flatten([
+  cloud-init-template = flatten([
     for master_name, master_content in  var.k8s_global_vars.ssl_for_each_map.master_instance_list_map:
-      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-master.tftpl", {
+      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm.tftpl", {
 
-        ssh_key                             = file(var.k8s_global_vars.ssh_rsa_path)
-        base_local_path_certs               = var.k8s_global_vars.global_path.base_local_path_certs
-        ssl                                 = var.k8s_global_vars.ssl
-        base_path                           = var.base_path
-        hostname                            = "${master_name}-${var.k8s_global_vars.cluster_name}"
-        actual_release                      = var.actual-release
-        release_vars                        = local.release-vars
-        kube_apiserver_lb_fqdn              = var.kube-apiserver-lb-fqdn
-        kube_apiserver_port_lb              = var.kube-apiserver-port-lb
-        bootstrap_token_all                 = var.vault-bootstrap-master-token[master_name].client_token
+        ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
+        base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
+        ssl                               = var.k8s_global_vars.ssl
+        base_path                         = var.base_path
+        hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
+        actual_release                    = var.actual-release
+        release_vars                      = local.release-vars
+        kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
+        kube_apiserver_port_lb            = var.kube-apiserver-port-lb
+        bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
 
         kube-apiserver-kubeconfig           = module.kube-apiserver-kubeconfig.kubeconfig
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig
@@ -94,9 +101,10 @@ locals {
         key-keeper-service                  = module.key-keeper-service.key-keeper-service
 
         static-pod-etcd                     = module.static-pod-etcd.manifest[master_name]
-        static-pod-kube-apiserver           = module.static-pod-kube-apiserver.manifest[master_name]
-        static-pod-kube-controller-manager  = module.static-pod-kube-controller-manager.manifest[master_name]
-        static-pod-kube-scheduler           = module.static-pod-kube-scheduler.manifest[master_name]
+        static-pod-kubeadm-config           = module.static-pod-kubeadm-config.manifest[master_name]
+        # static-pod-kube-apiserver           = module.static-pod-kube-apiserver.manifest[master_name]
+        # static-pod-kube-controller-manager  = module.static-pod-kube-controller-manager.manifest[master_name]
+        # static-pod-kube-scheduler           = module.static-pod-kube-scheduler.manifest[master_name]
 
         containerd-service                  = module.containerd-service.service
         sysctl-network                      = module.sysctl.network
@@ -106,7 +114,7 @@ locals {
         kube-apiserver-audit                = module.k8s-kube-apiserver.audit
       })}
     ])
-  cloud-init-master-map = { for item in local.cloud-init-master :
+  cloud-init-template-map = { for item in local.cloud-init-template :
     keys(item)[0] => values(item)[0]}
 
 }

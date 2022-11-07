@@ -10,6 +10,7 @@ resource "helm_release" "cilium" {
   values = [
     templatefile("${path.module}/templates/helm/cilium/values.yaml.tftpl", {
       kube_apiserver_lb_fqdn = local.lb-kube-apiserver-ip
+      kube_apiserver_port_lb = module.k8s-global-vars.kubernetes-ports.kube-apiserver-port-lb
     })
   ]
 }

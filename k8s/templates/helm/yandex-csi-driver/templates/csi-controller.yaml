@@ -226,6 +226,9 @@ spec:
         - key: node.kubernetes.io/out-of-disk
         - key: node.kubernetes.io/memory-pressure
         - key: node.kubernetes.io/disk-pressure
+        - key: node.cloudprovider.kubernetes.io/uninitialized
+          value: "true"
+          effect: NoSchedule
       volumes:
       - emptyDir: {}
         name: socket-dir

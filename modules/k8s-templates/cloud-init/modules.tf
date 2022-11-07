@@ -5,6 +5,7 @@ module "kube-apiserver-kubeconfig" {
       certificate-authority = local.kube-apiserver-kubeconfig-certificate-authority
       client-certificate    = local.kube-apiserver-kubeconfig-client-certificate
       client-key            = local.kube-apiserver-kubeconfig-client-key
+      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
 }
 
 module "kubelet-kubeconfig" {
@@ -13,6 +14,7 @@ module "kubelet-kubeconfig" {
       certificate-authority = local.kubelet-kubeconfig-certificate-authority
       client-certificate    = local.kubelet-kubeconfig-client-certificate
       client-key            = local.kubelet-kubeconfig-client-key
+      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
 }
 
 module "kube-scheduler-kubeconfig" {
@@ -21,6 +23,7 @@ module "kube-scheduler-kubeconfig" {
       certificate-authority = local.kube-scheduler-kubeconfig-certificate-authority
       client-certificate    = local.kube-scheduler-kubeconfig-client-certificate
       client-key            = local.kube-scheduler-kubeconfig-client-key
+      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
 }
 
 module "kube-controller-manager-kubeconfig" {
@@ -29,7 +32,9 @@ module "kube-controller-manager-kubeconfig" {
       certificate-authority = local.kube-controller-manager-kubeconfig-certificate-authority
       client-certificate    = local.kube-controller-manager-kubeconfig-client-certificate
       client-key            = local.kube-controller-manager-kubeconfig-client-key
+      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
 }
+
 
 module "containerd-service" {
     source = "../services/containerd"
@@ -104,4 +109,11 @@ module "static-pod-kube-scheduler" {
     kube_scheduler_image    = local.release-vars["v0_1"].kube-scheduler.registry
     kube_scheduler_version  = local.release-vars["v0_1"].kube-scheduler.version
 
+}
+
+module "static-pod-kubeadm-config" {
+    source = "../static-pods/kubeadm-config"
+    instance_type = "master"
+    k8s_global_vars = var.k8s_global_vars
+    kubernetes_version    = local.release-vars["v0_1"].kubernetes.version
 }

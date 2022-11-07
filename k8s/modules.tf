@@ -21,7 +21,9 @@ module "k8s-cloud-init" {
 }
 
 module "k8s-infrastructure" {
-    
+    depends_on = [
+      module.k8s-vault
+    ]
     source                  = "../modules/k8s-yandex-infrastructure"
     k8s_global_vars         = module.k8s-global-vars
     cloud_init_template     = module.k8s-cloud-init.master
@@ -47,4 +49,3 @@ module "k8s-infrastructure" {
 locals {
     lb-kube-apiserver-ip = module.k8s-infrastructure.kube-apiserver-lb
 }
-
