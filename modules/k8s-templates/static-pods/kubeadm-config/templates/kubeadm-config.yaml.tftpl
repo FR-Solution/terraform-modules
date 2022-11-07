@@ -1,0 +1,253 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+networking:
+  serviceSubnet: "${service_cidr}"
+  dnsDomain: "cluster.local"
+kubernetesVersion: "${kubernetes_version}"
+controlPlaneEndpoint: "${kube_api_fqdn}:${kube_apiserver_port}"
+etcd:
+  external:
+    # TODO Доделать цикл для всех мастер нод
+    endpoints:
+    - "https://master-0.cluster-3.dobry-kot.ru:2379"
+    - "https://master-1.cluster-3.dobry-kot.ru:2379"
+    - "https://master-2.cluster-3.dobry-kot.ru:2379"
+    caFile: "/etc/kubernetes/pki/ca/etcd-ca.pem"
+    certFile: "/etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client.pem"
+    keyFile: "/etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client-key.pem"
+apiServer:
+  extraArgs:
+  %{~ for intermediate_name, intermediate_content in ssl.intermediate ~}
+    %{~ if  try(intermediate_content.labels.static-pod-kube-apiserver-args, {}) != {} ~}
+      %{~ for key, value in intermediate_content.labels.static-pod-kube-apiserver-args ~}
+        %{~ if value == "cert-public-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}.pem
+        %{~ endif ~}
+        %{~ if value == "cert-private-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}-key.pem
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endif ~}
+    %{~ for issuer_name, issuer_content in intermediate_content.issuers ~}
+      %{~ for certificate_name, certificate_content in issuer_content.certificates ~}
+        %{~ if  try(certificate_content.labels.static-pod-kube-apiserver-args, {}) != {} ~}
+          %{~ for key, value in certificate_content.labels.static-pod-kube-apiserver-args ~}
+            %{~ if value == "cert-public-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}.pem
+            %{~ endif ~}
+            %{~ if value == "cert-private-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}-key.pem
+            %{~ endif ~}
+          %{~ endfor ~}
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endfor ~}
+  %{~ endfor ~}
+    # kubelet-client-certificate:
+    # kubelet-client-key: 
+    service-account-key-file: ${secrets["kube-apiserver-sa"].keys["public"].host_path}
+    service-account-signing-key-file: ${secrets["kube-apiserver-sa"].keys["private"].host_path}
+    # service-account-key-file: ""
+    # service-account-signing-key-file: ""
+    secure-port: "${kube_apiserver_port}"
+    bind-address: "0.0.0.0"
+    event-ttl: 1h0m0s
+    kubernetes-service-node-port: "0"
+    master-service-namespace: default
+    max-connection-bytes-per-sec: "0"
+    max-requests-inflight: "400"
+    min-request-timeout: "1800"
+    profiling: "false"
+    feature-gates: RotateKubeletServerCertificate=true
+    anonymous-auth: "true"
+    audit-log-maxage: "30"
+    audit-log-maxbackup: "10"
+    audit-log-maxsize: "1000"
+    audit-log-mode: batch
+    enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction
+    enable-bootstrap-token-auth: "true"
+    runtime-config: api/all=true
+    enable-aggregator-routing: "true"
+    api-audiences: konnectivity-server
+    requestheader-allowed-names: front-proxy-client
+    requestheader-extra-headers-prefix: X-Remote-Extra-
+    requestheader-group-headers: X-Remote-Group
+    requestheader-username-headers: X-Remote-User
+    allow-privileged: "true"
+    authorization-mode: Node,RBAC
+    service-account-issuer: https://kubernetes.default.svc.cluster.local
+    kubelet-preferred-address-types: InternalIP,ExternalIP,Hostname
+    kubelet-timeout: 5s
+    v: "2"
+    cloud-provider: external
+    oidc-ca-file: ${base_path.base_local_path_certs}/ca/oidc-ca.pem
+    oidc-client-id: kubernetes-cluster-3
+    oidc-username-claim: email
+    oidc-groups-claim: groups
+    oidc-username-prefix: "-"
+    oidc-issuer-url: https://auth.dobry-kot.ru/auth/realms/master
+
+  extraVolumes:
+  - name: "k8s-ca"
+    hostPath: "${base_path.base_local_path_certs}/ca"
+    mountPath: "${base_path.base_local_path_certs}/ca"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-certs"
+    hostPath: "${base_path.base_local_path_certs}/certs"
+    mountPath: "${base_path.base_local_path_certs}/certs"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-kube-apiserver-configs"
+    hostPath: "${base_path.base_kubernetes_path}/kube-apiserver"
+    mountPath: "${base_path.base_kubernetes_path}/kube-apiserver"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+controllerManager:
+  extraArgs:
+  %{~ for intermediate_name, intermediate_content in ssl.intermediate ~}
+    %{~ if  try(intermediate_content.labels.static-pod-kube-controller-manager-args, {}) != {} ~}
+      %{~ for key, value in intermediate_content.labels.static-pod-kube-controller-manager-args ~}
+        %{~ if value == "cert-public-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}.pem
+        %{~ endif ~}
+        %{~ if value == "cert-private-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}-key.pem
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endif ~}
+    %{~ for issuer_name, issuer_content in intermediate_content.issuers ~}
+      %{~ for certificate_name, certificate_content in issuer_content.certificates ~}
+        %{~ if  try(certificate_content.labels.static-pod-kube-controller-manager-args, {}) != {} ~}
+          %{~ for key, value in certificate_content.labels.static-pod-kube-controller-manager-args ~}
+            %{~ if value == "cert-public-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}.pem
+            %{~ endif ~}
+            %{~ if value == "cert-private-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}-key.pem
+            %{~ endif ~}
+          %{~ endfor ~}
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endfor ~}
+  %{~ endfor ~}
+    cluster-cidr: ${service_cidr}
+    service-account-private-key-file: ${secrets["kube-apiserver-sa"].keys["private"].host_path}
+    # service-account-private-key-file: ""
+    cluster-signing-key-file: ""
+    kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+    authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+    authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
+    bind-address: "0.0.0.0"
+    v: "2"
+    secure-port: "10257"
+    allocate-node-cidrs: "true"
+    cluster-name: kubernetes
+    concurrent-deployment-syncs: "5"
+    concurrent-endpoint-syncs: "5"
+    concurrent-namespace-syncs: "10"
+    concurrent-replicaset-syncs: "20"
+    concurrent-resource-quota-syncs: "5"
+    horizontal-pod-autoscaler-sync-period: 30s
+    kube-api-burst: "120"
+    kube-api-qps: "100"
+    leader-elect: "true"
+    leader-elect-lease-duration: 15s
+    leader-elect-renew-deadline: 10s
+    leader-elect-retry-period: 2s
+    namespace-sync-period: 2m0s
+    node-cidr-mask-size: "24"
+    node-monitor-grace-period: 40s
+    node-monitor-period: 5s
+    node-startup-grace-period: 10s
+    pod-eviction-timeout: 30s
+    profiling: "false"
+    resource-quota-sync-period: 5m0s
+    terminated-pod-gc-threshold: "0"
+    cluster-signing-duration: 1440m
+    use-service-account-credentials: "true"
+    authorization-always-allow-paths: /healthz,/metrics
+    feature-gates: RotateKubeletServerCertificate=true
+    cloud-provider: external
+    controllers: attachdetach,bootstrapsigner,cloud-node-lifecycle,clusterrole-aggregation,cronjob,csrapproving,csrcleaner,csrsigning,daemonset,deployment,disruption,endpoint,endpointslice,endpointslicemirroring,ephemeral-volume,garbagecollector,horizontalpodautoscaling,job,namespace,nodeipam,nodelifecycle,persistentvolume-binder,persistentvolume-expander,podgc,pv-protection,pvc-protection,replicaset,replicationcontroller,resourcequota,root-ca-cert-publisher,route,service,serviceaccount,statefulset,tokencleaner,ttl,ttl-after-finished
+
+  extraVolumes:
+  - name: "k8s-ca"
+    hostPath: "${base_path.base_local_path_certs}/ca"
+    mountPath: "${base_path.base_local_path_certs}/ca"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-certs"
+    hostPath: "${base_path.base_local_path_certs}/certs"
+    mountPath: "${base_path.base_local_path_certs}/certs"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-kube-controller-manager-configs"
+    hostPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
+    mountPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+scheduler:
+  extraArgs:
+  %{~ for intermediate_name, intermediate_content in ssl.intermediate ~}
+    %{~ if  try(intermediate_content.labels.static-pod-kube-scheduler-args, {}) != {} ~}
+      %{~ for key, value in intermediate_content.labels.static-pod-kube-scheduler-args ~}
+        %{~ if value == "cert-public-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}.pem
+        %{~ endif ~}
+        %{~ if value == "cert-private-arg" ~}
+    ${key}: ${intermediate_content.host_path}/${intermediate_name}-key.pem
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endif ~}
+    %{~ for issuer_name, issuer_content in intermediate_content.issuers ~}
+      %{~ for certificate_name, certificate_content in issuer_content.certificates ~}
+        %{~ if  try(certificate_content.labels.static-pod-kube-scheduler-args, {}) != {} ~}
+          %{~ for key, value in certificate_content.labels.static-pod-kube-scheduler-args ~}
+            %{~ if value == "cert-public-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}.pem
+            %{~ endif ~}
+            %{~ if value == "cert-private-arg" ~}
+    ${key}: ${certificate_content.key-keeper-args.host_path}/${certificate_name}-key.pem
+            %{~ endif ~}
+          %{~ endfor ~}
+        %{~ endif ~}
+      %{~ endfor ~}
+    %{~ endfor ~}
+  %{~ endfor ~}
+    authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    bind-address: "0.0.0.0"
+    leader-elect: "true"
+    secure-port: "10259"
+
+  extraVolumes:
+  - name: "k8s-ca"
+    hostPath: "${base_path.base_local_path_certs}/ca"
+    mountPath: "${base_path.base_local_path_certs}/ca"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-certs"
+    hostPath: "${base_path.base_local_path_certs}/certs"
+    mountPath: "${base_path.base_local_path_certs}/certs"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-kube-scheduler-configs"
+    hostPath: "${base_path.base_kubernetes_path}/kube-scheduler"
+    mountPath: "${base_path.base_kubernetes_path}/kube-scheduler"
+    readOnly: false
+    pathType: DirectoryOrCreate
+
+
+
+# kubectl get cs

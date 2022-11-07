@@ -8,6 +8,7 @@ KUBELET_BASIC_ARGS="
     --image-pull-progress-deadline=2m
     --feature-gates=RotateKubeletServerCertificate=true
     --cert-dir=/etc/kubernetes/pki/certs/kubelet
+    --authorization-mode=Webhook
     --v=2
 "
 KUBELET_AUTH_ARGS="
