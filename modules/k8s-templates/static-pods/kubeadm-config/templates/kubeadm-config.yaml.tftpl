@@ -10,9 +10,9 @@ etcd:
   external:
     # TODO Доделать цикл для всех мастер нод
     endpoints:
-    - "https://master-0.cluster-3.dobry-kot.ru:2379"
-    - "https://master-1.cluster-3.dobry-kot.ru:2379"
-    - "https://master-2.cluster-3.dobry-kot.ru:2379"
+    %{~ for etcd in  etcd_list_servers ~}
+    - ${etcd}
+    %{~ endfor ~}
     caFile: "/etc/kubernetes/pki/ca/etcd-ca.pem"
     certFile: "/etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client.pem"
     keyFile: "/etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client-key.pem"

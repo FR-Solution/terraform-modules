@@ -76,3 +76,7 @@ output "ssh_username" {
 output "ssh_rsa_path" {
   value = var.ssh_rsa_path
 }
+
+output "etcd_list_servers" {
+  value = local.etcd_list_servers
+}
