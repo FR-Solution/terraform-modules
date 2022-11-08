@@ -36,7 +36,7 @@ locals {
     key_algorithm       = yandex_iam_service_account_key.cloud-controller-csi-key.key_algorithm
     public_key          = yandex_iam_service_account_key.cloud-controller-csi-key.public_key
     private_key         = yandex_iam_service_account_key.cloud-controller-csi-key.private_key
-    vpc_id              = module.k8s-infrastructure.vpc-id
+    vpc_id              = module.k8s-control-plane.vpc-id
   }
 }
 

@@ -11,3 +11,8 @@ output "bootstrap-worker-token" {
 output "k8s-cluster-admin-certs" {
     value = vault_pki_secret_backend_cert.terraform-kubeconfig
 }
+
+
+output "k8s-auth-approle-backend-path" {
+    value = vault_auth_backend.approle.path
+}

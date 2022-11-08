@@ -46,6 +46,12 @@ variable "vault-bootstrap-master-token" {
   default = null
 }
 
+variable "vault-bootstrap-worker-token" {
+  type = any
+  default = null
+}
+
+
 
 variable "base_path" {
   type = object({

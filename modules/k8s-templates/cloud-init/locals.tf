@@ -59,6 +59,10 @@ locals {
   kube-apiserver-kubeconfig-client-certificate              = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client.pem"
   kube-apiserver-kubeconfig-client-key                      = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client-key.pem"
 
+  kubelet-bootstrap-kubeconfig-certificate-authority        = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
+  kubelet-bootstrap-kubeconfig-client-certificate           = "${local.kubernetes-ca-ssl.issuers["bootstrappers-client"].certificates["bootstrappers-client"].key-keeper-args.host_path}/bootstrappers-client.pem"
+  kubelet-bootstrap-kubeconfig-client-key                   = "${local.kubernetes-ca-ssl.issuers["bootstrappers-client"].certificates["bootstrappers-client"].key-keeper-args.host_path}/bootstrappers-client-key.pem"
+
   kubelet-kubeconfig-certificate-authority                  = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
   kubelet-kubeconfig-client-certificate                     = "${local.kubernetes-ca-ssl.issuers["kubelet-client"].certificates["kubelet-client"].key-keeper-args.host_path}/kubelet-client.pem"
   kubelet-kubeconfig-client-key                             = "${local.kubernetes-ca-ssl.issuers["kubelet-client"].certificates["kubelet-client"].key-keeper-args.host_path}/kubelet-client-key.pem"
@@ -75,7 +79,7 @@ locals {
 locals {
   cloud-init-template = flatten([
     for master_name, master_content in  var.k8s_global_vars.ssl_for_each_map.master_instance_list_map:
-      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm.tftpl", {
+      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master.tftpl", {
 
         ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
@@ -92,13 +96,13 @@ locals {
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig
         kube-scheduler-kubeconfig           = module.kube-scheduler-kubeconfig.kubeconfig
         kube-controller-manager-kubeconfig  = module.kube-controller-manager-kubeconfig.kubeconfig
-        kubelet-service                     = module.kubelet-service.kubelet-service
-        kubelet-service-d-fraima            = module.kubelet-service.kubelet-service-d-fraima
-        kubelet-service-args                = module.kubelet-service.kubelet-service-args[master_name]
-        kubelet-config                      = module.kubelet-service.kubelet-config
+        kubelet-service                     = module.kubelet-service-master.kubelet-service
+        kubelet-service-d-fraima            = module.kubelet-service-master.kubelet-service-d-fraima
+        kubelet-service-args                = module.kubelet-service-master.kubelet-service-args[master_name]
+        kubelet-config                      = module.kubelet-service-master.kubelet-config
 
-        key-keeper-config                   = module.key-keeper-service.key-keeper-config[master_name]
-        key-keeper-service                  = module.key-keeper-service.key-keeper-service
+        key-keeper-config                   = module.key-keeper-service-master.key-keeper-config[master_name]
+        key-keeper-service                  = module.key-keeper-service-master.key-keeper-service
 
         static-pod-etcd                     = module.static-pod-etcd.manifest[master_name]
         static-pod-kubeadm-config           = module.static-pod-kubeadm-config.manifest[master_name]
@@ -116,6 +120,45 @@ locals {
     ])
   cloud-init-template-map = { for item in local.cloud-init-template :
     keys(item)[0] => values(item)[0]}
+
+  cloud-init-worker = flatten([
+    for worker_name, worker_content in  var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map:
+      {"${worker_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-worker.tftpl", {
+
+        ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
+        base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
+        ssl                               = var.k8s_global_vars.ssl
+        base_path                         = var.base_path
+        hostname                          = "${worker_name}-${var.k8s_global_vars.cluster_name}"
+        actual_release                    = var.actual-release
+        release_vars                      = local.release-vars
+        kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
+        kube_apiserver_port_lb            = var.kube-apiserver-port-lb
+        bootstrap_token_all               = var.vault-bootstrap-worker-token[worker_name].client_token
+
+        kubelet-bootstrap-kubeconfig        = module.kubelet-bootstrap-kubeconfig.kubeconfig
+       
+        kubelet-service                     = module.kubelet-service-worker.kubelet-service
+        kubelet-service-d-fraima            = module.kubelet-service-worker.kubelet-service-d-fraima
+        kubelet-service-args                = module.kubelet-service-worker.kubelet-service-args[worker_name]
+        kubelet-config                      = module.kubelet-service-worker.kubelet-config
+
+        key-keeper-config                   = module.key-keeper-service-worker.key-keeper-config[worker_name]
+        key-keeper-service                  = module.key-keeper-service-worker.key-keeper-service
+
+        
+        containerd-service                  = module.containerd-service.service
+        sysctl-network                      = module.sysctl.network
+        modprobe-k8s                        = module.modprobe.k8s
+        cni-base                            = module.cni.base
+        bashrc-k8s                          = module.bashrc.k8s
+        
+      })}
+    ])
+
+  cloud-init-worker-map = { for item in local.cloud-init-worker :
+    keys(item)[0] => values(item)[0]}
+
 
 }
 

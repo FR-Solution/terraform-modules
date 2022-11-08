@@ -13,7 +13,7 @@ locals {
     ]
   ) 
 
-  intermediate_content = flatten([
+  intermediate_content_master = flatten([
   for name in keys(local.ssl.intermediate) : [
       for master_name in local.master_instance_list:
         {"${name}:${master_name}" = {}}
@@ -21,13 +21,31 @@ locals {
       ]
   )
 
-  external_intermediate_content = flatten([
-  for name in keys(local.ssl.external_intermediate) : [
-      for master_name in local.master_instance_list:
-        {"${name}:${master_name}" = {}}
+  intermediate_content_worker = flatten([
+  for intermediate_name in keys(local.ssl.intermediate) : [
+      for worker_name in local.worker_instance_list:
+        {"${intermediate_name}:${worker_name}" = {}}
         ]
       ]
   )
+
+# Формируется массивы для будущих for_each с маской "${external_intermediate_name}:${issuer_name}:${instance}"
+  external_intermediate_content_master = flatten([
+  for external_intermediate_name in keys(local.ssl.external_intermediate) : [
+      for master_name in local.master_instance_list:
+        {"${external_intermediate_name}:${master_name}" = {}}
+        ]
+      ]
+  )
+
+  external_intermediate_content_worker = flatten([
+  for external_intermediate_name in keys(local.ssl.external_intermediate) : [
+      for worker_name in local.worker_instance_list:
+        {"${external_intermediate_name}:${worker_name}" = {}}
+        ]
+      ]
+  )
+
 
   secret_content = flatten([
   for secret_name in keys(local.secrets) : [
@@ -52,10 +70,18 @@ locals {
     ]
   )
 
-  intermediate_content_only = flatten([
+  intermediate_content_only_master = flatten([
   for name in keys(local.ssl.intermediate) : [
       for master_name in local.master_instance_list:  
         {"${name}:${master_name}" = {}}
+        ]
+      ]
+  )
+
+  intermediate_content_only_worker = flatten([
+  for name in keys(local.ssl.intermediate) : [
+      for worker_name in local.worker_instance_list:  
+        {"${name}:${worker_name}" = {}}
         ]
       ]
   )
@@ -113,9 +139,13 @@ locals {
 locals {
 
   ssl_for_each_map = {
-    intermediate_content_map = { for item in local.intermediate_content :
+    intermediate_content_map_master = { for item in local.intermediate_content_master :
       keys(item)[0] => values(item)[0]
     }
+    intermediate_content_map_worker = { for item in local.intermediate_content_worker :
+      keys(item)[0] => values(item)[0]
+    }
+
     issuers_content_map = { for item in local.issuers_content :
     keys(item)[0] => values(item)[0]
     }
@@ -124,7 +154,10 @@ locals {
       keys(item)[0] => values(item)[0]
     }
 
-    external_intermediate_content_map = { for item in local.external_intermediate_content :
+    external_intermediate_content_map_master = { for item in local.external_intermediate_content_master :
+      keys(item)[0] => values(item)[0]
+    }
+    external_intermediate_content_map_worker = { for item in local.external_intermediate_content_worker :
       keys(item)[0] => values(item)[0]
     }
 
@@ -136,7 +169,10 @@ locals {
       item => {}
     }
 
-    intermediate_content_map_only = { for item in local.intermediate_content_only :
+    intermediate_content_map_only_master = { for item in local.intermediate_content_only_master :
+      keys(item)[0] => values(item)[0]
+    }
+    intermediate_content_map_only_worker = { for item in local.intermediate_content_only_worker :
       keys(item)[0] => values(item)[0]
     }
 
