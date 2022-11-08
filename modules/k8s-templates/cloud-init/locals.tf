@@ -77,7 +77,7 @@ locals {
 }
 
 locals {
-  cloud-init-master = flatten([
+  cloud-init-template = flatten([
     for master_name, master_content in  var.k8s_global_vars.ssl_for_each_map.master_instance_list_map:
       {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master.tftpl", {
 
@@ -118,7 +118,7 @@ locals {
         kube-apiserver-audit                = module.k8s-kube-apiserver.audit
       })}
     ])
-  cloud-init-master-map = { for item in local.cloud-init-master :
+  cloud-init-template-map = { for item in local.cloud-init-template :
     keys(item)[0] => values(item)[0]}
 
   cloud-init-worker = flatten([
