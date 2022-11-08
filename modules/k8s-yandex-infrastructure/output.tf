@@ -5,3 +5,4 @@ output "kube-apiserver-lb" {
 output "vpc-id" {
   value = yandex_vpc_network.cluster-vpc.id
 }
+

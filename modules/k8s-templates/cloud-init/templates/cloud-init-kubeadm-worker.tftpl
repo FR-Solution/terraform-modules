@@ -1,0 +1,181 @@
+#cloud-config
+version: v1
+
+hostname: ${hostname}
+
+users:
+  - name: dkot
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ ssh_key }
+
+packages:
+  - wget
+  - jq
+  - tree
+  - irqbalance
+  - net-tools
+  - socat 
+  - conntrack
+  - ipset
+  - ethtool
+  - unzip
+  - xfsprogs
+
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+bootcmd:
+  - sudo modprobe overlay
+  - sudo modprobe br_netfilter
+  - sudo sysctl --system
+
+runcmd:
+  - chmod -R 700 /var/lib/etcd
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221020%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221020T123413Z&X-Amz-Expires=2592000&X-Amz-Signature=138701723B70343E38D82791A28AD1DB87040677F7C94D83610FF26ED9AF1954&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/kubectl       ${release_vars[actual_release].kubectl.url}
+  - wget -O /usr/bin/kubelet       ${release_vars[actual_release].kubelet.url}
+  - wget -O /usr/bin/runc          ${release_vars[actual_release].runc.url}
+  - wget -O /tmp/cni.tar.gz        ${release_vars[actual_release].cni.url}
+  - wget -O /tmp/containerd.tar.gz ${release_vars[actual_release].containerd.url}
+  - wget -O /tmp/crictl.tar.gz     ${release_vars[actual_release].crictl.url}
+  - chmod +x /usr/bin/key-keeper 
+  - chmod +x /usr/bin/kubelet 
+  - chmod +x /usr/bin/kubectl 
+  - chmod +x /usr/bin/runc
+  - mkdir -p /opt/cni/bin
+  - mkdir -p /tmp/containerd
+  - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
+  - tar -C "/opt/cni/bin"     -xvf /tmp/cni.tar.gz
+  - tar -C "/usr/bin"         -xvf /tmp/crictl.tar.gz
+  - cp /tmp/containerd/bin/*   /usr/bin/
+  - systemctl daemon-reload
+  - systemctl enable  kubelet.service
+  - systemctl enable  containerd.service
+  - systemctl start   kubelet.service
+  - systemctl start   containerd.service
+  - systemctl enable  key-keeper.service
+  - systemctl start   key-keeper.service
+  - systemctl enable  systemd-resolved.service
+  - systemctl start   systemd-resolved.service
+  - sysctl --system
+
+write_files:
+
+####### Настройка key-keeper ###########################
+###--->
+
+  - path: /var/lib/key-keeper/bootstrap.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bootstrap_token_all)}
+      
+  - path: /etc/systemd/system/key-keeper.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-service)}
+
+  - path: ${base_local_path_certs}/vault-config
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-config)}
+
+####### KUBECONFIGS для подключения к кластеру
+
+
+  - path: ${base_path.kubernetes_path}/kubelet/bootstrap-kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-bootstrap-kubeconfig)}
+
+####### Настройка kubelet ##############################
+###--->
+  - path: /etc/systemd/system/kubelet.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service)}
+
+  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-d-fraima)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/service/kubelet-args.env
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-args)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/config.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-config)}
+###--->
+####### *** ############################################
+
+
+####### Настройка containerd ##############################
+###--->
+  - path: /etc/systemd/system/containerd.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, containerd-service)}
+
+# TODO config
+###--->
+####### *** ############################################
+
+####### Настройка sysctl ##############################
+###--->
+  - path: /etc/sysctl.d/99-network.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, sysctl-network )}
+###--->
+####### *** ############################################
+
+####### Настройка modprobe ##############################
+###--->
+  - path: /etc/modules-load.d/k8s.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, modprobe-k8s  )}
+###--->
+####### *** ############################################
+
+# TODO отключить
+####### Настройка cni ##############################
+###--->
+  - path: /etc/cni/net.d/99-loopback.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, cni-base )}
+###--->
+####### *** ############################################
+
+  - path: /root/.bashrc
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bashrc-k8s )}
+
+  - path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-apiserver-audit )}
+
+# TODO
+# Потребности:

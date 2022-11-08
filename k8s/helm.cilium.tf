@@ -1,5 +1,5 @@
 resource "helm_release" "cilium" {
-  depends_on = [module.k8s-infrastructure]
+  depends_on = [module.k8s-control-plane]
   name       = "cilium"
   repository = "https://helm.cilium.io"
   chart      = "cilium"
