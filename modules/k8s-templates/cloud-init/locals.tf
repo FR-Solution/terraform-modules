@@ -96,13 +96,13 @@ locals {
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig
         kube-scheduler-kubeconfig           = module.kube-scheduler-kubeconfig.kubeconfig
         kube-controller-manager-kubeconfig  = module.kube-controller-manager-kubeconfig.kubeconfig
-        kubelet-service                     = module.kubelet-service.kubelet-service
-        kubelet-service-d-fraima            = module.kubelet-service.kubelet-service-d-fraima
-        kubelet-service-args                = module.kubelet-service.kubelet-service-args[master_name]
-        kubelet-config                      = module.kubelet-service.kubelet-config
+        kubelet-service                     = module.kubelet-service-master.kubelet-service
+        kubelet-service-d-fraima            = module.kubelet-service-master.kubelet-service-d-fraima
+        kubelet-service-args                = module.kubelet-service-master.kubelet-service-args[master_name]
+        kubelet-config                      = module.kubelet-service-master.kubelet-config
 
-        key-keeper-config                   = module.key-keeper-service.key-keeper-config[master_name]
-        key-keeper-service                  = module.key-keeper-service.key-keeper-service
+        key-keeper-config                   = module.key-keeper-service-master.key-keeper-config[master_name]
+        key-keeper-service                  = module.key-keeper-service-master.key-keeper-service
 
         static-pod-etcd                     = module.static-pod-etcd.manifest[master_name]
         static-pod-kubeadm-config           = module.static-pod-kubeadm-config.manifest[master_name]
@@ -138,13 +138,13 @@ locals {
 
         kubelet-bootstrap-kubeconfig        = module.kubelet-bootstrap-kubeconfig.kubeconfig
        
-        kubelet-service                     = module.kubelet-service.kubelet-service
-        kubelet-service-d-fraima            = module.kubelet-service.kubelet-service-d-fraima
-        kubelet-service-args                = module.kubelet-service.kubelet-service-args[worker_name]
-        kubelet-config                      = module.kubelet-service.kubelet-config
+        kubelet-service                     = module.kubelet-service-worker.kubelet-service
+        kubelet-service-d-fraima            = module.kubelet-service-worker.kubelet-service-d-fraima
+        kubelet-service-args                = module.kubelet-service-worker.kubelet-service-args[worker_name]
+        kubelet-config                      = module.kubelet-service-worker.kubelet-config
 
-        key-keeper-config                   = module.key-keeper-service.key-keeper-config[worker_name]
-        key-keeper-service                  = module.key-keeper-service.key-keeper-service
+        key-keeper-config                   = module.key-keeper-service-worker.key-keeper-config[worker_name]
+        key-keeper-service                  = module.key-keeper-service-worker.key-keeper-service
 
         
         containerd-service                  = module.containerd-service.service

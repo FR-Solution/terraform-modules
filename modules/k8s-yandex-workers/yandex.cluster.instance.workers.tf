@@ -1,12 +1,8 @@
-
-#### WORKERS ######
-##-->
-
 resource "yandex_compute_instance" "worker" {
 
     for_each    = var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map
     name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
-    hostname    = format("%s.%s.%s", "${each.key}" ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
+    hostname    = format("%s.%s.%s", each.key ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
     platform_id = "standard-v1"
     zone        = var.zone
     labels      = {
@@ -25,6 +21,8 @@ resource "yandex_compute_instance" "worker" {
         }
     }
 
+    service_account_id = yandex_iam_service_account.worker-sa[each.key].id
+
     network_interface {
         subnet_id = yandex_vpc_subnet.worker-subnets[var.zone].id
         nat = true
@@ -37,11 +35,7 @@ resource "yandex_compute_instance" "worker" {
     }
 
     metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
-    user-data = var.cloud_init_template.worker[each.key]
+        ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+        user-data = var.cloud_init_template.worker[each.key]
     }
 }
-    # 
-# output "cloud_init_worker" {
-#     value = "${yandex_compute_instance.worker.network_interface[*].nat_ip_address}"
-# }

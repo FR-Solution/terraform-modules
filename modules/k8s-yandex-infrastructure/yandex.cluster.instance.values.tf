@@ -9,8 +9,8 @@ variable "master_flavor" {
     secondary_disk  = string
   })
   default = {
-    core            = 4
-    memory          = 8
+    core            = 6
+    memory          = 12
     core_fraction   = 100
     secondary_disk  = 60
   }

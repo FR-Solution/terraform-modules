@@ -1,10 +1,3 @@
-kube_apiserver_lb_access:           ${kube_apiserver_lb_access}
-base64_certificate_authority_data:  ${base64_certificate_authority_data}
-kubernetes_version:                 ${kubernetes_version}
-base_local_path_certs:              ${base_local_path_certs}
-service_cidr:                       ${service_cidr}
-etcd_data_base_dir:                 ${etcd_data_base_dir}
-kubernetes_version_major:           ${kubernetes_version_major}
 
 vault:
   approle:

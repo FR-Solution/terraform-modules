@@ -23,7 +23,9 @@ module "kubelet-bootstrap-kubeconfig" {
       certificate-authority = local.kubelet-bootstrap-kubeconfig-certificate-authority
       client-certificate    = local.kubelet-bootstrap-kubeconfig-client-certificate
       client-key            = local.kubelet-bootstrap-kubeconfig-client-key
-      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
+      kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
+      kube-apiserver        = var.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
+
 }
 
 module "kube-scheduler-kubeconfig" {
@@ -71,18 +73,30 @@ module "bashrc" {
 
 }
 
-module "kubelet-service" {
+module "kubelet-service-master" {
     source = "../services/kubelet"
     instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
 }
 
-module "key-keeper-service" {
+module "kubelet-service-worker" {
+    source = "../services/kubelet"
+    instance_type = "worker"
+    k8s_global_vars = var.k8s_global_vars
+}
+
+module "key-keeper-service-master" {
     source = "../services/key-keeper"
     instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
-
 }
+
+module "key-keeper-service-worker" {
+    source = "../services/key-keeper"
+    instance_type = "worker"
+    k8s_global_vars = var.k8s_global_vars
+}
+
 
 module "static-pod-etcd" {
     source = "../static-pods/etcd"

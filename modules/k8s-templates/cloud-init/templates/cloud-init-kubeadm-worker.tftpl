@@ -171,11 +171,6 @@ write_files:
     content: |
       ${indent(6, bashrc-k8s )}
 
-  - path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-apiserver-audit )}
 
 # TODO
 # Потребности:

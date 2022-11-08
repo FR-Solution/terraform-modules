@@ -64,3 +64,9 @@ module "k8s-data-plane" {
 locals {
     lb-kube-apiserver-ip = module.k8s-control-plane.kube-apiserver-lb
 }
+
+
+output "LB-IP" {
+    value = "kubectl config set-cluster  ${module.k8s-global-vars.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
+  
+}
