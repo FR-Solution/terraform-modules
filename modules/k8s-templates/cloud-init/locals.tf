@@ -55,9 +55,6 @@ locals {
 
 locals {
   kubernetes-ca-ssl                                         = var.k8s_global_vars.ssl.intermediate["kubernetes-ca"]
-  kube-apiserver-kubeconfig-certificate-authority           = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
-  kube-apiserver-kubeconfig-client-certificate              = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client.pem"
-  kube-apiserver-kubeconfig-client-key                      = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client-key.pem"
 
   kube-apiserver-admin-kubeconfig-certificate-authority     = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
   kube-apiserver-admin-kubeconfig-client-certificate        = "${local.kubernetes-ca-ssl.issuers["kubeadm-client"].certificates["kubeadm-client"].key-keeper-args.host_path}/kubeadm-client.pem"
