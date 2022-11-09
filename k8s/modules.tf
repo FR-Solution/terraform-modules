@@ -23,11 +23,13 @@ module "k8s-cloud-init" {
 
 module "k8s-control-plane" {
     depends_on = [
-      module.k8s-vault
+      module.k8s-vault,
     ]
     source                  = "../modules/k8s-yandex-infrastructure"
     k8s_global_vars         = module.k8s-global-vars
     cloud_init_template     = module.k8s-cloud-init
+
+    # base_os_image         = "fd8dl9ahl649kf31vp4o"
 
     master_availability_zones = {
         ru-central1-a = "10.100.0.0/24"
@@ -52,6 +54,8 @@ module "k8s-data-plane" {
     k8s_global_vars         = module.k8s-global-vars
     cloud_init_template     = module.k8s-cloud-init
     vpc-id                  = module.k8s-control-plane.vpc-id
+    
+    # base_worker_os_image  = "fd8dl9ahl649kf31vp4o"
 
     worker_availability_zones = {
         ru-central1-a = "172.16.1.0/24"
