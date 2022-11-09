@@ -1,10 +1,15 @@
 # kubernetes
 
 ```bash
-cd vault && terraform init && cd -
-cd k8s   && terraform init && cd -
+cd vault && terraform init --upgrade && cd -
+cd k8s   && terraform init --upgrade && cd -
 
-CLUSTER_NAME="cluster-2" terraform -chdir=k8s apply -var cluster_name="$CLUSTER_NAME" -var vault_server="http:/auth.example.com"  -auto-approve  -state states/$CLUSTER_NAME
+CLUSTER_NAME="example" terraform apply \
+  -chdir=k8s \
+  -var cluster_name="$CLUSTER_NAME" \
+  -var vault_server="http:/auth.example.com"  \
+  -auto-approve  \
+  -state states/$CLUSTER_NAME
 ```
 
 ```
@@ -51,5 +56,20 @@ kubectl config set-credentials ${EMAIL} \
 
 kubectl config set-context ${CLUSTER_NAME} --cluster=${CLUSTER_NAME} --user=${EMAIL}
 kubectl config use-context ${CLUSTER_NAME}
+
+```
+
+### Обновление мастеров из нового golden-image
+```bash
+CLUSTER_NAME="example" terraform  apply \
+  -chdir=k8s \
+  -var cluster_name="example" \
+  -var vault_server="http:/auth.example.com"  \
+  -var base_os_image="$ID" \                                                                  # ID нового golden-image
+  -auto-approve \
+  -state states/example  \
+  -replace=module.k8s-vault.vault_token.kubernetes-all-login-bootstrap-master[\"master-0\"] \ # Пересоздаст временный токен для доступа в vault
+  -replace=module.k8s-control-plane.yandex_compute_instance.master[\"master-0\"]              # Пересоздаст VM с мастером
+  -refresh=false \                                                                            # Отключаем рефреш, что бы не проверять наполнение куба
 
 ```

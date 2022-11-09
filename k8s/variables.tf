@@ -21,7 +21,7 @@ variable "master-instance-count" {
 
 variable "worker-instance-count" {
   type = number
-  default = 1
+  default = 0
 }
 
 variable "cluster_name" {
@@ -45,5 +45,15 @@ variable "yandex_folder_name" {
   description = "module:K8S "
   type        = string
   default     = "example"
+}
+
+variable "base_os_image" {
+  type        = string
+  default     = "fd8kdq6d0p8sij7h5qe3"
+}
+
+variable "base_worker_os_image" {
+  type        = string
+  default     = "fd8kdq6d0p8sij7h5qe3"
 }
 
