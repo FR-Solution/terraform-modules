@@ -14,8 +14,8 @@ issuers:
         appRole:
           name: ${secret_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
-          secretIDLocalPath: ${base_path.base_vault_path}/${secret_name}/secret-id
-          roleIDLocalPath: ${base_path.base_vault_path}/${secret_name}/role-id
+          secretIDLocalPath: ${base_path.base_local_path_vault}/${secret_name}/secret-id
+          roleIDLocalPath: ${base_path.base_local_path_vault}/${secret_name}/role-id
       resource:
         kv:
           path: ${secret.path}
@@ -36,8 +36,8 @@ issuers:
         appRole:
           name: ${external_intermediate_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
-          secretIDLocalPath: ${base_path.base_vault_path}/${external_intermediate_name}/secret-id
-          roleIDLocalPath: ${base_path.base_vault_path}/${external_intermediate_name}/role-id
+          secretIDLocalPath: ${base_path.base_local_path_vault}/${external_intermediate_name}/secret-id
+          roleIDLocalPath: ${base_path.base_local_path_vault}/${external_intermediate_name}/role-id
       resource:
         CAPath: "pki-root"
       timeout: 15s
@@ -57,8 +57,8 @@ issuers:
         appRole:
           name: ${intermediate_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
-          secretIDLocalPath: ${base_path.base_vault_path}/${intermediate_name}/secret-id
-          roleIDLocalPath: ${base_path.base_vault_path}/${intermediate_name}/role-id
+          secretIDLocalPath: ${base_path.base_local_path_vault}/${intermediate_name}/secret-id
+          roleIDLocalPath: ${base_path.base_local_path_vault}/${intermediate_name}/role-id
       resource:
         CAPath: "${intermediate.path}"
         rootCAPath: "${intermediate.root_path}"
@@ -78,8 +78,8 @@ issuers:
         appRole:
           name: ${issuer_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
-          secretIDLocalPath: ${base_path.base_vault_path}/${issuer_name}/secret-id
-          roleIDLocalPath: ${base_path.base_vault_path}/${issuer_name}/role-id
+          secretIDLocalPath: ${base_path.base_local_path_vault}/${issuer_name}/secret-id
+          roleIDLocalPath: ${base_path.base_local_path_vault}/${issuer_name}/role-id
       resource:
         role: ${issuer_name}
         CAPath: "${intermediate.path}"
