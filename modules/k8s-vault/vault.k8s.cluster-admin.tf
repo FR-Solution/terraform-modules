@@ -5,6 +5,6 @@ resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
 
     ]
     backend       = var.k8s_global_vars.ssl.intermediate.kubernetes-ca.path
-    name          = "kube-apiserver-kubelet-client"
+    name          = "kube-apiserver-cluster-admin-client"
     common_name   = "custom:terraform-kubeconfig"
 }

@@ -113,7 +113,6 @@ locals {
               instance-worker = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "custom:bootstrappers:*"
@@ -151,7 +150,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-controller-manager"
@@ -183,7 +181,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -234,20 +231,19 @@ locals {
 
             }
           },
-          kube-apiserver-test-client = {
+          kube-apiserver-kubelet-client = {
             labels = {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
-                "custom:kube-apiserver-test-client",
+                "custom:kube-apiserver-kubelet-client",
               ]
               client_flag  = true
             }
             certificates = {
-              kube-apiserver-test-client = {
+              kube-apiserver-kubelet-client = {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
@@ -258,7 +254,7 @@ locals {
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "custom:kube-apiserver-test-client",
+                      commonName = "custom:kube-apiserver-kubelet-client",
                     }
                     usages = [
                       "client auth"
@@ -269,22 +265,20 @@ locals {
               }
             }
           },
-          kube-apiserver-kubelet-client = {
+          kubeadm-client = {
             labels = {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
-                "custom:kube-apiserver-kubelet-client",
-                "custom:terraform-kubeconfig",
+                "custom:kubeadm-client",
               ]
               organization = ["system:masters"]
               client_flag  = true
             }
             certificates = {
-              kube-apiserver-kubelet-client = {
+              kubeadm-client = {
                 labels = {
                   instance-master = true
                   # static-pod-kube-apiserver-args = {
@@ -295,7 +289,7 @@ locals {
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "custom:kube-apiserver-kubelet-client",
+                      commonName = "custom:kubeadm-client",
                       organizationalUnit = [
                         "system:masters"
                         ]
@@ -309,12 +303,49 @@ locals {
               }
             }
           },
+          kube-apiserver-cluster-admin-client = {
+            labels = {
+              instance-master = true
+            }
+            issuer-args = {
+              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              allowed_domains = [
+                "custom:terraform-kubeconfig",
+              ]
+              organization = ["system:masters"]
+              client_flag  = true
+            }
+            certificates = {
+              # kube-apiserver-cluster-admin-client = {
+              #   labels = {
+              #     instance-master = true
+              #     # static-pod-kube-apiserver-args = {
+              #     #   kubelet-client-certificate   = "cert-public-arg"
+              #     #   kubelet-client-key           = "cert-private-arg"
+              #     # }
+              #   }
+              #   key-keeper-args = {
+              #     spec = {
+              #       subject = {
+              #         commonName = "custom:terraform-kubeconfig",
+              #         organizationalUnit = [
+              #           "system:masters"
+              #           ]
+              #       }
+              #       usages = [
+              #         "client auth"
+              #       ]
+              #     }
+              #     host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+              #   }
+              # }
+            }
+          },
           kube-apiserver = {
             labels = {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -381,7 +412,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -439,7 +469,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-scheduler"
@@ -467,7 +496,6 @@ locals {
           },
           kubelet-peer-k8s-certmanager = {
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
               key_bits  = 0
               key_type  = "any"
@@ -493,7 +521,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "localhost",
@@ -550,7 +577,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/kubernetes"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:node:*",
@@ -609,7 +635,6 @@ locals {
         issuers = {
           etcd-server = {
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
               allowed_domains = [
                 "system:etcd-server",
@@ -629,7 +654,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth", "ClientAuth"]
               allowed_domains = [
                 "system:etcd-peer",
@@ -721,7 +745,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/etcd"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-etcd-client",
@@ -782,7 +805,6 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              # backend   = "${local.global_path.base_vault_path}/front-proxy"
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
                 "system:kube-apiserver-front-proxy-client",

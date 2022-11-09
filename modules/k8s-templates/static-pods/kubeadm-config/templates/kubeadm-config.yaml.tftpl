@@ -8,7 +8,6 @@ kubernetesVersion: "${kubernetes_version}"
 controlPlaneEndpoint: "${kube_api_fqdn}:${kube_apiserver_port}"
 etcd:
   external:
-    # TODO Доделать цикл для всех мастер нод
     endpoints:
     %{~ for etcd in  etcd_list_servers ~}
     - ${etcd}

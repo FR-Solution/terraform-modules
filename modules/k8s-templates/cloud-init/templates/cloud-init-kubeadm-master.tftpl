@@ -142,17 +142,11 @@ write_files:
     content: |
       ${indent(6, kube-controller-manager-kubeconfig)}
 
-  - path: ${base_path.kubernetes_path}/kube-apiserver/kubeconfig
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-apiserver-kubeconfig)}
-
   - path: /etc/kubernetes/admin.conf
     owner: root:root
     permissions: '0644'
     content: |
-      ${indent(6, kube-apiserver-kubeconfig)}
+      ${indent(6, kube-apiserver-admin-kubeconfig)}
 
   - path: ${base_path.kubernetes_path}/kubelet/kubeconfig
     owner: root:root

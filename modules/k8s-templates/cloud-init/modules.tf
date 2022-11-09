@@ -1,10 +1,10 @@
 
-module "kube-apiserver-kubeconfig" {
+module "kube-apiserver-admin-kubeconfig" {
     source = "../kubeconfig"
       component-name        = "kube-apiserver"
-      certificate-authority = local.kube-apiserver-kubeconfig-certificate-authority
-      client-certificate    = local.kube-apiserver-kubeconfig-client-certificate
-      client-key            = local.kube-apiserver-kubeconfig-client-key
+      certificate-authority = local.kube-apiserver-admin-kubeconfig-certificate-authority
+      client-certificate    = local.kube-apiserver-admin-kubeconfig-client-certificate
+      client-key            = local.kube-apiserver-admin-kubeconfig-client-key
       kube-apiserver-port   = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
 }
 
