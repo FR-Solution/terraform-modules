@@ -35,8 +35,10 @@ resource "vault_token" "kubernetes-all-login-bootstrap-master" {
   role_name = vault_token_auth_backend_role.kubernetes-all-bootstrap-master[each.key].role_name
   policies  = vault_token_auth_backend_role.kubernetes-all-bootstrap-master[each.key].allowed_policies
   metadata  = {}
-  ttl       = 0
+  ttl       = 300
   num_uses  = 0
+  # TODO ждем фикса key-keeper
+  #num_uses  = 1
 
 }
 
