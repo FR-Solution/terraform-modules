@@ -238,12 +238,12 @@ locals {
             issuer-args = {
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
-                "custom:kubelet-apiserver-kubelet-client",
+                "custom:kube-apiserver-kubelet-client",
               ]
               client_flag  = true
             }
             certificates = {
-              kube-apiserver-test-client = {
+              kube-apiserver-kubelet-client = {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
@@ -254,7 +254,7 @@ locals {
                 key-keeper-args = {
                   spec = {
                     subject = {
-                      commonName = "custom:kubelet-apiserver-kubelet-client",
+                      commonName = "custom:kube-apiserver-kubelet-client",
                     }
                     usages = [
                       "client auth"
@@ -265,44 +265,81 @@ locals {
               }
             }
           },
-          kube-apiserver-kubelet-cluster-admin-admin = {
+          kubeadm-client = {
             labels = {
               instance-master = true
             }
             issuer-args = {
               key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
               allowed_domains = [
-                # "custom:kube-apiserver-kubelet-cluster-admin-client",
+                "custom:kubeadm-client",
+              ]
+              organization = ["system:masters"]
+              client_flag  = true
+            }
+            certificates = {
+              kubeadm-client = {
+                labels = {
+                  instance-master = true
+                  # static-pod-kube-apiserver-args = {
+                  #   kubelet-client-certificate   = "cert-public-arg"
+                  #   kubelet-client-key           = "cert-private-arg"
+                  # }
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "custom:kubeadm-client",
+                      organizationalUnit = [
+                        "system:masters"
+                        ]
+                    }
+                    usages = [
+                      "client auth"
+                    ]
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+                }
+              }
+            }
+          },
+          kube-apiserver-cluster-admin-client = {
+            labels = {
+              instance-master = true
+            }
+            issuer-args = {
+              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              allowed_domains = [
                 "custom:terraform-kubeconfig",
               ]
               organization = ["system:masters"]
               client_flag  = true
             }
-            # certificates = {
-            #   kube-apiserver-kubelet-admin = {
-            #     labels = {
-            #       instance-master = true
-            #       # static-pod-kube-apiserver-args = {
-            #       #   kubelet-client-certificate   = "cert-public-arg"
-            #       #   kubelet-client-key           = "cert-private-arg"
-            #       # }
-            #     }
-            #     key-keeper-args = {
-            #       spec = {
-            #         subject = {
-            #           commonName = "custom:kube-apiserver-kubelet-cluster-admin-client",
-            #           organizationalUnit = [
-            #             "system:masters"
-            #             ]
-            #         }
-            #         usages = [
-            #           "client auth"
-            #         ]
-            #       }
-            #       host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
-            #     }
-            #   }
-            # }
+            certificates = {
+              # kube-apiserver-cluster-admin-client = {
+              #   labels = {
+              #     instance-master = true
+              #     # static-pod-kube-apiserver-args = {
+              #     #   kubelet-client-certificate   = "cert-public-arg"
+              #     #   kubelet-client-key           = "cert-private-arg"
+              #     # }
+              #   }
+              #   key-keeper-args = {
+              #     spec = {
+              #       subject = {
+              #         commonName = "custom:terraform-kubeconfig",
+              #         organizationalUnit = [
+              #           "system:masters"
+              #           ]
+              #       }
+              #       usages = [
+              #         "client auth"
+              #       ]
+              #     }
+              #     host_path = "${local.global_path.base_local_path_certs}/certs/kube-apiserver"
+              #   }
+              # }
+            }
           },
           kube-apiserver = {
             labels = {

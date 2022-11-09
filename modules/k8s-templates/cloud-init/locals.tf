@@ -59,6 +59,10 @@ locals {
   kube-apiserver-kubeconfig-client-certificate              = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client.pem"
   kube-apiserver-kubeconfig-client-key                      = "${local.kubernetes-ca-ssl.issuers["kube-apiserver-kubelet-client"].certificates["kube-apiserver-kubelet-client"].key-keeper-args.host_path}/kube-apiserver-kubelet-client-key.pem"
 
+  kube-apiserver-admin-kubeconfig-certificate-authority     = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
+  kube-apiserver-admin-kubeconfig-client-certificate        = "${local.kubernetes-ca-ssl.issuers["kubeadm-client"].certificates["kubeadm-client"].key-keeper-args.host_path}/kubeadm-client.pem"
+  kube-apiserver-admin-kubeconfig-client-key                = "${local.kubernetes-ca-ssl.issuers["kubeadm-client"].certificates["kubeadm-client"].key-keeper-args.host_path}/kubeadm-client-key.pem"
+
   kubelet-bootstrap-kubeconfig-certificate-authority        = "${local.kubernetes-ca-ssl.host_path}/kubernetes-ca.pem"
   kubelet-bootstrap-kubeconfig-client-certificate           = "${local.kubernetes-ca-ssl.issuers["bootstrappers-client"].certificates["bootstrappers-client"].key-keeper-args.host_path}/bootstrappers-client.pem"
   kubelet-bootstrap-kubeconfig-client-key                   = "${local.kubernetes-ca-ssl.issuers["bootstrappers-client"].certificates["bootstrappers-client"].key-keeper-args.host_path}/bootstrappers-client-key.pem"
@@ -92,10 +96,11 @@ locals {
         kube_apiserver_port_lb            = var.kube-apiserver-port-lb
         bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
 
-        kube-apiserver-kubeconfig           = module.kube-apiserver-kubeconfig.kubeconfig
+        kube-apiserver-admin-kubeconfig     = module.kube-apiserver-admin-kubeconfig.kubeconfig
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig
         kube-scheduler-kubeconfig           = module.kube-scheduler-kubeconfig.kubeconfig
         kube-controller-manager-kubeconfig  = module.kube-controller-manager-kubeconfig.kubeconfig
+
         kubelet-service                     = module.kubelet-service-master.kubelet-service
         kubelet-service-d-fraima            = module.kubelet-service-master.kubelet-service-d-fraima
         kubelet-service-args                = module.kubelet-service-master.kubelet-service-args[master_name]

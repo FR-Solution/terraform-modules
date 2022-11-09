@@ -44,7 +44,9 @@ module "k8s-control-plane" {
 
 module "k8s-data-plane" {
     depends_on = [
-      module.k8s-control-plane
+        module.k8s-control-plane,
+        helm_release.gatekeeper,
+        helm_release.certmanager
     ]
     source                  = "../modules/k8s-yandex-workers"
     k8s_global_vars         = module.k8s-global-vars
