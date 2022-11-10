@@ -21,4 +21,6 @@ locals {
     manifest-map = { for item in local.manifest :
       keys(item)[0] => values(item)[0]
     }
+
+    kube-apiserver-audit = file("${path.module}/templates/audit.yaml.tftpl")
 }

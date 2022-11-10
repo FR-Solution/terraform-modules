@@ -64,6 +64,8 @@ apiServer:
     audit-log-maxbackup: "10"
     audit-log-maxsize: "1000"
     audit-log-mode: batch
+    audit-policy-file: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+    audit-log-path: /var/log/kubernetes/audit/audit.log
     enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction
     enable-bootstrap-token-auth: "true"
     runtime-config: api/all=true
@@ -91,18 +93,24 @@ apiServer:
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-certs"
     hostPath: "${base_path.base_local_path_certs}/certs"
     mountPath: "${base_path.base_local_path_certs}/certs"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-apiserver-configs"
     hostPath: "${base_path.base_kubernetes_path}/kube-apiserver"
     mountPath: "${base_path.base_kubernetes_path}/kube-apiserver"
+    readOnly: true
+    pathType: DirectoryOrCreate
+
+  - name: "k8s-audit"
+    hostPath: "/var/log/kubernetes/audit/"
+    mountPath: "/var/log/kubernetes/audit/"
     readOnly: false
     pathType: DirectoryOrCreate
 
@@ -178,19 +186,19 @@ controllerManager:
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-certs"
     hostPath: "${base_path.base_local_path_certs}/certs"
     mountPath: "${base_path.base_local_path_certs}/certs"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-controller-manager-configs"
     hostPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
     mountPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
 scheduler:
@@ -232,19 +240,19 @@ scheduler:
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-certs"
     hostPath: "${base_path.base_local_path_certs}/certs"
     mountPath: "${base_path.base_local_path_certs}/certs"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-scheduler-configs"
     hostPath: "${base_path.base_kubernetes_path}/kube-scheduler"
     mountPath: "${base_path.base_kubernetes_path}/kube-scheduler"
-    readOnly: false
+    readOnly: true
     pathType: DirectoryOrCreate
 
 

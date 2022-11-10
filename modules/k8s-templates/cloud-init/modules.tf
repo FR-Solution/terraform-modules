@@ -63,10 +63,6 @@ module "cni" {
     source = "../cni"
 }
 
-module "k8s-kube-apiserver" {
-    source = "../k8s/kube-apiserver"
-}
-
 module "bashrc" {
     source = "../bashrc"
     k8s_global_vars = var.k8s_global_vars
