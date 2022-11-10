@@ -87,11 +87,18 @@ locals {
         ssl                               = var.k8s_global_vars.ssl
         base_path                         = var.base_path
         hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
+        node_name                         = "${master_name}"
         actual_release                    = var.actual-release
         release_vars                      = local.release-vars
         kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
         kube_apiserver_port_lb            = var.kube-apiserver-port-lb
-        bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
+        # bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
+
+        # DEDICATED VAULT BOOTSTRAP TOKENS
+        vault-bootstrap-issuer-master-token       = var.vault-bootstrap-issuer-master-token
+        vault-bootstrap-ca-master-token           = var.vault-bootstrap-ca-master-token
+        vault-bootstrap-external-ca-master-token  = var.vault-bootstrap-external-ca-master-token
+        vault-bootstrap-secret-master-token       = var.vault-bootstrap-secret-master-token
 
         kube-apiserver-admin-kubeconfig     = module.kube-apiserver-admin-kubeconfig.kubeconfig
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig

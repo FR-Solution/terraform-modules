@@ -31,9 +31,10 @@ bootcmd:
   - sudo modprobe br_netfilter
   - sudo sysctl --system
 
-runcmd:
+runcmd: 
   - chmod -R 700 /var/lib/etcd
-  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221020%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221020T123413Z&X-Amz-Expires=2592000&X-Amz-Signature=138701723B70343E38D82791A28AD1DB87040677F7C94D83610FF26ED9AF1954&X-Amz-SignedHeaders=host"
+  # - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221020%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221020T123413Z&X-Amz-Expires=2592000&X-Amz-Signature=138701723B70343E38D82791A28AD1DB87040677F7C94D83610FF26ED9AF1954&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T-3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221109%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221109T133004Z&X-Amz-Expires=2592000&X-Amz-Signature=5258586AC79FF1CFFDA71FB79FED18CAD5888C4E22DCDB524DF4753564AAF9FD&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       ${release_vars[actual_release].kubectl.url}
   - wget -O /usr/bin/kubelet       ${release_vars[actual_release].kubelet.url}
   - wget -O /usr/bin/runc          ${release_vars[actual_release].runc.url}

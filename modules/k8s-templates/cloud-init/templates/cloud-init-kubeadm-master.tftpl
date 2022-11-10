@@ -110,13 +110,46 @@ write_files:
 
 ####### Настройка key-keeper ###########################
 ###--->
-
-  - path: /var/lib/key-keeper/bootstrap.token
+%{ for secret_name, secret_content in vault-bootstrap-secret-master-token }
+  %{~ if split(":", secret_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${secret_name}.token
     owner: root:root
     permissions: '0644'
     content: |
-      ${indent(6, bootstrap_token_all)}
-      
+      ${indent(6, secret_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for issuer_name, issuer_content in vault-bootstrap-issuer-master-token }
+  %{~ if split(":", issuer_name)[2] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${issuer_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, issuer_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for ca_name, ca_content in vault-bootstrap-ca-master-token }
+  %{~ if split(":", ca_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${ca_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, ca_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for external_ca_name, external_ca_content in vault-bootstrap-external-ca-master-token }
+  %{~ if split(":", external_ca_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${external_ca_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, external_ca_content.client_token )}
+  %{ endif }
+%{ endfor }
+
   - path: /etc/systemd/system/key-keeper.service
     owner: root:root
     permissions: '0644'

@@ -17,8 +17,16 @@ module "k8s-vault" {
 module "k8s-cloud-init" {
     source                       = "../modules/k8s-templates/cloud-init"
     k8s_global_vars              = module.k8s-global-vars
-    vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
+
+    # IF VAULT GLOBAL BOOTSTRAP MOD
+    # vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
     vault-bootstrap-worker-token = module.k8s-vault.bootstrap-worker-token
+
+    # IF VAULT DEDICATED BOOTSTRAP MOD
+    vault-bootstrap-issuer-master-token         = module.k8s-vault.bootstrap-issuer-master-token
+    vault-bootstrap-ca-master-token             = module.k8s-vault.bootstrap-ca-master-token
+    vault-bootstrap-external-ca-master-token    = module.k8s-vault.bootstrap-external-ca-master-token
+    vault-bootstrap-secret-master-token         = module.k8s-vault.bootstrap-secret-master-token
 }
 
 module "k8s-control-plane" {
