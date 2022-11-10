@@ -1,7 +1,7 @@
 locals {
     key-keeper-config = flatten([
     for node_name, node_content in  var.k8s_global_vars.ssl_for_each_map["${var.instance_type}_instance_list_map"]:
-        {"${node_name}" = templatefile("${path.module}/templates/config.tftpl", {
+        {"${node_name}" = templatefile("${path.module}/templates/config-dedicated.tftpl", {
             intermediates                   = var.k8s_global_vars.ssl.intermediate
             external_intermediates          = var.k8s_global_vars.ssl.external_intermediate
             secrets                         = var.k8s_global_vars.secrets

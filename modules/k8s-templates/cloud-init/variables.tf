@@ -41,15 +41,6 @@ variable "kube-apiserver-lb-fqdn" {
   default = null
 }
 
-variable "vault-bootstrap-master-token" {
-  type = any
-  default = null
-}
-
-variable "vault-bootstrap-worker-token" {
-  type = any
-  default = null
-}
 
 
 
@@ -126,4 +117,34 @@ variable "kubernetes-version-major" {
 variable "actual-release" {
   type = string
   default = "v0_1"
+}
+
+variable "vault-bootstrap-master-token" {
+  type = any
+  default = null
+}
+
+variable "vault-bootstrap-worker-token" {
+  type = any
+  default = null
+}
+
+variable "vault-bootstrap-issuer-master-token" {
+  type = any
+  default = null
+}
+
+variable "vault-bootstrap-ca-master-token" {
+  type = any
+  default = null
+}
+
+variable "vault-bootstrap-external-ca-master-token" {
+  type = any
+  default = null
+}
+
+variable "vault-bootstrap-secret-master-token" {
+  type = any
+  default = null
 }
