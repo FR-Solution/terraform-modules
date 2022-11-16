@@ -23,12 +23,12 @@ resource "yandex_dns_zone" "cluster-external" {
 
 #### INTERNAL DNS FOR KUBE-APISERVER ######
 ##-->
-resource "yandex_dns_recordset" "api-internal" {
+resource "yandex_dns_recordset" "api-external" {
   zone_id = yandex_dns_zone.cluster-external.id
   name    = "${var.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn}."
   type    = "A"
   ttl     = 60
-  data    = "${(tolist(yandex_lb_network_load_balancer.api-internal.listener)[0].external_address_spec)[*].address}"
+  data    = "${(tolist(yandex_lb_network_load_balancer.api-external.listener)[0].external_address_spec)[*].address}"
 }
 
 #### INTERNAL DNS FRO ETCD DISCOVERY ######

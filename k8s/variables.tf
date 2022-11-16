@@ -21,7 +21,7 @@ variable "master-instance-count" {
 
 variable "worker-instance-count" {
   type = number
-  default = 1
+  default = 0
 }
 
 variable "cluster_name" {
