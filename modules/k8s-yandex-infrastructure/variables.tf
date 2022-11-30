@@ -17,3 +17,8 @@ variable "master-configs" {
   type     = any
   default  = {}
 }
+
+variable "master-instance-count" {
+  type = number
+  default = 1
+}

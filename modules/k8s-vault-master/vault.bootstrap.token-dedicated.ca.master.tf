@@ -1,7 +1,7 @@
 
 
 resource "vault_token_auth_backend_role" "kubernetes-dedicated-ca-bootstrap-master" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.intermediate_content_map_master
+  for_each  = local.intermediate_content_map_master
 
   role_name                 = "${join(".",split(":", each.key))}"
   allowed_policies          = [vault_policy.kubernetes-dedicated-ca-bootstrap-master[each.key].name]
@@ -18,7 +18,7 @@ resource "vault_token_auth_backend_role" "kubernetes-dedicated-ca-bootstrap-mast
 }
 
 resource "vault_token" "kubernetes-dedicated-ca-login-bootstrap-master" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.intermediate_content_map_master
+  for_each  = local.intermediate_content_map_master
   role_name = vault_token_auth_backend_role.kubernetes-dedicated-ca-bootstrap-master[each.key].role_name
   policies  = vault_token_auth_backend_role.kubernetes-dedicated-ca-bootstrap-master[each.key].allowed_policies
   metadata  = {}

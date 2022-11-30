@@ -1,6 +1,6 @@
 
 resource "vault_policy" "kubernetes-dedicated-external-ca-bootstrap-master" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.external_intermediate_content_map_master
+  for_each  = local.external_intermediate_content_map_master
 
   name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-dedicated-external-ca:${split(":",each.key)[0]}"
 

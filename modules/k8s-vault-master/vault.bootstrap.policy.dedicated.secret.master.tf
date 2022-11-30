@@ -1,8 +1,7 @@
+resource "vault_policy" "kubernetes-dedicated-secret-bootstrap-master" {
+  for_each  = local.secret_content_map
 
-resource "vault_policy" "kubernetes-dedicated-ca-bootstrap-master" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.intermediate_content_map_master
-
-  name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-dedicated-ca:${split(":",each.key)[0]}"
+  name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-dedicated-secret:${split(":",each.key)[0]}"
 
   policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-dedicated.tftpl", { 
     base_vault_path_approle = var.k8s_global_vars.global_path.base_vault_path_approle
