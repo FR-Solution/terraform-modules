@@ -13,7 +13,7 @@ resource "yandex_lb_target_group" "master-tg" {
   }
 }
 
-resource "yandex_lb_network_load_balancer" "api-internal" {
+resource "yandex_lb_network_load_balancer" "api-external" {
   name = "lb-api-${var.k8s_global_vars.cluster_name}"
   type = "external"
   region_id  = "ru-central1"

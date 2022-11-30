@@ -1,6 +1,7 @@
 resource "yandex_compute_instance" "worker" {
 
     for_each    = var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map
+    
     name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
     hostname    = format("%s.%s.%s", each.key ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
     platform_id = "standard-v1"

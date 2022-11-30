@@ -113,10 +113,14 @@ locals {
               instance-worker = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "custom:bootstrappers:*"
-                
               ]
               organization = [
                 "system:bootstrappers"
@@ -150,7 +154,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:kube-controller-manager"
               ]
@@ -181,7 +190,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth"
+                ]
               allowed_domains = [
                 "localhost",
                 "kube-controller-manager.default",
@@ -236,7 +250,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
               ]
@@ -270,7 +289,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "custom:kubeadm-client",
               ]
@@ -308,7 +332,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "custom:terraform-kubeconfig",
               ]
@@ -346,7 +375,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth"
+                ]
               allowed_domains = [
                 "localhost",
                 "kubernetes",
@@ -412,7 +446,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth"
+                ]
               allowed_domains = [
                 "localhost",
                 "kube-scheduler.default",
@@ -469,7 +508,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:kube-scheduler"
               ]
@@ -496,7 +540,13 @@ locals {
           },
           kubelet-peer-k8s-certmanager = {
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth","ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth",
+                "ClientAuth"
+                ]
               key_bits  = 0
               key_type  = "any"
               allowed_domains = [
@@ -521,7 +571,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth"
+                ]
               allowed_domains = [
                 "localhost",
                 local.wildcard_base_cluster_fqdn,
@@ -577,7 +632,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:node:*",
               ]
@@ -635,7 +695,12 @@ locals {
         issuers = {
           etcd-server = {
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth"
+                ]
               allowed_domains = [
                 "system:etcd-server",
                 "localhost",
@@ -654,7 +719,13 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ServerAuth", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ServerAuth",
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:etcd-peer",
                 "system:etcd-server",
@@ -745,7 +816,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:kube-apiserver-etcd-client",
                 "system:etcd-healthcheck-client",
@@ -805,7 +881,12 @@ locals {
               instance-master = true
             }
             issuer-args = {
-              key_usage = ["DigitalSignature", "KeyAgreement", "KeyEncipherment", "ClientAuth"]
+              key_usage = [
+                "DigitalSignature", 
+                "KeyAgreement", 
+                "KeyEncipherment", 
+                "ClientAuth"
+                ]
               allowed_domains = [
                 "system:kube-apiserver-front-proxy-client",
                 "custom:kube-apiserver-front-proxy-client"

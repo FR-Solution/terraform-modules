@@ -124,13 +124,13 @@ locals {
 
   master_instance_list        = flatten([
     for master-index in range(var.master_instance_count): [
-     "master-${master-index}"
+     "master-${sum([master-index, 1])}"
     ]
   ])
 
   worker_instance_list        = flatten([
     for worker-index in range(var.worker_instance_count): [
-     "worker-${worker-index}"
+     "worker-${sum([worker-index, 1])}"
     ]
   ])
 

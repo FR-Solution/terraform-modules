@@ -12,14 +12,14 @@ locals {
 
   }
 
-  list_masters                  = formatlist("master-%s.${var.cluster_name}.${var.base_domain}", 
-                                            range(var.master_instance_count))
+  list_masters                  = formatlist("%s.${var.cluster_name}.${var.base_domain}", 
+                                            local.master_instance_list)
 
-  etcd_list_servers             = formatlist("https://master-%s.${var.cluster_name}.${var.base_domain}:${local.kubernetes-ports.etcd-server-port}", 
-                                            range(var.master_instance_count))
-  etcd_list_initial_cluster     = formatlist("master-%s.${var.cluster_name}.${var.base_domain}=https://master-%s.${var.cluster_name}.${var.base_domain}:${local.kubernetes-ports.etcd-peer-port}", 
-                                            range(var.master_instance_count), 
-                                            range(var.master_instance_count))
+  etcd_list_servers             = formatlist("https://%s.${var.cluster_name}.${var.base_domain}:${local.kubernetes-ports.etcd-server-port}", 
+                                            local.master_instance_list)
+  etcd_list_initial_cluster     = formatlist("%s.${var.cluster_name}.${var.base_domain}=https://%s.${var.cluster_name}.${var.base_domain}:${local.kubernetes-ports.etcd-peer-port}", 
+                                            local.master_instance_list,
+                                            local.master_instance_list)
 
   
   etcd_initial_cluster          = join(",", local.etcd_list_initial_cluster)

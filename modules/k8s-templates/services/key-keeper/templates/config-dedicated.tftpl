@@ -10,7 +10,11 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.vault_server_insecure}
         bootstrap:
+          %{~ if instance_type == "worker"  ~}
+          file: /var/lib/key-keeper/bootstrap.token
+          %{~ else ~}
           file: /var/lib/key-keeper/bootstrap:${secret_name}:${availability_zone}.token
+          %{~ endif ~}
         appRole:
           name: ${secret_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
@@ -32,7 +36,11 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.vault_server_insecure}
         bootstrap:
+          %{~ if instance_type == "worker"  ~}
+          file: /var/lib/key-keeper/bootstrap.token
+          %{~ else ~}
           file: /var/lib/key-keeper/bootstrap:${external_intermediate_name}:${availability_zone}.token
+          %{~ endif ~}
         appRole:
           name: ${external_intermediate_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
@@ -53,7 +61,11 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.vault_server_insecure}
         bootstrap:
+          %{~ if instance_type == "worker"  ~}
+          file: /var/lib/key-keeper/bootstrap.token
+          %{~ else ~}
           file: /var/lib/key-keeper/bootstrap:${intermediate_name}:${availability_zone}.token
+          %{~ endif ~}
         appRole:
           name: ${intermediate_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
@@ -74,7 +86,11 @@ issuers:
         caBundle: ${vault_config.caBundle}
         tlsInsecure: ${vault_config.vault_server_insecure}
         bootstrap:
+          %{~ if instance_type == "worker"  ~}
+          file: /var/lib/key-keeper/bootstrap.token
+          %{~ else ~}
           file: /var/lib/key-keeper/bootstrap:${intermediate_name}:${issuer_name}:${availability_zone}.token
+          %{~ endif ~}
         appRole:
           name: ${issuer_name}-${availability_zone}
           path: "${base_path.base_vault_path_approle}"
