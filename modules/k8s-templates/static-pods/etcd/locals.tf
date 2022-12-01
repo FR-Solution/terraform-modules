@@ -1,6 +1,6 @@
 locals {
     manifest = flatten([
-    for node_name, node_content in  var.k8s_global_vars.ssl_for_each_map["${var.instance_type}_instance_list_map"]:
+    for node_name, node_content in  var.instance_list_map:
         {"${node_name}" = templatefile("${path.module}/templates/etcd.yaml.tftpl", {
         base_local_path_certs           = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                             = var.k8s_global_vars.ssl

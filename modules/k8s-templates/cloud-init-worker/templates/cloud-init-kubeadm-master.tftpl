@@ -1,0 +1,293 @@
+#cloud-config
+version: v1
+
+hostname: ${hostname}
+
+users:
+  - name: dkot
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ ssh_key }
+
+packages:
+  - wget
+  - jq
+  - tree
+  - irqbalance
+  - net-tools
+  - socat 
+  - conntrack
+  - ipset
+  - ethtool
+  - unzip
+  - xfsprogs
+
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+bootcmd:
+  - sudo modprobe overlay
+  - sudo modprobe br_netfilter
+  - sudo sysctl --system
+
+# Проверялось только для Yandex Cloud
+# device_aliases: {'etcd-data': '/dev/disk/by-id/virtio-etcd-data'}
+
+disk_setup:
+  /dev/disk/by-id/virtio-etcd-data:
+    table_type: 'gpt'
+    overwrite: true
+
+fs_setup:
+  - label: etcd_data
+    filesystem: 'ext4'
+    device: /dev/disk/by-id/virtio-etcd-data
+    partition: auto
+    overwrite: true
+
+mounts:
+  - [ "/dev/disk/by-id/virtio-etcd-data", "/var/lib/etcd"]
+
+runcmd:
+  - chmod -R 700 /var/lib/etcd
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221128%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221128T143409Z&X-Amz-Expires=2592000&X-Amz-Signature=0DF251979CFCA81C3891B5B87025E83213F2FCF32DA438C93E4042F0AD4B2B99&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/kubectl       ${release_vars[actual_release].kubectl.url}
+  - wget -O /usr/bin/kubelet       ${release_vars[actual_release].kubelet.url}
+  - wget -O /usr/bin/kubeadm       ${release_vars[actual_release].kubeadm.url}
+  - wget -O /usr/bin/runc          ${release_vars[actual_release].runc.url}
+  - wget -O /tmp/etcd.tar.gz       https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
+  - wget -O /tmp/cni.tar.gz        ${release_vars[actual_release].cni.url}
+  - wget -O /tmp/containerd.tar.gz ${release_vars[actual_release].containerd.url}
+  - wget -O /tmp/crictl.tar.gz     ${release_vars[actual_release].crictl.url}
+  - chmod +x /usr/bin/key-keeper 
+  - chmod +x /usr/bin/kubelet 
+  - chmod +x /usr/bin/kubectl 
+  - chmod +x /usr/bin/kubeadm
+  - chmod +x /usr/bin/runc
+  - mkdir -p /opt/cni/bin
+  - mkdir -p /tmp/containerd
+  - mkdir -p /tmp/etcd
+  - tar -C "/tmp/etcd"        -xvf /tmp/etcd.tar.gz
+  - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
+  - tar -C "/opt/cni/bin"     -xvf /tmp/cni.tar.gz
+  - tar -C "/usr/bin"         -xvf /tmp/crictl.tar.gz
+  - cp /tmp/etcd/etcd*/etcdctl /usr/bin/
+  - cp /tmp/containerd/bin/*   /usr/bin/
+  - systemctl daemon-reload
+  - systemctl enable  kubelet.service
+  - systemctl enable  containerd.service
+  - systemctl start   kubelet.service
+  - systemctl start   containerd.service
+  - systemctl enable  key-keeper.service
+  - systemctl start   key-keeper.service
+  - systemctl enable  systemd-resolved.service
+  - systemctl start   systemd-resolved.service
+  - sysctl --system
+  - until ls /etc/kubernetes/pki/ca/kubernetes-ca.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client-key.pem; do sleep 1; done
+  # TODO вынести в голден image | Проверка на ускорение сетапа
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/coredns/coredns:1.9.3
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper-crds:v3.10.0-beta.2
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper:v3.10.0-beta.2
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/etcd:3.5.3-0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-apiserver:v1.23.12
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-controller-manager:v1.23.12
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-scheduler:v1.23.12
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/pause:3.6
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/livenessprobe:v2.0.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
+  - kubeadm init --skip-phases=preflight,certs,kubeconfig,kubelet-start,etcd,upload-certs,kubelet-finalize,addon,bootstrap-token --config=/etc/kubernetes/kubeadm/config.yaml
+
+
+write_files:
+
+####### Настройка key-keeper ###########################
+###--->
+%{ for secret_name, secret_content in vault-bootstrap-secret-master-token }
+  %{~ if split(":", secret_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${secret_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, secret_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for issuer_name, issuer_content in vault-bootstrap-issuer-master-token }
+  %{~ if split(":", issuer_name)[2] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${issuer_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, issuer_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for ca_name, ca_content in vault-bootstrap-ca-master-token }
+  %{~ if split(":", ca_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${ca_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, ca_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+%{ for external_ca_name, external_ca_content in vault-bootstrap-external-ca-master-token }
+  %{~ if split(":", external_ca_name)[1] == node_name ~}
+  - path: /var/lib/key-keeper/bootstrap:${external_ca_name}.token
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, external_ca_content.client_token )}
+  %{ endif }
+%{ endfor }
+
+  - path: /etc/systemd/system/key-keeper.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-service)}
+
+  - path: ${base_local_path_certs}/vault-config
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, key-keeper-config)}
+
+####### KUBECONFIGS для подключения к кластеру
+  - path: ${base_path.kubernetes_path}/kube-scheduler/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-scheduler-kubeconfig)}
+
+  - path: ${base_path.kubernetes_path}/kube-controller-manager/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-controller-manager-kubeconfig)}
+
+  - path: /etc/kubernetes/admin.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-apiserver-admin-kubeconfig)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-kubeconfig)}
+
+####### Настройка kubelet ##############################
+###--->
+  - path: /etc/systemd/system/kubelet.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service)}
+
+  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-d-fraima)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/service/kubelet-args.env
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-service-args)}
+
+  - path: ${base_path.kubernetes_path}/kubelet/config.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kubelet-config)}
+###--->
+####### *** ############################################
+
+
+####### Статик поды для создания контрол плейна ########
+###--->
+  - path: ${base_path.static_pod_path}/etcd.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-etcd)}
+
+  - path: /etc/kubernetes/kubeadm/config.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, static-pod-kubeadm-config)}
+
+###--->
+####### *** ############################################    
+
+
+####### Настройка containerd ##############################
+###--->
+  - path: /etc/systemd/system/containerd.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, containerd-service)}
+
+# TODO config
+###--->
+####### *** ############################################
+
+####### Настройка sysctl ##############################
+###--->
+  - path: /etc/sysctl.d/99-network.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, sysctl-network )}
+###--->
+####### *** ############################################
+
+####### Настройка modprobe ##############################
+###--->
+  - path: /etc/modules-load.d/k8s.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, modprobe-k8s  )}
+###--->
+####### *** ############################################
+
+# TODO отключить
+####### Настройка cni ##############################
+###--->
+  - path: /etc/cni/net.d/99-loopback.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, cni-base )}
+###--->
+####### *** ############################################
+
+  - path: /root/.bashrc
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, bashrc-k8s )}
+
+  - path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, kube-apiserver-audit )}
+
+# TODO
+# Потребности:

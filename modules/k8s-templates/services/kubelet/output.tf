@@ -7,7 +7,7 @@ output "kubelet-service" {
 }
 
 output "kubelet-service-args" {
-  value = local.kubelet-service-args-map
+  value = local.kubelet-service-args
 }
 
 output "kubelet-config" {
