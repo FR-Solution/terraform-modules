@@ -42,18 +42,18 @@ module "k8s-control-plane" {
         master-2 = "ru-central1-b"
         master-3 = "ru-central1-c"
     }
-    master-instance-count = 3
+    master-instance-count = 1
 
     vault_policy_kubernetes_sign_approle = module.k8s-vault.vault-policy_kubernetes-sign-approle
 }
 
 # module "k8s-data-plane" {
-#     depends_on = [
-#         module.k8s-control-plane,
-#         helm_release.gatekeeper,
-#         helm_release.certmanager
-#     ]
-#     source                  = "../modules/k8s-yandex-workers"
+#     # depends_on = [
+#     #     module.k8s-control-plane,
+#     #     helm_release.gatekeeper,
+#     #     helm_release.certmanager
+#     # ]
+#     source                  = "../modules/k8s-yandex-worker-instances"
 #     k8s_global_vars         = module.k8s-global-vars
 #     cloud_init_template     = module.k8s-cloud-init
 #     vpc-id                  = module.k8s-control-plane.vpc-id
@@ -67,6 +67,8 @@ module "k8s-control-plane" {
 #     }
 
 #     zone = "ru-central1-a"
+#     name = "worker-g1"
+#     worker-instance-count = 1
 
 # }
 

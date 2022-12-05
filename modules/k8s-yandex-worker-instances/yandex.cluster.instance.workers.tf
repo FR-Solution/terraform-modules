@@ -1,3 +1,15 @@
+locals {
+  worker_instance_list        = flatten([
+    for worker-index in range(var.worker-instance-count): [
+     "${var.name}-${sum([worker-index, 1])}"
+    ]
+  ])
+
+  worker_instance_list_map = { for item in local.worker_instance_list :
+    item => {}
+  }
+}
+
 resource "yandex_compute_instance" "worker" {
 
     for_each    = var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map
