@@ -31,53 +31,24 @@ bootcmd:
   - sudo modprobe br_netfilter
   - sudo sysctl --system
 
-# Проверялось только для Yandex Cloud
-# device_aliases: {'etcd-data': '/dev/disk/by-id/virtio-etcd-data'}
-
-disk_setup:
-  /dev/disk/by-id/virtio-etcd-data:
-    table_type: 'gpt'
-    overwrite: true
-
-fs_setup:
-  - label: etcd_data
-    filesystem: 'ext4'
-    device: /dev/disk/by-id/virtio-etcd-data
-    partition: auto
-    overwrite: true
-
-mounts:
-  - [ "/dev/disk/by-id/virtio-etcd-data", "/var/lib/etcd"]
-
-
-runcmd:
-  # Скачивание базовых бинарей для сетапа кластера
-  - chmod -R 700 /var/lib/etcd
-  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221020%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221020T123413Z&X-Amz-Expires=2592000&X-Amz-Signature=138701723B70343E38D82791A28AD1DB87040677F7C94D83610FF26ED9AF1954&X-Amz-SignedHeaders=host"
+runcmd: 
+  - wget -O /usr/bin/key-keeper   "https://storage.yandexcloud.net/m.images/key-keeper-T2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221128%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221128T143409Z&X-Amz-Expires=2592000&X-Amz-Signature=0DF251979CFCA81C3891B5B87025E83213F2FCF32DA438C93E4042F0AD4B2B99&X-Amz-SignedHeaders=host"
   - wget -O /usr/bin/kubectl       ${release_vars[actual_release].kubectl.url}
   - wget -O /usr/bin/kubelet       ${release_vars[actual_release].kubelet.url}
-  - wget -O /usr/bin/kubeadm       ${release_vars[actual_release].kubeadm.url}
   - wget -O /usr/bin/runc          ${release_vars[actual_release].runc.url}
-  - wget -O /tmp/etcd.tar.gz       https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
   - wget -O /tmp/cni.tar.gz        ${release_vars[actual_release].cni.url}
   - wget -O /tmp/containerd.tar.gz ${release_vars[actual_release].containerd.url}
   - wget -O /tmp/crictl.tar.gz     ${release_vars[actual_release].crictl.url}
-  # Раскидывание бинарей по диррректориям
   - chmod +x /usr/bin/key-keeper 
   - chmod +x /usr/bin/kubelet 
-  - chmod +x /usr/bin/kubectl
-  - chmod +x /usr/bin/kubeadm
+  - chmod +x /usr/bin/kubectl 
   - chmod +x /usr/bin/runc
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
-  - mkdir -p /tmp/etcd
-  - tar -C "/tmp/etcd"        -xvf /tmp/etcd.tar.gz
   - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
   - tar -C "/opt/cni/bin"     -xvf /tmp/cni.tar.gz
   - tar -C "/usr/bin"         -xvf /tmp/crictl.tar.gz
-  - cp /tmp/etcd/etcd*/etcdctl /usr/bin/
   - cp /tmp/containerd/bin/*   /usr/bin/
-  # Старт всех сервисов и автозапуск при старте системы
   - systemctl daemon-reload
   - systemctl enable  kubelet.service
   - systemctl enable  containerd.service
@@ -85,10 +56,8 @@ runcmd:
   - systemctl start   containerd.service
   - systemctl enable  key-keeper.service
   - systemctl start   key-keeper.service
-  # Fix kubelet.config:resolvConf
   - systemctl enable  systemd-resolved.service
   - systemctl start   systemd-resolved.service
-  # FIX что бы применился /etc/sysctls.d
   - sysctl --system
 
 write_files:
@@ -115,29 +84,13 @@ write_files:
       ${indent(6, key-keeper-config)}
 
 ####### KUBECONFIGS для подключения к кластеру
-  - path: ${base_path.kubernetes_path}/kube-scheduler/kubeconfig
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-scheduler-kubeconfig)}
 
-  - path: ${base_path.kubernetes_path}/kube-controller-manager/kubeconfig
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-controller-manager-kubeconfig)}
 
-  - path: ${base_path.kubernetes_path}/kube-apiserver/kubeconfig
+  - path: ${base_path.kubernetes_path}/kubelet/bootstrap-kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
-      ${indent(6, kube-apiserver-kubeconfig)}
-
-  - path: ${base_path.kubernetes_path}/kubelet/kubeconfig
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kubelet-kubeconfig)}
+      ${indent(6, kubelet-bootstrap-kubeconfig)}
 
 ####### Настройка kubelet ##############################
 ###--->
@@ -168,13 +121,6 @@ write_files:
 ####### *** ############################################
 
 
-####### Статик поды для создания контрол плейна ########
-###--->
-
-###--->
-####### *** ############################################    
-
-
 ####### Настройка containerd ##############################
 ###--->
   - path: /etc/systemd/system/containerd.service
@@ -183,6 +129,7 @@ write_files:
     content: |
       ${indent(6, containerd-service)}
 
+# TODO config
 ###--->
 ####### *** ############################################
 
@@ -206,6 +153,7 @@ write_files:
 ###--->
 ####### *** ############################################
 
+# TODO отключить
 ####### Настройка cni ##############################
 ###--->
   - path: /etc/cni/net.d/99-loopback.conf
@@ -216,15 +164,12 @@ write_files:
 ###--->
 ####### *** ############################################
 
-
   - path: /root/.bashrc
     owner: root:root
     permissions: '0644'
     content: |
       ${indent(6, bashrc-k8s )}
 
-  - path: ${base_path.kubernetes_path}/kube-apiserver/audit-policy.yaml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      ${indent(6, kube-apiserver-audit )}
+
+# TODO
+# Потребности:

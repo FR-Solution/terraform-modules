@@ -22,3 +22,8 @@ variable "master-instance-count" {
   type = number
   default = 1
 }
+
+variable "vault_policy_kubernetes_sign_approle" {
+  type     = any
+  default  = {}
+}

@@ -1,7 +1,3 @@
-output "master" {
-  value = local.cloud-init-template-map
-}
-
-output "worker" {
-  value = local.cloud-init-worker-map
+output "cloud-init-render" {
+  value = local.cloud-init-master-map
 }

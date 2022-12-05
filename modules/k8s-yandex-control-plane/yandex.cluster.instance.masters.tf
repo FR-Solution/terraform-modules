@@ -2,7 +2,7 @@
 ##-->
 resource "yandex_compute_instance" "master" {
 
-  for_each    = var.k8s_global_vars.ssl_for_each_map.master_instance_list_map
+  for_each    = local.master_instance_list_map
 
   name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
 
@@ -47,7 +47,7 @@ resource "yandex_compute_instance" "master" {
 
  metadata = {
    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
-   user-data = module.k8s-cloud-init.master[each.key]
+   user-data = module.k8s-cloud-init-master.cloud-init-render[each.key]
  }
 
 }

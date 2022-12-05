@@ -1,6 +1,6 @@
 
 resource "null_resource" "cluster" {
-    for_each    = var.k8s_global_vars.ssl_for_each_map.master_instance_list_map
+    for_each    = local.master_instance_list_map
 
     triggers = {
         cluster_instance_ids = join(",", yandex_compute_instance.master[*][each.key].id)

@@ -1,10 +1,17 @@
-locals {
 
+
+locals {
+  
   master_instance_list        = flatten([
     for master-index in range(var.master-instance-count): [
      "master-${sum([master-index, 1])}"
     ]
   ])
+
+  master_instance_list_map = { for item in local.master_instance_list :
+    item => {}
+  }
+
 
   issuers_content_labels_master = flatten([
   for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [

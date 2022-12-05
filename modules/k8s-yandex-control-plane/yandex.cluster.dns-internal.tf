@@ -1,11 +1,11 @@
 locals {
   etcd_member_servers_srv = flatten([
-    for master_index, master_value in var.k8s_global_vars.master_instance_list: [
+    for master_index, master_value in local.master_instance_list: [
      "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-peer-port} ${master_value}.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
     ]
   ])
   etcd_member_clients_srv = flatten([
-    for master_index, master_value in var.k8s_global_vars.master_instance_list: [
+    for master_index, master_value in local.master_instance_list: [
      "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-server-port} ${master_value}.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
     ]
   ])

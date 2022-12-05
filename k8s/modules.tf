@@ -3,8 +3,6 @@ module "k8s-global-vars" {
     source = "../modules/k8s-config-vars"
     cluster_name          = var.cluster_name
     base_domain           = var.base_domain
-    master_instance_count = var.master-instance-count
-    worker_instance_count = var.worker-instance-count
     vault_server          = var.vault_server
 }
 
@@ -24,40 +22,30 @@ module "k8s-vault" {
 #     common_name   = "custom:terraform-kubeconfig"
 # }
 
+module "k8s-control-plane" {
+    depends_on = [
+      module.k8s-vault,
+    ]
+    source                  = "../modules/k8s-yandex-control-plane"
+    k8s_global_vars         = module.k8s-global-vars
 
-module "k8s-cloud-init" {
-    source                       = "../modules/k8s-templates/cloud-init-master"
-    k8s_global_vars              = module.k8s-global-vars
-    master-instance-count        = 1
+    # base_os_image         = "fd8dl9ahl649kf31vp4o"
+
+    master_availability_zones = {
+        ru-central1-a = "10.100.0.0/24"
+        ru-central1-b = "10.101.0.0/24"
+        ru-central1-c = "10.102.0.0/24"
+    }
+
+    master_zones = {
+        master-1 = "ru-central1-a"
+        master-2 = "ru-central1-b"
+        master-3 = "ru-central1-c"
+    }
+    master-instance-count = 3
+
     vault_policy_kubernetes_sign_approle = module.k8s-vault.vault-policy_kubernetes-sign-approle
 }
-
-output "name" {
-  value = module.k8s-cloud-init.test
-}
-# module "k8s-control-plane" {
-#     depends_on = [
-#       module.k8s-vault,
-#     ]
-#     source                  = "../modules/k8s-yandex-infrastructure"
-#     k8s_global_vars         = module.k8s-global-vars
-#     # cloud_init_template     = module.k8s-cloud-init
-
-#     # base_os_image         = "fd8dl9ahl649kf31vp4o"
-
-#     master_availability_zones = {
-#         ru-central1-a = "10.100.0.0/24"
-#         ru-central1-b = "10.101.0.0/24"
-#         ru-central1-c = "10.102.0.0/24"
-#     }
-
-#     master_zones = {
-#         master-0 = "ru-central1-a"
-#         master-1 = "ru-central1-b"
-#         master-2 = "ru-central1-c"
-#     }
-#     master-instance-count = 1
-# }
 
 # module "k8s-data-plane" {
 #     depends_on = [

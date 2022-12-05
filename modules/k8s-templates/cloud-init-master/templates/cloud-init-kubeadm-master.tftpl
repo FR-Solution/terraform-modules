@@ -117,7 +117,7 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, secret_content.client_token )}
-  %{ endif }
+  %{~ endif ~}
 %{ endfor }
 
 %{ for issuer_name, issuer_content in vault-bootstrap-issuer-master-token }
@@ -127,7 +127,7 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, issuer_content.client_token )}
-  %{ endif }
+  %{~ endif ~}
 %{ endfor }
 
 %{ for ca_name, ca_content in vault-bootstrap-ca-master-token }
@@ -137,7 +137,7 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, ca_content.client_token )}
-  %{ endif }
+  %{~ endif ~}
 %{ endfor }
 
 %{ for external_ca_name, external_ca_content in vault-bootstrap-external-ca-master-token }
@@ -147,7 +147,7 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, external_ca_content.client_token )}
-  %{ endif }
+  %{~ endif ~}
 %{ endfor }
 
   - path: /etc/systemd/system/key-keeper.service
@@ -288,6 +288,3 @@ write_files:
     permissions: '0644'
     content: |
       ${indent(6, kube-apiserver-audit )}
-
-# TODO
-# Потребности:

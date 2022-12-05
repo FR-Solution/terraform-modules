@@ -1,3 +1,3 @@
-# output "master" {
-#   value = local.cloud-init-template-map
-# }
+output "cloud-init-render" {
+  value = local.cloud-init-master-map
+}

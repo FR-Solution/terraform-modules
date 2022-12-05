@@ -1,6 +1,47 @@
+variable "k8s_global_vars" {
+  type = any
+  default = null
+}
 
 variable "vault_policy_kubernetes_sign_approle" {
   description = "module:VAULT: policy for cert roles"
+  type        = any
+  default     = {}
+}
+
+# variable "instance-count" {
+#   type = number
+#   default = 0
+# }
+
+variable "base_path" {
+  type = object({
+    static_pod_path = string
+    kubernetes_path = string
+  })
+  default = {
+    static_pod_path = "/etc/kubernetes/manifests"
+    kubernetes_path = "/etc/kubernetes"
+  }
+}
+
+variable "actual-release" {
+  type = string
+  default = "v0_1"
+}
+
+# variable "instance_type" {
+#   description = "K8S: node type"
+#   type        = string
+#   default     = null
+# }
+
+variable "master_instance_list_map" {
+  type        = any
+  default     = {}
+}
+
+variable "master_instance_list" {
   type        = any
   default     = {}
 }
@@ -11,10 +52,7 @@ variable "vault_policy_kubernetes_sign_approle" {
 #   default = null
 # }
 
-variable "master-instance-count" {
-  type = number
-  default = 0
-}
+
 
 # variable "cluster_name" {
 #   type = string
@@ -36,10 +74,6 @@ variable "master-instance-count" {
 #   default = null
 # }
 
-variable "k8s_global_vars" {
-  type = any
-  default = null
-}
 
 # variable "base_local_path_certs" {
 #   type = string
@@ -52,16 +86,6 @@ variable "k8s_global_vars" {
 #   default = null
 # }
 
-variable "base_path" {
-  type = object({
-    static_pod_path = string
-    kubernetes_path = string
-  })
-  default = {
-    static_pod_path = "/etc/kubernetes/manifests"
-    kubernetes_path = "/etc/kubernetes"
-  }
-}
 
 # variable "master_instance_list_map" {
 #   type = any
@@ -122,10 +146,6 @@ variable "base_path" {
 
 # }
 
-variable "actual-release" {
-  type = string
-  default = "v0_1"
-}
 
 # variable "vault-bootstrap-master-token" {
 #   type = any
