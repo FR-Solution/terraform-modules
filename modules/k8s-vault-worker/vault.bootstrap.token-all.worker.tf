@@ -25,3 +25,5 @@ resource "vault_token" "kubernetes-all-login-bootstrap-worker" {
   ttl = "0"
 
 }
+
+
