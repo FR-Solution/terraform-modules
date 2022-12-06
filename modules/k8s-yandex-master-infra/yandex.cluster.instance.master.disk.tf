@@ -4,8 +4,8 @@ resource "yandex_compute_disk" "etcd" {
 
   name  = "etcd-${each.key}-${var.k8s_global_vars.cluster_name}"
 
-  size = var.master_flavor.secondary_disk
+  size = var.master_group.resources.etcd_disk
   type = "network-ssd"
-  zone = try(var.master_zones[each.key], var.default_master_zone)
+  zone = try(var.master_group.subnet_id_overwrite[each.key].zone, var.master_group.default_zone)
 
 }

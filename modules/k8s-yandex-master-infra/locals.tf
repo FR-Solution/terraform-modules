@@ -3,8 +3,8 @@
 locals {
   
   master_instance_list        = flatten([
-    for master-index in range(var.master-instance-count): [
-     "master-${sum([master-index, 1])}"
+    for master-index in range(var.master_group.count): [
+     "${var.master_group.name}-${sum([master-index, 1])}"
     ]
   ])
 

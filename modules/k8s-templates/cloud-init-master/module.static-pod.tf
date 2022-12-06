@@ -19,24 +19,24 @@ module "static-pod-kube-apiserver" {
     etcd_advertise_client_urls = local.etcd_advertise_client_urls
 }
 
-module "static-pod-kube-controller-manager" {
-    source = "../static-pods/kube-controller-manager"
-    instance_type = "master"
-    k8s_global_vars = var.k8s_global_vars
-    kube_controller_manager_image    = local.release-vars[var.actual-release].kube-controller-manager.registry
-    kube_controller_manager_version  = local.release-vars[var.actual-release].kube-controller-manager.version
-    instance_list_map = var.master_instance_list_map
-}
+# module "static-pod-kube-controller-manager" {
+#     source = "../static-pods/kube-controller-manager"
+#     instance_type = "master"
+#     k8s_global_vars = var.k8s_global_vars
+#     kube_controller_manager_image    = local.release-vars[var.actual-release].kube-controller-manager.registry
+#     kube_controller_manager_version  = local.release-vars[var.actual-release].kube-controller-manager.version
+#     instance_list_map = var.master_instance_list_map
+# }
 
-module "static-pod-kube-scheduler" {
-    source = "../static-pods/kube-scheduler"
-    instance_type = "master"
-    k8s_global_vars = var.k8s_global_vars
-    kube_scheduler_image    = local.release-vars[var.actual-release].kube-scheduler.registry
-    kube_scheduler_version  = local.release-vars[var.actual-release].kube-scheduler.version
-    instance_list_map = var.master_instance_list_map
+# module "static-pod-kube-scheduler" {
+#     source = "../static-pods/kube-scheduler"
+#     instance_type = "master"
+#     k8s_global_vars = var.k8s_global_vars
+#     kube_scheduler_image    = local.release-vars[var.actual-release].kube-scheduler.registry
+#     kube_scheduler_version  = local.release-vars[var.actual-release].kube-scheduler.version
+#     instance_list_map = var.master_instance_list_map
 
-}
+# }
 
 module "static-pod-kubeadm-config" {
     source = "../static-pods/kubeadm-config"

@@ -1,5 +1,6 @@
 #### MASTERS ######
 ##-->
+
 resource "yandex_compute_instance" "master" {
 
   for_each    = local.master_instance_list_map
@@ -8,20 +9,22 @@ resource "yandex_compute_instance" "master" {
 
   hostname    = format("%s.%s.%s", each.key ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
   platform_id = "standard-v1"
-  zone        = try(var.master_zones[each.key], var.default_master_zone)
+
+  zone        = try(var.master_group.subnet_id_overwrite[each.key].zone, var.master_group.default_zone)
+
   labels      = {
     "node-role.kubernetes.io/master" = ""
   }
   resources {
-    cores         = var.master_flavor.core
-    memory        = var.master_flavor.memory
-    core_fraction = var.master_flavor.core_fraction
+    cores         = var.master_group.resources.core
+    memory        = var.master_group.resources.memory
+    core_fraction = var.master_group.resources.core_fraction
   }
 
   boot_disk {
     initialize_params {
-      image_id = var.base_os_image
-      size = 20
+      image_id = var.master_group.os_image
+      size = var.master_group.resources.first_disk
     }
   }
 
@@ -35,7 +38,7 @@ resource "yandex_compute_instance" "master" {
   service_account_id = yandex_iam_service_account.master-sa[each.key].id
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.master-subnets[try(var.master_zones[each.key], var.default_master_zone)].id
+    subnet_id = try(var.master_group.subnet_id_overwrite[each.key].subnet, var.master_group.default_subnet_id)
     nat = true
   }
 
@@ -51,7 +54,3 @@ resource "yandex_compute_instance" "master" {
  }
 
 }
-
-# output "cloud_init" {
-#     value = "${yandex_compute_instance.master[*].master-1.network_interface[*].nat_ip_address}"
-# }

@@ -18,7 +18,7 @@ resource "yandex_dns_zone" "cluster-external" {
   description      = "desc"
   zone             = "${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
   public           = false
-  private_networks = [yandex_vpc_network.cluster-vpc.id]
+  private_networks = [var.master_group.vpc_id]
 }
 
 #### INTERNAL DNS FOR KUBE-APISERVER ######
