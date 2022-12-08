@@ -1,5 +1,7 @@
 resource "vault_pki_secret_backend_role" "kubernetes-role" {
-    depends_on = [vault_mount.intermediate]
+    depends_on = [
+        vault_mount.intermediate
+    ]
     
     for_each                            = var.k8s_global_vars.ssl_for_each_map.issuers_content_map_only
     

@@ -1,86 +1,107 @@
-
-module "k8s-global-vars" {
-    source = "../modules/k8s-config-vars"
-    cluster_name          = var.cluster_name
-    base_domain           = var.base_domain
-    master_instance_count = var.master-instance-count
-    worker_instance_count = var.worker-instance-count
-    vault_server          = var.vault_server
+data "yandex_resourcemanager_cloud" "current" {
+  name = var.yandex_cloud_name
 }
 
-module "k8s-vault" {
-    source = "../modules/k8s-vault"
-    k8s_global_vars   = module.k8s-global-vars
-
+data "yandex_resourcemanager_folder" "current" {
+  name     = var.yandex_folder_name
+  cloud_id = data.yandex_resourcemanager_cloud.current.id
 }
 
-module "k8s-cloud-init" {
-    source                       = "../modules/k8s-templates/cloud-init"
-    k8s_global_vars              = module.k8s-global-vars
-
-    # IF VAULT GLOBAL BOOTSTRAP MOD
-    # vault-bootstrap-master-token = module.k8s-vault.bootstrap-master-token
-    vault-bootstrap-worker-token = module.k8s-vault.bootstrap-worker-token
-
-    # IF VAULT DEDICATED BOOTSTRAP MOD
-    vault-bootstrap-issuer-master-token         = module.k8s-vault.bootstrap-issuer-master-token
-    vault-bootstrap-ca-master-token             = module.k8s-vault.bootstrap-ca-master-token
-    vault-bootstrap-external-ca-master-token    = module.k8s-vault.bootstrap-external-ca-master-token
-    vault-bootstrap-secret-master-token         = module.k8s-vault.bootstrap-secret-master-token
+#### VPC ######
+##-->
+resource "yandex_vpc_network" "cluster-vpc" {
+  name = "vpc.clusters"
 }
 
-module "k8s-control-plane" {
-    depends_on = [
-      module.k8s-vault,
-    ]
-    source                  = "../modules/k8s-yandex-infrastructure"
-    k8s_global_vars         = module.k8s-global-vars
-    cloud_init_template     = module.k8s-cloud-init
-
-    # base_os_image         = "fd8dl9ahl649kf31vp4o"
-
-    master_availability_zones = {
-        ru-central1-a = "10.100.0.0/24"
-        ru-central1-b = "10.101.0.0/24"
-        ru-central1-c = "10.102.0.0/24"
-    }
-
-    master_zones = {
-        master-0 = "ru-central1-a"
-        master-1 = "ru-central1-b"
-        master-2 = "ru-central1-c"
-    }
-}
-
-module "k8s-data-plane" {
-    depends_on = [
-        module.k8s-control-plane,
-        helm_release.gatekeeper,
-        helm_release.certmanager
-    ]
-    source                  = "../modules/k8s-yandex-workers"
-    k8s_global_vars         = module.k8s-global-vars
-    cloud_init_template     = module.k8s-cloud-init
-    vpc-id                  = module.k8s-control-plane.vpc-id
+#### SUBNETS ######
+##-->
+resource "yandex_vpc_subnet" "master-subnets" {
+    for_each = var.master_availability_zones
     
-    # base_worker_os_image  = "fd8dl9ahl649kf31vp4o"
+    v4_cidr_blocks  = [var.master_availability_zones[each.key]]
+    zone            = each.key
+    network_id      = yandex_vpc_network.cluster-vpc.id
+    name            = "vpc-${var.cluster_name}-masters-${each.key}" 
+}
 
-    worker_availability_zones = {
-        ru-central1-a = "172.16.1.0/24"
-        ru-central1-b = "172.16.2.0/24"
-        ru-central1-c = "172.16.3.0/24"
+variable "master_availability_zones"{
+  type = object({
+    ru-central1-a = string
+    ru-central1-b = string
+    ru-central1-c = string
+  })
+  default = {
+    ru-central1-a = "10.1.0.0/16"
+    ru-central1-b = "10.2.0.0/16"
+    ru-central1-c = "10.3.0.0/16"
+  }
+}
+
+module "k8s-yandex-cluster" {
+    source = "../modules/k8s-yandex-cluster"
+    cluster_name    = var.cluster_name
+    base_domain     = "dobry-kot.ru"
+    vault_server    = "http://193.32.219.99:9200/"
+    
+    service_cidr    = "29.64.0.0/16"
+
+    master_group = {
+        name    = "master" # Разрешенный префикс для сертификатов.
+        count   = 1
+
+        vpc_id  = yandex_vpc_network.cluster-vpc.id
+    
+        default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+        default_zone      = "ru-central1-a"
+
+        subnet_id_overwrite = {
+            master-1 = {
+                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+                zone    = "ru-central1-a"
+            }
+            master-2 = {
+                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-b"].id
+                zone    = "ru-central1-b"
+            }
+            master-3 = {
+                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-c"].id
+                zone    = "ru-central1-c"
+            }
+        }
+        resources = {
+          core            = 6
+          memory          = 12
+          core_fraction   = 100
+          etcd_disk       = 60
+          first_disk      = 30
+        }
+        os_image = "fd8kdq6d0p8sij7h5qe3"
+        ssh_username = "dkot"
+        ssh_rsa_path = "~/.ssh/id_rsa.pub"
     }
-
-    zone = "ru-central1-a"
-
-}
-
-locals {
-    lb-kube-apiserver-ip = module.k8s-control-plane.kube-apiserver-lb
 }
 
 
-output "LB-IP" {
-    value = "kubectl config set-cluster  ${module.k8s-global-vars.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
-  
+resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
+  depends_on = [
+    module.k8s-yandex-cluster
+  ]
+    backend       = module.k8s-yandex-cluster.k8s_global_vars.ssl.intermediate.kubernetes-ca.path
+    name          = "kube-apiserver-cluster-admin-client"
+    common_name   = "custom:terraform-kubeconfig"
+}
+
+module "k8s-yandex-worker-instances" {
+  depends_on = [
+    module.k8s-yandex-cluster,
+    helm_release.base
+  ]
+    k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
+    source          = "../modules/k8s-yandex-worker-instances"
+
+    name = "worker"
+    vpc_id  = yandex_vpc_network.cluster-vpc.id
+
+    default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+
 }

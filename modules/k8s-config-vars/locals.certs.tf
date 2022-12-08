@@ -99,7 +99,7 @@ locals {
         common_name   = "Kubernetes Intermediate CA",
         description   = "Kubernetes Intermediate CA"
         path          = "${local.global_path.base_vault_path_pki}/kubernetes"
-        root_path     = "${local.global_path.base_vault_path_pki}/root"
+        root_path     = "${local.global_path.root_vault_path_pki}"
         host_path     = "${local.global_path.base_local_path_certs}/ca"
         type          = "internal"
         organization  = "Kubernetes"
@@ -684,7 +684,7 @@ locals {
         common_name  = "ETCD Intermediate CA",
         description  = "ETCD Intermediate CA"
         path         = "${local.global_path.base_vault_path_pki}/etcd"
-        root_path    = "${local.global_path.base_vault_path_pki}/root"
+        root_path    = "${local.global_path.root_vault_path_pki}"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
@@ -867,7 +867,7 @@ locals {
         common_name  = "Front-proxy Intermediate CA",
         description  = "Front-proxy Intermediate CA"
         path         = "${local.global_path.base_vault_path_pki}/front-proxy"
-        root_path    = "${local.global_path.base_vault_path_pki}/root"
+        root_path    = "${local.global_path.root_vault_path_pki}"
         host_path    = "${local.global_path.base_local_path_certs}/ca"
         type         = "internal"
         organization = "Kubernetes"
@@ -920,16 +920,16 @@ locals {
       }
     }
     root_ca = {
-      root = {
-        CN          = "root",
-        description = "root-ca"
-        path        = "${local.global_path.base_vault_path_pki}/root"
-        root_path   = "${local.global_path.root_vault_path_pki}"
-        common_name = "Kubernetes Root CA"
-        type        = "internal"
-        default_lease_ttl_seconds = 321408000
-        max_lease_ttl_seconds     = 321408000
-      }
+      # root = {
+      #   CN          = "root",
+      #   description = "root-ca"
+      #   path        = "${local.global_path.root_vault_path_pki}"
+      #   root_path   = "${local.global_path.root_vault_path_pki}"
+      #   common_name = "Kubernetes Root CA"
+      #   type        = "internal"
+      #   default_lease_ttl_seconds = 321408000
+      #   max_lease_ttl_seconds     = 321408000
+      # }
     }
     external_intermediate = {
       oidc-ca = {

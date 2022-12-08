@@ -33,9 +33,9 @@ output "ssl_for_each_map" {
   value         = local.ssl_for_each_map
 }
 
-output "master_instance_list" {
-  value         = local.master_instance_list
-}
+# output "master_instance_list" {
+#   value         = local.master_instance_list
+# }
 
 output "worker_instance_list" {
   value         = local.worker_instance_list
@@ -77,6 +77,6 @@ output "ssh_rsa_path" {
   value = var.ssh_rsa_path
 }
 
-output "etcd_list_servers" {
-  value = local.etcd_list_servers
-}
+# output "etcd_list_servers" {
+#   value = local.etcd_list_servers
+# }

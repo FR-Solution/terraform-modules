@@ -33,3 +33,15 @@ variable "instance_type" {
   type        = string
   default     = null
 }
+
+variable "instance_list_map" {
+  description = "K8S: node type"
+  type        = any
+  default     = {}
+}
+
+variable "etcd_advertise_client_urls" {
+  description = "K8S: etcd_advertise_client_urls"
+  type        = any
+  default     = {}
+}

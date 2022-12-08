@@ -11,3 +11,9 @@ variable "k8s_global_vars" {
   type        = any
   default     = {}
 }
+
+variable "instance_list_map" {
+  description = "K8S: node type"
+  type        = any
+  default     = {}
+}

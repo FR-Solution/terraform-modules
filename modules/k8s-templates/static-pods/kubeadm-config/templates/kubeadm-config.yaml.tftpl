@@ -50,7 +50,7 @@ apiServer:
     # service-account-key-file: ""
     # service-account-signing-key-file: ""
     secure-port: "${kube_apiserver_port}"
-    bind-address: "0.0.0.0"
+    # bind-address: "0.0.0.0"
     event-ttl: 1h0m0s
     kubernetes-service-node-port: "0"
     master-service-namespace: default
@@ -149,7 +149,7 @@ controllerManager:
     kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
     authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
     authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
-    bind-address: "0.0.0.0"
+    # bind-address: "0.0.0.0"
     v: "2"
     secure-port: "10257"
     allocate-node-cidrs: "true"
@@ -232,7 +232,7 @@ scheduler:
     authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
     authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
     kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
-    bind-address: "0.0.0.0"
+    # bind-address: "0.0.0.0"
     leader-elect: "true"
     secure-port: "10259"
 
@@ -254,7 +254,3 @@ scheduler:
     mountPath: "${base_path.base_kubernetes_path}/kube-scheduler"
     readOnly: true
     pathType: DirectoryOrCreate
-
-
-
-# kubectl get cs

@@ -1,0 +1,19 @@
+path "${intermediate.path}/sign/${issuer_name}" {
+    capabilities = ["update"]
+}
+
+path "${intermediate.path}/${issuer_name}/certs" {
+    capabilities = ["list"]
+}
+
+path "auth/${base_vault_path_approle}/login" {
+  capabilities = [ "update" ]
+}
+
+path "auth/token/renew" {
+    capabilities = ["update"]
+}
+
+path "auth/token/renew-self" {
+    capabilities = ["update"]
+}

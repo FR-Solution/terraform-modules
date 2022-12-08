@@ -74,7 +74,8 @@ variable "instance_type" {
   default     = null
 }
 
-
-
-
-
+variable "instance_list_map" {
+  description = "K8S: node type"
+  type        = any
+  default     = {}
+}
