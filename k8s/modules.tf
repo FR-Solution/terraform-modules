@@ -39,7 +39,7 @@ variable "master_availability_zones"{
 
 module "k8s-yandex-cluster" {
     source = "../modules/k8s-yandex-cluster"
-    cluster_name    = "cluster-2"
+    cluster_name    = var.cluster_name
     base_domain     = "dobry-kot.ru"
     vault_server    = "http://193.32.219.99:9200/"
     
