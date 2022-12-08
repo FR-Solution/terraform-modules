@@ -3,7 +3,7 @@ locals {
   cloud-init-master = flatten([
     for master_name, master_content in  var.master_instance_list_map:
       {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master.tftpl", {
-
+        ssh_username                      = var.k8s_global_vars.ssh_username
         ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                               = var.k8s_global_vars.ssl

@@ -1,5 +1,5 @@
 resource "vault_policy" "kubernetes-ca-approle-worker" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.intermediate_content_map_worker
+  for_each  = local.intermediate_content_map_worker
   
   name      = "${var.k8s_global_vars.global_path.base_vault_path}/ca/${split(":","${each.key}")[0]}"
 
@@ -12,7 +12,7 @@ resource "vault_policy" "kubernetes-ca-approle-worker" {
 }
 
 resource "vault_policy" "external-ca-approle-worker" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.external_intermediate_content_map_worker
+  for_each  = local.external_intermediate_content_map_worker
   
   name      = "${var.k8s_global_vars.global_path.base_vault_path}/external-ca/${split(":","${each.key}")[0]}"
 

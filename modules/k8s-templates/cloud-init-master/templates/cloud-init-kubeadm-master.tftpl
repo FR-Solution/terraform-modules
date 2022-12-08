@@ -4,7 +4,7 @@ version: v1
 hostname: ${hostname}
 
 users:
-  - name: dkot
+  - name: ${ ssh_username }
     sudo: ALL=(ALL) NOPASSWD:ALL
     groups: users, admin
     shell: /bin/bash

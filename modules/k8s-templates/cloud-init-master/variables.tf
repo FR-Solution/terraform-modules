@@ -46,7 +46,6 @@ variable "master_instance_list" {
   default     = {}
 }
 
-
 # variable "hostname" {
 #   type = string
 #   default = null

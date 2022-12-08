@@ -1,4 +1,14 @@
 locals {
+  issuers_content_only = flatten([
+  for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
+    for issuer_name,issuer in var.k8s_global_vars.ssl.intermediate[intermediate_name].issuers : 
+          {
+            "${intermediate_name}:${issuer_name}" = merge(var.k8s_global_vars.ssl["global-args"]["issuer-args"], issuer["issuer-args"]) 
+          }
+
+      ]
+    ]
+  )
 
   issuers_content_labels_master = flatten([
   for intermediate_name in keys(var.k8s_global_vars.ssl.intermediate) : [
@@ -80,4 +90,8 @@ locals {
     secret_content_map_only = { for item in local.secret_content_only :
       keys(item)[0] => values(item)[0]
     }
+    issuers_content_map_only = { for item in local.issuers_content_only :
+      keys(item)[0] => values(item)[0]
+    }
+
 }

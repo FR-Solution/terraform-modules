@@ -13,7 +13,7 @@ output "k8s-auth-approle-backend-path" {
     value = vault_auth_backend.approle.path
 }
 
-output "vault-policy_kubernetes-sign-approle" {
-    value = vault_policy.kubernetes-sign-approle
-}
+# output "vault-policy_kubernetes-sign-approle" {
+#     value = vault_policy.kubernetes-sign-approle
+# }
 

@@ -1,6 +1,6 @@
 
 resource "vault_policy" "kubernetes-all-bootstrap-worker" {
-  for_each  = var.k8s_global_vars.ssl_for_each_map.worker_instance_list_map
+  for_each  = var.worker_instance_list_map
 
   name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-all-${each.key}"
 

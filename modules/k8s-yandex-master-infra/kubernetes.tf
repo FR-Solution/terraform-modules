@@ -8,9 +8,9 @@ resource "null_resource" "cluster" {
 
     connection {
         host        = element(yandex_compute_instance.master[*][each.key].network_interface.0.nat_ip_address, 0)
-        user        = "dkot"
+        user        = var.k8s_global_vars.ssh_username
         type        = "ssh"
-        private_key = file("/home/dk/.ssh/id_rsa")
+        private_key = file(split(".pub", var.k8s_global_vars.ssh_rsa_path)[0])
         agent = "false"
     }
     # TODO поправить команду так, что бы не падала сборка

@@ -28,6 +28,8 @@ variable "master_group"{
     subnet_id_overwrite = any
     resources = any
     os_image = string
+    ssh_username = string
+    ssh_rsa_path = string
 
   })
   default = {
@@ -45,5 +47,8 @@ variable "master_group"{
       etcd_disk = 60
     }
     os_image = "fd8kdq6d0p8sij7h5qe3"
+    ssh_username = "dkot"
+    ssh_rsa_path = "~/.ssh/id_rsa"
+
   }
 }

@@ -7,15 +7,20 @@ variable "k8s_global_vars" {
 }
 
 
-variable "cloud_init_template" {
-  description = "module:K8S "
-  type        = any
-  default     = {}
+# variable "cloud_init_template" {
+#   description = "module:K8S "
+#   type        = any
+#   default     = {}
+# }
+
+variable "vpc_id" {
+  type = string
+  default = ""
 }
 
-variable "vpc-id" {
-  type = any
-  default = {}
+variable "default_subnet_id" {
+  type = string
+  default = ""
 }
 
 
@@ -58,9 +63,9 @@ variable "worker_availability_zones"{
   }
 }
 
-variable "worker-instance-count" {
+variable "worker_instance_count" {
   type = number
-  default = 0
+  default = 1
 }
 
 variable "name" {

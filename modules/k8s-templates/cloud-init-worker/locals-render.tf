@@ -11,9 +11,10 @@ locals {
         hostname                          = "${worker_name}-${var.k8s_global_vars.cluster_name}"
         actual_release                    = var.actual-release
         release_vars                      = local.release-vars
-        kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
-        kube_apiserver_port_lb            = var.kube-apiserver-port-lb
-        bootstrap_token_all               = var.vault-bootstrap-worker-token[worker_name].client_token
+        kube_apiserver_lb_fqdn            = var.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
+        kube_apiserver_port_lb            = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
+        # bootstrap_token_all               = var.vault-bootstrap-worker-token[worker_name].client_token
+        bootstrap_token_all               = module.k8s-vault-worker.bootstrap-issuer-worker-token[worker_name].client_token
 
         kubelet-bootstrap-kubeconfig        = module.kubelet-bootstrap-kubeconfig.kubeconfig
        

@@ -3,11 +3,11 @@ variable "k8s_global_vars" {
   default = null
 }
 
-variable "vault_policy_kubernetes_sign_approle" {
-  description = "module:VAULT: policy for cert roles"
-  type        = any
-  default     = {}
-}
+# variable "vault_policy_kubernetes_sign_approle" {
+#   description = "module:VAULT: policy for cert roles"
+#   type        = any
+#   default     = {}
+# }
 
 # variable "instance-count" {
 #   type = number
@@ -36,12 +36,12 @@ variable "actual-release" {
 #   default     = null
 # }
 
-variable "master_instance_list_map" {
+variable "worker_instance_list_map" {
   type        = any
   default     = {}
 }
 
-variable "master_instance_list" {
+variable "worker_instance_list" {
   type        = any
   default     = {}
 }

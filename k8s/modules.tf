@@ -52,11 +52,11 @@ module "k8s-yandex-cluster" {
                 zone    = "ru-central1-a"
             }
             master-2 = {
-                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-b"].id
                 zone    = "ru-central1-b"
             }
             master-3 = {
-                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-c"].id
                 zone    = "ru-central1-c"
             }
         }
@@ -68,5 +68,22 @@ module "k8s-yandex-cluster" {
           first_disk      = 30
         }
         os_image = "fd8kdq6d0p8sij7h5qe3"
+        ssh_username = "jkot"
+        ssh_rsa_path = "~/.ssh/id_rsa.pub"
     }
+}
+
+
+
+module "k8s-yandex-worker-instances" {
+  depends_on = [
+    module.k8s-yandex-cluster
+  ]
+    k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
+    source          = "../modules/k8s-yandex-worker-instances"
+
+    vpc_id  = yandex_vpc_network.cluster-vpc.id
+
+    default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+
 }

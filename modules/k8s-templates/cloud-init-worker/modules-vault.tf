@@ -1,7 +1,8 @@
 
-module "k8s-vault-master" {
-    source = "../../k8s-vault-master"
+module "k8s-vault-worker" {
+    source = "../../k8s-vault-worker"
     k8s_global_vars   = var.k8s_global_vars
-    vault_policy_kubernetes_sign_approle = var.vault_policy_kubernetes_sign_approle
-    master_instance_list = var.master_instance_list
+    worker_instance_list = var.worker_instance_list
+    worker_instance_list_map = var.worker_instance_list_map
+    # vault_policy_kubernetes_sign_approle = var.vault_policy_kubernetes_sign_approle
 }   
