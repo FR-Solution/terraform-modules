@@ -1,3 +1,11 @@
+data "yandex_resourcemanager_cloud" "current" {
+  name = var.yandex_cloud_name
+}
+
+data "yandex_resourcemanager_folder" "current" {
+  name     = var.yandex_folder_name
+  cloud_id = data.yandex_resourcemanager_cloud.current.id
+}
 
 #### VPC ######
 ##-->
@@ -35,7 +43,7 @@ module "k8s-yandex-cluster" {
     base_domain     = "dobry-kot.ru"
     vault_server    = "http://193.32.219.99:9200/"
     
-    service_cidr    = "29.11.0.0/16"
+    service_cidr    = "29.64.0.0/16"
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
@@ -68,20 +76,30 @@ module "k8s-yandex-cluster" {
           first_disk      = 30
         }
         os_image = "fd8kdq6d0p8sij7h5qe3"
-        ssh_username = "jkot"
+        ssh_username = "dkot"
         ssh_rsa_path = "~/.ssh/id_rsa.pub"
     }
 }
 
 
+resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
+  depends_on = [
+    module.k8s-yandex-cluster
+  ]
+    backend       = module.k8s-yandex-cluster.k8s_global_vars.ssl.intermediate.kubernetes-ca.path
+    name          = "kube-apiserver-cluster-admin-client"
+    common_name   = "custom:terraform-kubeconfig"
+}
 
 module "k8s-yandex-worker-instances" {
   depends_on = [
-    module.k8s-yandex-cluster
+    module.k8s-yandex-cluster,
+    helm_release.base
   ]
     k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
     source          = "../modules/k8s-yandex-worker-instances"
 
+    name = "worker"
     vpc_id  = yandex_vpc_network.cluster-vpc.id
 
     default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id

@@ -1,3 +1,9 @@
+resource "yandex_iam_service_account" "worker-sa" {
+  for_each    = local.worker_instance_list_map
+
+  name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
+  description = "service account to manage VMs in cloud ${var.k8s_global_vars.cluster_name}" 
+}
 
 resource "yandex_compute_instance" "worker" {
 
