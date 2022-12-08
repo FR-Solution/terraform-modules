@@ -2,7 +2,7 @@
 locals {
   cloud-init-master = flatten([
     for master_name, master_content in  var.master_instance_list_map:
-      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master.tftpl", {
+      {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master-all.tftpl", {
         ssh_username                      = var.k8s_global_vars.ssh_username
         ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
@@ -14,13 +14,13 @@ locals {
         release_vars                      = local.release-vars
         # kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
         # kube_apiserver_port_lb            = var.kube-apiserver-port-lb
-        # bootstrap_token_all               = var.vault-bootstrap-master-token[master_name].client_token
+        bootstrap_token_all               = module.k8s-vault-master.bootstrap-all[master_name].client_token
 
         # DEDICATED VAULT BOOTSTRAP TOKENS
-        vault-bootstrap-issuer-master-token         = module.k8s-vault-master.bootstrap-issuer-master-token
-        vault-bootstrap-ca-master-token             = module.k8s-vault-master.bootstrap-ca-master-token
-        vault-bootstrap-external-ca-master-token    = module.k8s-vault-master.bootstrap-external-ca-master-token
-        vault-bootstrap-secret-master-token         = module.k8s-vault-master.bootstrap-secret-master-token
+        # vault-bootstrap-issuer-master-token         = module.k8s-vault-master.bootstrap-issuer-master-token
+        # vault-bootstrap-ca-master-token             = module.k8s-vault-master.bootstrap-ca-master-token
+        # vault-bootstrap-external-ca-master-token    = module.k8s-vault-master.bootstrap-external-ca-master-token
+        # vault-bootstrap-secret-master-token         = module.k8s-vault-master.bootstrap-secret-master-token
         
         kube-apiserver-admin-kubeconfig     = module.kube-apiserver-admin-kubeconfig.kubeconfig
         kubelet-kubeconfig                  = module.kubelet-kubeconfig.kubeconfig

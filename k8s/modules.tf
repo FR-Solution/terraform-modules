@@ -47,7 +47,7 @@ module "k8s-yandex-cluster" {
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 1
+        count   = 3
 
         vpc_id  = yandex_vpc_network.cluster-vpc.id
     
@@ -75,7 +75,7 @@ module "k8s-yandex-cluster" {
           etcd_disk       = 60
           first_disk      = 30
         }
-        os_image = "fd8kdq6d0p8sij7h5qe3"
+        os_image = "fd8dl9ahl649kf31vp4o"
         ssh_username = "dkot"
         ssh_rsa_path = "~/.ssh/id_rsa.pub"
     }
@@ -91,17 +91,17 @@ resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
     common_name   = "custom:terraform-kubeconfig"
 }
 
-module "k8s-yandex-worker-instances" {
-  depends_on = [
-    module.k8s-yandex-cluster,
-    helm_release.base
-  ]
-    k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
-    source          = "../modules/k8s-yandex-worker-instances"
+# module "k8s-yandex-worker-instances" {
+#   depends_on = [
+#     module.k8s-yandex-cluster,
+#     helm_release.base
+#   ]
+#     k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
+#     source          = "../modules/k8s-yandex-worker-instances"
 
-    name = "worker"
-    vpc_id  = yandex_vpc_network.cluster-vpc.id
+#     name = "worker"
+#     vpc_id  = yandex_vpc_network.cluster-vpc.id
 
-    default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+#     default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
 
-}
+# }
