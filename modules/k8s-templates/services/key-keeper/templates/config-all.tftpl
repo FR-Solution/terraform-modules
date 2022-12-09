@@ -113,7 +113,7 @@ certificates:
       subject:
         %{~ if try(certificate["key-keeper-args"].spec.subject.commonName, "") == "" ~}
           %{~ if try(certificate["key-keeper-args"].spec.subject.commonNamePrefix, "") != "" ~}
-        commonName: "${certificate["key-keeper-args"].spec.subject.commonNamePrefix}:${ external_instance_name }"
+        commonName: "${certificate["key-keeper-args"].spec.subject.commonNamePrefix}:$HOSTNAME"
           %{~ endif ~}
         %{~ else ~}
         commonName: "${certificate["key-keeper-args"].spec.subject.commonName}"
@@ -208,7 +208,7 @@ certificates:
         - ${hostname}
       %{~ endfor ~}
           %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
-        - "${ full_instance_name }"
+        - "$HOSTNAME.${ base_cluster_fqdn }"
           %{~ else ~}
           %{~ endif ~}
       %{~ endif ~}

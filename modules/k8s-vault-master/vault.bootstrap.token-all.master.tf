@@ -24,7 +24,6 @@ resource "vault_token" "kubernetes-all-login-bootstrap-master" {
   metadata  = {}
   ttl       = 0
   num_uses  = 0
-  # TODO ждем фикса key-keeper
-  # num_uses  = 1
+  period = 0
 
 }

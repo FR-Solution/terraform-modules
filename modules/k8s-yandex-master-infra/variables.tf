@@ -11,6 +11,15 @@ variable "vault_policy_kubernetes_sign_approle" {
   default  = {}
 }
 
+variable "cloud_metadata" {
+  type = object({
+    folder_id = string
+  })
+  default = {
+    folder_id = null
+    }
+}
+
 variable "master_group"{
   type = object({
     name = string

@@ -7,14 +7,14 @@ locals {
         ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                               = var.k8s_global_vars.ssl
-        base_path                         = var.base_path
+        base_path                         = var.k8s_global_vars.global_path
         hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
         node_name                         = "${master_name}"
         actual_release                    = var.actual-release
         release_vars                      = local.release-vars
         # kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
         # kube_apiserver_port_lb            = var.kube-apiserver-port-lb
-        bootstrap_token_all               = module.k8s-vault-master.bootstrap-all[master_name].client_token
+        # bootstrap_token_all               = var.bootstrap_token_all[master_name].client_token
 
         # DEDICATED VAULT BOOTSTRAP TOKENS
         # vault-bootstrap-issuer-master-token         = module.k8s-vault-master.bootstrap-issuer-master-token

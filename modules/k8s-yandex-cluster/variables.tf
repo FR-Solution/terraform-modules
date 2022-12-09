@@ -18,6 +18,15 @@ variable "service_cidr" {
   default = "172.16.0.0/16"
 }
 
+variable "cloud_metadata" {
+  type = object({
+    folder_id = string
+  })
+  default = {
+    folder_id = null
+    }
+}
+
 variable "master_group"{
   type = object({
     name = string

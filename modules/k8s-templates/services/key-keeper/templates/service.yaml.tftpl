@@ -4,6 +4,8 @@ Description=key-keeper-agent
 Wants=network-online.target
 After=network-online.target
 
+ConditionPathExists=/var/lib/key-keeper/bootstrap.token
+
 [Service]
 ExecStart=/usr/bin/key-keeper -config-dir ${base_local_path_certs} -config-regexp .*vault-config 
 

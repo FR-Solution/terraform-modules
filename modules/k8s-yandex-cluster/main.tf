@@ -22,6 +22,6 @@ module "k8s-yandex-master-infra" {
     k8s_global_vars         = module.k8s-global-vars
 
     master_group = var.master_group
+    cloud_metadata = var.cloud_metadata
 
 }
-

@@ -7,6 +7,7 @@ data "yandex_resourcemanager_folder" "current" {
   cloud_id = data.yandex_resourcemanager_cloud.current.id
 }
 
+
 #### VPC ######
 ##-->
 resource "yandex_vpc_network" "cluster-vpc" {
@@ -44,7 +45,10 @@ module "k8s-yandex-cluster" {
     vault_server    = "http://193.32.219.99:9200/"
     
     service_cidr    = "29.64.0.0/16"
-
+    
+    cloud_metadata = {
+      folder_id = data.yandex_resourcemanager_folder.current.id
+    }
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
         count   = 3
@@ -81,7 +85,6 @@ module "k8s-yandex-cluster" {
     }
 }
 
-
 resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
   depends_on = [
     module.k8s-yandex-cluster
@@ -89,6 +92,14 @@ resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
     backend       = module.k8s-yandex-cluster.k8s_global_vars.ssl.intermediate.kubernetes-ca.path
     name          = "kube-apiserver-cluster-admin-client"
     common_name   = "custom:terraform-kubeconfig"
+}
+
+locals {
+    lb-kube-apiserver-ip = module.k8s-yandex-cluster.kube-apiserver-lb
+}
+
+output "LB-IP" {
+    value = "kubectl config set-cluster  ${var.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
 }
 
 # module "k8s-yandex-worker-instances" {
