@@ -7,3 +7,11 @@ resource "vault_approle_auth_backend_role" "kubernetes-sign-master" {
   secret_id_bound_cidrs   = []
   token_bound_cidrs       = []
 }
+
+resource "vault_approle_auth_backend_role_secret_id" "kubernetes-sign-master" {
+  for_each  = local.issuers_content_map_master
+  backend   = var.k8s_global_vars.global_path.base_vault_path_approle
+  role_name = vault_approle_auth_backend_role.kubernetes-sign-master[each.key].role_name
+}
+
+

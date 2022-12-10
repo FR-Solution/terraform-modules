@@ -25,3 +25,7 @@ module "k8s-yandex-master-infra" {
     cloud_metadata = var.cloud_metadata
 
 }
+
+# output "FUCK" {
+#   value = module.k8s-yandex-master-infra.FUCK
+# }

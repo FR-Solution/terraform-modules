@@ -5,16 +5,16 @@ resource "yandex_compute_instance" "master" {
 
   for_each    = local.master_instance_list_map
 
-  name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
+  # name        = "${each.key}-${var.k8s_global_vars.cluster_name}"
+  name        = "${each.key}"
 
-  hostname    = format("%s.%s.%s", each.key ,var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
+  hostname    = format("%s.%s.%s", each.key, var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
   platform_id = "standard-v1"
 
-  zone        = try(var.master_group.subnet_id_overwrite[each.key].zone, var.master_group.default_zone)
+  zone                = try(var.master_group.subnet_id_overwrite[each.key].zone, var.master_group.default_zone)
+  
+  service_account_id  = yandex_iam_service_account.master-sa[each.key].id
 
-  labels      = {
-    "node-role.kubernetes.io/master" = ""
-  }
   resources {
     cores         = var.master_group.resources.core
     memory        = var.master_group.resources.memory
@@ -35,8 +35,6 @@ resource "yandex_compute_instance" "master" {
     device_name = "etcd-data"
   }
 
-  service_account_id = yandex_iam_service_account.master-sa[each.key].id
-
   network_interface {
     subnet_id = try(var.master_group.subnet_id_overwrite[each.key].subnet, var.master_group.default_subnet_id)
     nat = true
@@ -49,7 +47,6 @@ resource "yandex_compute_instance" "master" {
   }
 
  metadata = {
-   ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
    user-data = module.k8s-cloud-init-master.cloud-init-render[each.key]
  }
 

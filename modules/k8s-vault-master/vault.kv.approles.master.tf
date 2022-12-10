@@ -9,3 +9,9 @@ resource "vault_approle_auth_backend_role" "kubernetes-kv" {
   token_bound_cidrs       = []
 
 }
+
+resource "vault_approle_auth_backend_role_secret_id" "kubernetes-kv" {
+  for_each  = local.secret_content_map
+  backend   = var.k8s_global_vars.global_path.base_vault_path_approle
+  role_name = vault_approle_auth_backend_role.kubernetes-kv[each.key].role_name
+}

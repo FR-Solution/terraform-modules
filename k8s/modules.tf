@@ -102,6 +102,10 @@ output "LB-IP" {
     value = "kubectl config set-cluster  ${var.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
 }
 
+# output "FUCK" {
+#   value = module.k8s-yandex-cluster.FUCK
+# }
+
 # module "k8s-yandex-worker-instances" {
 #   depends_on = [
 #     module.k8s-yandex-cluster,
@@ -116,3 +120,4 @@ output "LB-IP" {
 #     default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
 
 # }
+

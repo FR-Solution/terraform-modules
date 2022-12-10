@@ -1,7 +1,7 @@
 #cloud-config
 version: v1
 
-hostname: ${hostname}
+# hostname: ${hostname}
 
 users:
   - name: ${ ssh_username }
@@ -71,7 +71,7 @@ runcmd:
   - mkdir -p /opt/cni/bin
   - mkdir -p /tmp/containerd
   - mkdir -p /tmp/etcd
-  - mkdir -p /var/lib/key-keeper
+  - mkdir -p /var/lib/key-keeper/vault
   - tar -C "/tmp/etcd"        -xvf /tmp/etcd.tar.gz
   - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
   - tar -C "/opt/cni/bin"     -xvf /tmp/cni.tar.gz
@@ -83,7 +83,43 @@ runcmd:
   - yc config set cloud-id *
   - yc config set folder-id *
   - export IAM_TOKEN=`yc iam create-token`
-  - yc lockbox payload get --name=${hostname} --key=token > /var/lib/key-keeper/bootstrap.token
+  - touch /var/lib/key-keeper/bootstrap.token
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-role-id                --key=etcd-ca                             > /var/lib/key-keeper/vault/etcd-ca-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-secret-id              --key=etcd-ca                             > /var/lib/key-keeper/vault/etcd-ca-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-role-id                --key=kubernetes-ca                       > /var/lib/key-keeper/vault/kubernetes-ca-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-secret-id              --key=kubernetes-ca                       > /var/lib/key-keeper/vault/kubernetes-ca-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-role-id                --key=front-proxy-ca                      > /var/lib/key-keeper/vault/front-proxy-ca-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-ca-secret-id              --key=front-proxy-ca                      > /var/lib/key-keeper/vault/front-proxy-ca-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=etcd-client                         > /var/lib/key-keeper/vault/etcd-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=etcd-client                         > /var/lib/key-keeper/vault/etcd-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=etcd-peer                           > /var/lib/key-keeper/vault/etcd-peer-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=etcd-peer                           > /var/lib/key-keeper/vault/etcd-peer-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=front-proxy-client                  > /var/lib/key-keeper/vault/front-proxy-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=front-proxy-client                  > /var/lib/key-keeper/vault/front-proxy-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kubeadm-client                      > /var/lib/key-keeper/vault/kubeadm-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kubeadm-client                      > /var/lib/key-keeper/vault/kubeadm-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-apiserver-cluster-admin-client > /var/lib/key-keeper/vault/kube-apiserver-cluster-admin-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-apiserver-cluster-admin-client > /var/lib/key-keeper/vault/kube-apiserver-cluster-admin-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-apiserver-kubelet-client       > /var/lib/key-keeper/vault/kube-apiserver-kubelet-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-apiserver-kubelet-client       > /var/lib/key-keeper/vault/kube-apiserver-kubelet-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-apiserver                      > /var/lib/key-keeper/vault/kube-apiserver-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-apiserver                      > /var/lib/key-keeper/vault/kube-apiserver-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-controller-manager-client      > /var/lib/key-keeper/vault/kube-controller-manager-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-controller-manager-client      > /var/lib/key-keeper/vault/kube-controller-manager-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-controller-manager-server      > /var/lib/key-keeper/vault/kube-controller-manager-server-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-controller-manager-server      > /var/lib/key-keeper/vault/kube-controller-manager-server-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kubelet-client                      > /var/lib/key-keeper/vault/kubelet-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kubelet-client                      > /var/lib/key-keeper/vault/kubelet-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kubelet-server                      > /var/lib/key-keeper/vault/kubelet-server-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kubelet-server                      > /var/lib/key-keeper/vault/kubelet-server-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-scheduler-client               > /var/lib/key-keeper/vault/kube-scheduler-client-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-scheduler-client               > /var/lib/key-keeper/vault/kube-scheduler-client-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-role-id              --key=kube-scheduler-server               > /var/lib/key-keeper/vault/kube-scheduler-server-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-cert-secret-id            --key=kube-scheduler-server               > /var/lib/key-keeper/vault/kube-scheduler-server-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-external-ca-role-id       --key=oidc-ca                             > /var/lib/key-keeper/vault/oidc-ca-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-external-ca-secret-id     --key=oidc-ca                             > /var/lib/key-keeper/vault/oidc-ca-secret-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-kv-role-id                --key=kube-apiserver-sa                   > /var/lib/key-keeper/vault/kube-apiserver-sa-role-id
+  - yc lockbox payload get --name=$(cat /proc/sys/kernel/hostname)-kv-secret-id              --key=kube-apiserver-sa                   > /var/lib/key-keeper/vault/kube-apiserver-sa-secret-id
   - systemctl daemon-reload
   - systemctl enable  kubelet.service
   - systemctl enable  containerd.service

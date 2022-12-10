@@ -10,7 +10,10 @@ locals {
   kube_apiserver_lb_fqdn        = var.kube_apiserver_lb_fqdn       == null ? local.default_kube_apiserver_lb_fqdn       : var.kube_apiserver_lb_fqdn
   kube_apiserver_lb_fqdn_local  = var.kube_apiserver_lb_fqdn_local == null ? local.default_kube_apiserver_lb_fqdn_local : var.kube_apiserver_lb_fqdn_local
   wildcard_base_cluster_fqdn    = var.wildcard_base_cluster_fqdn   == null ? local.default_wildcard_base_cluster_fqdn   : var.wildcard_base_cluster_fqdn
-  
+
+  extra_cluster_name = substr(sha256(var.cluster_name), 0, 8)
+
+
 }
 
 locals {
@@ -554,7 +557,9 @@ locals {
                 "*.${var.cluster_name}.${var.base_domain}",
                 "system:node:*",
                 "worker-*",
-                "master-*"
+                "master-${local.extra_cluster_name}-1",
+                "master-${local.extra_cluster_name}-2",
+                "master-${local.extra_cluster_name}-3"
               ]
               organization = [
                 "system:nodes",
@@ -581,7 +586,9 @@ locals {
                 "localhost",
                 local.wildcard_base_cluster_fqdn,
                 "system:node:*",
-                "master-*",  # КОСТЫЛЬ
+                "master-${local.extra_cluster_name}-1",
+                "master-${local.extra_cluster_name}-2",
+                "master-${local.extra_cluster_name}-3",
                 "worker-*"   # КОСТЫЛЬ
               ]
               organization = [
@@ -733,7 +740,9 @@ locals {
                 "custom:etcd-peer",
                 "custom:etcd-server",
                 local.wildcard_base_cluster_fqdn,
-                "master-*" # КОСТЫЛЬ
+                "master-${local.extra_cluster_name}-1",
+                "master-${local.extra_cluster_name}-2",
+                "master-${local.extra_cluster_name}-3"
               ]
               client_flag     = true
               server_flag     = true
@@ -761,7 +770,6 @@ locals {
                     hostnames = [
                       "localhost",
                       "$HOSTNAME"
-                      # "${local.etcd_server_lb_fqdn}"
                     ]
                     ipAddresses = {
                       static = [
