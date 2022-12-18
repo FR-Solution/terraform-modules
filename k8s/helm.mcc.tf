@@ -16,7 +16,7 @@ resource "helm_release" "mci" {
     helm_release.mcc
   ]
   name       = "mci"
-  chart      = "templates/helm/machine-controller-instances"
+  chart      = "templates/helm/yandex-machine-controller-instances"
   namespace  = "fraima-ccm"
   create_namespace  = true
   timeout = 6000
