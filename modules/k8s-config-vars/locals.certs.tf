@@ -556,7 +556,7 @@ locals {
                 "localhost",
                 "*.${var.cluster_name}.${var.base_domain}",
                 "system:node:*",
-                "worker-*",
+                "*",
                 "master-${local.extra_cluster_name}-1",
                 "master-${local.extra_cluster_name}-2",
                 "master-${local.extra_cluster_name}-3"

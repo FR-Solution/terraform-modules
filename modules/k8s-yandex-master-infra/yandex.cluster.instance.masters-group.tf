@@ -61,7 +61,8 @@
 #       mode = "READ_WRITE"
 #       device_name = "etcd-data"
 #       initialize_params {
-#         size = var.master_group.resources.first_disk
+#         size = 20
+#         type = "network-ssd"
 #       }
 #     }
 
@@ -83,7 +84,7 @@
 
 #   scale_policy {
 #     fixed_scale {
-#       size = 3
+#       size = var.master_group.count
 #     }
 #   }
 
@@ -97,14 +98,9 @@
 
 #   deploy_policy {
 #     max_unavailable = 1
-#     max_creating    = 3
-#     max_expansion   = 1
+#     max_creating    = var.master_group.count
+#     max_expansion   = 0
 #     max_deleting    = 1
 #   }
-
-
 # }
 
-# data "yandex_lb_target_group" "master-tg" {
-#   target_group_id = "${var.k8s_global_vars.cluster_name}${var.master_group.vpc_id}"
-# }

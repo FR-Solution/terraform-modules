@@ -142,7 +142,6 @@ controllerManager:
       %{~ endfor ~}
     %{~ endfor ~}
   %{~ endfor ~}
-    cluster-cidr: ${service_cidr}
     service-account-private-key-file: ${secrets["kube-apiserver-sa"].keys["private"].host_path}
     # service-account-private-key-file: ""
     cluster-signing-key-file: ""
@@ -152,6 +151,8 @@ controllerManager:
     # bind-address: "0.0.0.0"
     v: "2"
     secure-port: "10257"
+    cluster-cidr: 10.100.0.0/16
+    node-cidr-mask-size: "24"
     allocate-node-cidrs: "true"
     cluster-name: kubernetes
     concurrent-deployment-syncs: "5"
@@ -167,7 +168,6 @@ controllerManager:
     leader-elect-renew-deadline: 10s
     leader-elect-retry-period: 2s
     namespace-sync-period: 2m0s
-    node-cidr-mask-size: "24"
     node-monitor-grace-period: 40s
     node-monitor-period: 5s
     node-startup-grace-period: 10s
@@ -180,8 +180,8 @@ controllerManager:
     authorization-always-allow-paths: /healthz,/metrics
     feature-gates: RotateKubeletServerCertificate=true
     cloud-provider: external
-    controllers: attachdetach,bootstrapsigner,cloud-node-lifecycle,clusterrole-aggregation,cronjob,csrapproving,csrcleaner,csrsigning,daemonset,deployment,disruption,endpoint,endpointslice,endpointslicemirroring,ephemeral-volume,garbagecollector,horizontalpodautoscaling,job,namespace,nodeipam,nodelifecycle,persistentvolume-binder,persistentvolume-expander,podgc,pv-protection,pvc-protection,replicaset,replicationcontroller,resourcequota,root-ca-cert-publisher,route,service,serviceaccount,statefulset,tokencleaner,ttl,ttl-after-finished
-
+    #controllers: attachdetach,bootstrapsigner,cloud-node-lifecycle,clusterrole-aggregation,cronjob,csrapproving,csrcleaner,csrsigning,daemonset,deployment,disruption,endpoint,endpointslice,endpointslicemirroring,ephemeral-volume,garbagecollector,horizontalpodautoscaling,job,namespace,nodeipam,nodelifecycle,persistentvolume-binder,persistentvolume-expander,podgc,pv-protection,pvc-protection,replicaset,replicationcontroller,resourcequota,root-ca-cert-publisher,route,service,serviceaccount,statefulset,tokencleaner,ttl,ttl-after-finished
+    controllers: "*,bootstrapsigner,tokencleaner"
   extraVolumes:
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"

@@ -1,0 +1,2 @@
+subnet_id: ${subnet_id}
+zone: ru-central1-a

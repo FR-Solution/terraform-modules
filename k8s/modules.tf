@@ -14,6 +14,11 @@ resource "yandex_vpc_network" "cluster-vpc" {
   name = "vpc.clusters"
 }
 
+resource "yandex_vpc_route_table" "cluster-vpc-route-table" {
+  name = "vpc.clusters.route.table"
+  network_id = "${yandex_vpc_network.cluster-vpc.id}"
+}
+
 #### SUBNETS ######
 ##-->
 resource "yandex_vpc_subnet" "master-subnets" {
@@ -23,6 +28,7 @@ resource "yandex_vpc_subnet" "master-subnets" {
     zone            = each.key
     network_id      = yandex_vpc_network.cluster-vpc.id
     name            = "vpc-${var.cluster_name}-masters-${each.key}" 
+    route_table_id = yandex_vpc_route_table.cluster-vpc-route-table.id
 }
 
 variable "master_availability_zones"{
@@ -53,8 +59,7 @@ module "k8s-yandex-cluster" {
         name    = "master" # Разрешенный префикс для сертификатов.
         count   = 3
 
-        vpc_id  = yandex_vpc_network.cluster-vpc.id
-    
+        vpc_id          = yandex_vpc_network.cluster-vpc.id
         default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
         default_zone      = "ru-central1-a"
 
@@ -76,10 +81,10 @@ module "k8s-yandex-cluster" {
           core            = 6
           memory          = 12
           core_fraction   = 100
-          etcd_disk       = 60
+          etcd_disk       = 10
           first_disk      = 30
         }
-        os_image = "fd8dl9ahl649kf31vp4o"
+        os_image = "fd8kdq6d0p8sij7h5qe3"
         ssh_username = "dkot"
         ssh_rsa_path = "~/.ssh/id_rsa.pub"
     }
@@ -101,23 +106,3 @@ locals {
 output "LB-IP" {
     value = "kubectl config set-cluster  ${var.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
 }
-
-# output "FUCK" {
-#   value = module.k8s-yandex-cluster.FUCK
-# }
-
-# module "k8s-yandex-worker-instances" {
-#   depends_on = [
-#     module.k8s-yandex-cluster,
-#     helm_release.base
-#   ]
-#     k8s_global_vars = module.k8s-yandex-cluster.k8s_global_vars
-#     source          = "../modules/k8s-yandex-worker-instances"
-
-#     name = "worker"
-#     vpc_id  = yandex_vpc_network.cluster-vpc.id
-
-#     default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
-
-# }
-

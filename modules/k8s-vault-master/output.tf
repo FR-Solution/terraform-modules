@@ -20,10 +20,10 @@
 #     value = vault_token.kubernetes-dedicated-secret-login-bootstrap-master
 # }
 
-output "bootstrap-all" {
-    description   = "VAULT: master tokens for vault access"
-    value = vault_token.kubernetes-all-login-bootstrap-master
-}
+# output "bootstrap-all" {
+#     description   = "VAULT: master tokens for vault access"
+#     value = vault_token.kubernetes-all-login-bootstrap-master
+# }
 
 
 output "secret_id_cert" {

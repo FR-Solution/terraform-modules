@@ -1,7 +1,7 @@
 
 resource "tls_private_key" "kube_apiserver_sa_key" {
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 } 
 
 resource "vault_kv_secret_v2" "kube_apiserver_sa" {

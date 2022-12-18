@@ -1,9 +1,306 @@
-  # Настроить интеграцию с LOCBOX от YCloud
-  #- wget -O /usr/bin/yc           "https://storage.yandexcloud.net/yandexcloud-yc/release/0.96.0/linux/amd64/yc"
-  #- chmod +x /usr/bin/yc
-  #- yc config profile create my-robot-profile
-  #- yc config set cloud-id *
-  #- yc config set folder-id *
-  #- export IAM_TOKEN=`yc iam create-token`
-  #- | # Получаем временный токен для доступа в Vault
-  #  curl -X GET -H "Authorization: Bearer $IAM_TOKEN" https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/e6qprcqkive849prd1kk/payload | jq .entries[0].textValue | sed 's/"//g' > /tmp/key-keeper-tmp.token
+#cloud-config
+version: v1
+
+users:
+  - name: dkot
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBKp0G8Vlyi9XgxoL9xA20sY+Vc4szJ5PnP3BpAyaThtEIPtz/6w8DYy1qMGR5lq2MtjHKo0ghApCEM78rZf8PMR/EFW5hOeZzgiHZZVOUIThDwNAk9XQHKG+6OOS5+gpv+VLB3DTXxlPJsGdiI3/SBTmMfUCDZVR6LA94Uh5tgNypPqRRIv65tW0KbGjsYnMQxKFvO9lMHeFtJm1bAsb/+dbm1MafWYXg3yEGr6pyiHgaiwYgx2sKtIVqkg8IYNxLXzjIyS4kwB/WCkv3CEEIDL8KIi+HGnfv2tFzvtjwLgz2rtG73tVLzvjuplwG24Fx5vgCcTnWfFvAWiG5r8+IaHZ9ZvO9TOeAlOAWjB3ieHjA5ZS3R9J3WOAlfAQCA5jz6i2tFxAtIPBdWL0ZzYKUVLR561qd1AY5v9akqhquVIZqsJMzaLdCg0eoLNNdKgdQLXJohMPlqR96lR+mbym7UI/Fn7FvURibRgb781Z86ALfeYVHLYidVkrmhuuHzuU= dk@dobry-kot-system
+
+packages:
+  - wget
+  - jq
+  - tree
+  - irqbalance
+  - net-tools
+  - socat 
+  - conntrack
+  - ipset
+  - ethtool
+  - unzip
+  - xfsprogs
+
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+bootcmd:
+  - sudo modprobe overlay
+  - sudo modprobe br_netfilter
+  - sudo sysctl --system
+
+runcmd: 
+  - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
+  - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
+  - wget -O /usr/bin/runc          https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+  - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.8/containerd-1.6.8-linux-amd64.tar.gz
+  - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
+  - chmod +x /usr/bin/kubelet 
+  - chmod +x /usr/bin/kubectl 
+  - chmod +x /usr/bin/runc
+  - mkdir -p /tmp/containerd
+  - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
+  - tar -C "/usr/bin"         -xvf /tmp/crictl.tar.gz
+  - cp /tmp/containerd/bin/*   /usr/bin/
+  - systemctl daemon-reload
+  - systemctl enable  kubelet.service
+  - systemctl enable  containerd.service
+  - systemctl start   kubelet.service
+  - systemctl start   containerd.service 
+  - systemctl enable  systemd-resolved.service
+  - systemctl start   systemd-resolved.service
+  - sysctl --system
+
+write_files:
+
+####### KUBECONFIGS для подключения к кластеру
+
+
+  - path: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ---
+      apiVersion: v1
+      clusters:
+      - cluster:
+          insecure-skip-tls-verify: true
+          server: https://api.cluster-2.dobry-kot.ru
+        name: bootstrap
+      contexts:
+      - context:
+          cluster: bootstrap
+          user: kubelet-bootstrap
+        name: bootstrap
+      current-context: bootstrap
+      kind: Config
+      preferences: {}
+      users:
+      - name: kubelet-bootstrap
+        user:
+          token: <<BOOTSTRAP_TOKEN>>
+
+####### Настройка kubelet ##############################
+###--->
+  - path: /etc/systemd/system/kubelet.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=kubelet: The Kubernetes Node Agent
+      Documentation=https://kubernetes.io/docs/home/
+      Wants=network-online.target
+      After=network-online.target
+      
+      
+      [Service]
+      ExecStart=/usr/bin/kubelet
+      
+      Restart=always
+      StartLimitInterval=0
+      RestartSec=10
+      
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Service]
+      EnvironmentFile=-/etc/kubernetes/kubelet/service/kubelet-args.env
+
+      ExecStart=
+      ExecStart=/usr/bin/kubelet \
+        --node-labels=node.kubernetes.io/worker \
+        --register-node=true \
+        --cloud-provider=external \
+        --image-pull-progress-deadline=2m \
+        --feature-gates=RotateKubeletServerCertificate=true \
+        --cert-dir=/etc/kubernetes/pki/certs/kubelet \
+        --authorization-mode=Webhook \
+        --v=2 \
+        --anonymous-auth="false" \
+        --cni-bin-dir=/opt/cni/bin \
+        --cni-conf-dir=/etc/cni/net.d \
+        --network-plugin=cni \
+        --config=/etc/kubernetes/kubelet/config.yaml \
+        --root-dir=/var/lib/kubelet \
+        --register-node=true \
+        --image-pull-progress-deadline=2m \
+        --v=2 \
+        --kubeconfig=/etc/kubernetes/kubelet/kubeconfig \
+        --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig \
+        --container-runtime=remote \
+        --container-runtime-endpoint=/run/containerd/containerd.sock \
+        --pod-infra-container-image=k8s.gcr.io/pause:3.6
+
+  - path: /etc/kubernetes/kubelet/config.yaml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      authentication:
+        anonymous:
+          enabled: false
+        webhook:
+          cacheTTL: 0s
+          enabled: true
+        x509:
+          clientCAFile: "/etc/kubernetes/pki/ca/kubernetes-ca.pem"
+      authorization:
+        mode: Webhook
+        webhook:
+          cacheAuthorizedTTL: 0s
+          cacheUnauthorizedTTL: 0s
+      cgroupDriver: systemd
+      clusterDNS:
+        - "29.64.0.10"
+      clusterDomain: cluster.local
+      cpuManagerReconcilePeriod: 0s
+      evictionPressureTransitionPeriod: 0s
+      fileCheckFrequency: 0s
+      healthzBindAddress: 127.0.0.1
+      healthzPort: 10248
+      httpCheckFrequency: 0s
+      imageMinimumGCAge: 0s
+      kind: KubeletConfiguration
+      logging:
+        flushFrequency: 0
+        options:
+          json:
+            infoBufferSize: "0"
+        verbosity: 0
+      memorySwap: {}
+      nodeStatusReportFrequency: 1s
+      nodeStatusUpdateFrequency: 1s
+      resolvConf: /run/systemd/resolve/resolv.conf
+      rotateCertificates: false
+      runtimeRequestTimeout: 0s
+      serverTLSBootstrap: true
+      shutdownGracePeriod: 15s
+      shutdownGracePeriodCriticalPods: 5s
+      staticPodPath: "/etc/kubernetes/manifests"
+      streamingConnectionIdleTimeout: 0s
+      syncFrequency: 0s
+      volumeStatsAggPeriod: 0s
+      containerLogMaxSize: 50Mi
+      maxPods: 250
+      kubeAPIQPS: 50
+      kubeAPIBurst: 100
+      podPidsLimit: 4096
+      serializeImagePulls: false
+      systemReserved:
+        ephemeral-storage: 1Gi
+      featureGates:
+        APIPriorityAndFairness: true
+        DownwardAPIHugePages: true
+        PodSecurity: true
+        CSIMigrationAWS: false
+        CSIMigrationAzureFile: false
+        CSIMigrationGCE: false
+        CSIMigrationvSphere: false
+      rotateCertificates: false
+      serverTLSBootstrap: true
+      tlsMinVersion: VersionTLS12
+      tlsCipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      allowedUnsafeSysctls:
+        - "net.core.somaxconn"
+      evictionSoft: 
+        memory.available: 3Gi 
+        nodefs.available: 25%
+        nodefs.inodesFree: 15%
+        imagefs.available: 30%
+        imagefs.inodesFree: 25%
+      evictionSoftGracePeriod:  
+        memory.available: 2m30s
+        nodefs.available: 2m30s
+        nodefs.inodesFree: 2m30s
+        imagefs.available: 2m30s
+        imagefs.inodesFree: 2m30s
+      evictionHard:
+        memory.available: 2Gi
+        nodefs.available: 20%
+        nodefs.inodesFree: 10%
+        imagefs.available: 25%
+        imagefs.inodesFree: 15%
+      evictionPressureTransitionPeriod: 5s 
+      imageMinimumGCAge: 12h 
+      imageGCHighThresholdPercent: 55
+      imageGCLowThresholdPercent: 50
+
+  - path: /etc/systemd/system/containerd.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=containerd container runtime
+      Documentation=https://containerd.io
+      After=network.target
+      
+      [Service]
+      ExecStartPre=/sbin/modprobe overlay
+      ExecStart=/usr/bin/containerd
+      Restart=always
+      RestartSec=5
+      Delegate=yes
+      KillMode=process
+      OOMScoreAdjust=-999
+      LimitNOFILE=1048576
+      LimitNPROC=infinity
+      LimitCORE=infinity
+      
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/sysctl.d/99-network.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      net.bridge.bridge-nf-call-iptables=1
+      net.bridge.bridge-nf-call-ip6tables=1
+      net.ipv4.ip_forward=1
+
+  - path: /etc/modules-load.d/k8s.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      overlay
+      br_netfilter
+
+  - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+    owner: root:root
+    permissions: '0644'
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIIEVzCCAj+gAwIBAgIUBajqtWbYZYNcoy0ZQXQi/EiWfvgwDQYJKoZIhvcNAQEL
+      BQAwHzELMAkGA1UECBMCQ0ExEDAOBgNVBAMTB1Jvb3QgQ0EwHhcNMjIxMjE4MDIw
+      NjQzWhcNMzMwMjIzMDIwNzEzWjBHMQswCQYDVQQIEwJDQTETMBEGA1UEChMKS3Vi
+      ZXJuZXRlczEjMCEGA1UEAxMaS3ViZXJuZXRlcyBJbnRlcm1lZGlhdGUgQ0EwggEi
+      MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCwGzOn3EsigosxFw/Np+8xazOD
+      SjIiA6kvFQkdraFsUH1TKKLJnmyAd8AGZV6q+7PYL/k4nameMh9likkjrKO8zbCm
+      SFkm86UcNW/jeJ2xvP3wQYTvOmvh8V++dxO2U2vsvU+bAfWlyuUQrvo7d6nbpYyW
+      paI0ofpdvZNqUzVuQ0Uqy7mVjp/kDIzgyoNuXBPc7UyqNnS2/+9b53AjnBPU51B0
+      UWtiyCvPhLSxVoFjpWtOwDEc5FSee2MfMap9QuMRaJznIcpQ+sJYESp9ztdcJEkB
+      ogsbSXXelrX/kHia6WrGDIvFgcYcX014SqbTL3BNZkxaXMqdtbhyzDCjtzRjAgMB
+      AAGjYzBhMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
+      BBTd1p53MIhUGJSr3nj8vR5WDwmBkTAfBgNVHSMEGDAWgBSBqSsnGPlRoEmUz2Lw
+      kxmxDBtQ/TANBgkqhkiG9w0BAQsFAAOCAgEADoi/ArHQagmboa1ZINBC3NU9Z22S
+      qzue9PyxLkjdFq6Q3F/fBmPKwIhQmQB+xEMcuRxcRgWDTRouf7Qx0wJV6TUXUi/+
+      Fa+/UfQWRvSE5/UdMPTamC3B1qK/WARlrT4XoN3FBC0gIOeCOmHwruXGO16FZ+4E
+      nuxKVds/X/qIBTqlsguuLY4eGi6eF88n7HUsQ65cMRQi7dNCj3CESp2V+z1or+iI
+      VlxEGNhYXAM6JsqCsSGqnJhb2Q1JlgJx1qactSHFkMXEZXpsWMsLUHxftnjY+k/C
+      8iWBel8V958+IkyGM/MT+yyO5u86RPhDdfr5fHDkqO3KiD2EOglc8nPp5vEMQ1ly
+      konIUX0grmv8NTnwGw0RCxWbLu9JF0WFwKijTYxSUyKXp4/EpfLws41fcJrkJocy
+      wk/pYy09Qqr00CWnuYXK95HPbdM5XuN5+0U1fBvZe/0A21nhMivspUzcLy1CSNZb
+      Pu3RA/VZtFwD7RRoKYw/Mi4hoFJeD9YUAidwTlwJs073srwmjspu96nRDSTKpOt5
+      MO6CYUTtNBIe2M3EImXsj0pnpxjnsPwHkPwsPLzAJYbo12dCwv9rPQyyS6KEW+xB
+      Ui7h6LFvIoWtUlU80FBn0l3Cftae9ggRrzqm9znVmMCWBVdGwj/hnBSfqJmghDIJ
+      2gGMv8aMlDMCmrY=
+      -----END CERTIFICATE-----

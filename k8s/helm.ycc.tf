@@ -28,11 +28,14 @@ locals {
     public_key          = yandex_iam_service_account_key.cloud-controller-key.public_key
     private_key         = yandex_iam_service_account_key.cloud-controller-key.private_key
     vpc_id              = yandex_vpc_network.cluster-vpc.id
+    route_table_id      = yandex_vpc_route_table.cluster-vpc-route-table.id
   }
 }
 
 resource "helm_release" "ycc" {
-  depends_on = [helm_release.coredns]
+  depends_on = [
+    helm_release.coredns
+  ]
   name       = "ycc"
   chart      = "templates/helm/yandex-cloud-controller"
   namespace  = "fraima-ccm"
