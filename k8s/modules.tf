@@ -57,7 +57,7 @@ module "k8s-yandex-cluster" {
     }
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 3
+        count   = 1
 
         vpc_id          = yandex_vpc_network.cluster-vpc.id
         default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id

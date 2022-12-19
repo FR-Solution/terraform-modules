@@ -1,11 +1,11 @@
 apiVersion: machine.sapcloud.io/v1alpha1
 kind: MachineDeployment
 metadata:
-  name: worker
+  name: worker-{{ .Values.zone }}
   namespace: {{ .Release.Namespace }}
 spec:
   minReadySeconds: 300
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       instance-group: {{ .Values.zone }}

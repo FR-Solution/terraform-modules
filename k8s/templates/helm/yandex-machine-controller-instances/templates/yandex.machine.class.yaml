@@ -3,6 +3,8 @@ kind: YandexMachineClass
 metadata:
   name: {{ .Values.zone }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: post-install
 spec:
   bootDiskSpec:
     autoDelete: true
@@ -24,6 +26,6 @@ spec:
     memory: 8589934592
   schedulingPolicy: {}
   secretRef:
-    name: treska
+    name: treska-{{ .Values.zone }}
     namespace: {{ .Release.Namespace }}
   zoneID: {{ .Values.zone }}

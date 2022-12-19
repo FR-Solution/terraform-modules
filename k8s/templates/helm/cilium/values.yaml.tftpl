@@ -1,6 +1,6 @@
 kubeProxyReplacement: strict
-k8sServiceHost: "${kube_apiserver_lb_fqdn}"
-k8sServicePort: ${kube_apiserver_port_lb}
+k8sServiceHost: api.cluster-2.dobry-kot.ru
+k8sServicePort: 443
 
 ipam:
   operator:
@@ -8,25 +8,10 @@ ipam:
     clusterPoolIPv4PodCIDRList:
       - 10.100.0.0/16
 
-#localRedirectPolicy: true
-#
-#loadBalancer:
-#  algorithm: random
-#  mode: snat
-#
-#wellKnownIdentities:
-#  enabled: true
-#
-#l2NeighDiscovery:
-#  enabled: false
-#
-#ipv4NativeRoutingCIDR: "10.0.0.0/8"
-#enableK8sEventHandover: true
-#
-#tunnel: "disabled"
-#
-#endpointRoutes:
-#  enabled: true 
-#
-#hostPort:
-#  enabled: true
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi

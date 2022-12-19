@@ -92,25 +92,7 @@ write_files:
       Wants=network-online.target
       After=network-online.target
       
-      
       [Service]
-      ExecStart=/usr/bin/kubelet
-      
-      Restart=always
-      StartLimitInterval=0
-      RestartSec=10
-      
-      [Install]
-      WantedBy=multi-user.target
-
-  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      [Service]
-      EnvironmentFile=-/etc/kubernetes/kubelet/service/kubelet-args.env
-
-      ExecStart=
       ExecStart=/usr/bin/kubelet \
         --node-labels=node.kubernetes.io/worker \
         --register-node=true \
@@ -128,12 +110,17 @@ write_files:
         --root-dir=/var/lib/kubelet \
         --register-node=true \
         --image-pull-progress-deadline=2m \
-        --v=2 \
         --kubeconfig=/etc/kubernetes/kubelet/kubeconfig \
         --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig \
         --container-runtime=remote \
         --container-runtime-endpoint=/run/containerd/containerd.sock \
         --pod-infra-container-image=k8s.gcr.io/pause:3.6
+      Restart=always
+      StartLimitInterval=0
+      RestartSec=10
+      
+      [Install]
+      WantedBy=multi-user.target
 
   - path: /etc/kubernetes/kubelet/config.yaml
     owner: root:root
@@ -273,34 +260,3 @@ write_files:
     content: |
       overlay
       br_netfilter
-
-  - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
-    owner: root:root
-    permissions: '0644'
-    content: |
-      -----BEGIN CERTIFICATE-----
-      MIIEVzCCAj+gAwIBAgIUBajqtWbYZYNcoy0ZQXQi/EiWfvgwDQYJKoZIhvcNAQEL
-      BQAwHzELMAkGA1UECBMCQ0ExEDAOBgNVBAMTB1Jvb3QgQ0EwHhcNMjIxMjE4MDIw
-      NjQzWhcNMzMwMjIzMDIwNzEzWjBHMQswCQYDVQQIEwJDQTETMBEGA1UEChMKS3Vi
-      ZXJuZXRlczEjMCEGA1UEAxMaS3ViZXJuZXRlcyBJbnRlcm1lZGlhdGUgQ0EwggEi
-      MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCwGzOn3EsigosxFw/Np+8xazOD
-      SjIiA6kvFQkdraFsUH1TKKLJnmyAd8AGZV6q+7PYL/k4nameMh9likkjrKO8zbCm
-      SFkm86UcNW/jeJ2xvP3wQYTvOmvh8V++dxO2U2vsvU+bAfWlyuUQrvo7d6nbpYyW
-      paI0ofpdvZNqUzVuQ0Uqy7mVjp/kDIzgyoNuXBPc7UyqNnS2/+9b53AjnBPU51B0
-      UWtiyCvPhLSxVoFjpWtOwDEc5FSee2MfMap9QuMRaJznIcpQ+sJYESp9ztdcJEkB
-      ogsbSXXelrX/kHia6WrGDIvFgcYcX014SqbTL3BNZkxaXMqdtbhyzDCjtzRjAgMB
-      AAGjYzBhMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
-      BBTd1p53MIhUGJSr3nj8vR5WDwmBkTAfBgNVHSMEGDAWgBSBqSsnGPlRoEmUz2Lw
-      kxmxDBtQ/TANBgkqhkiG9w0BAQsFAAOCAgEADoi/ArHQagmboa1ZINBC3NU9Z22S
-      qzue9PyxLkjdFq6Q3F/fBmPKwIhQmQB+xEMcuRxcRgWDTRouf7Qx0wJV6TUXUi/+
-      Fa+/UfQWRvSE5/UdMPTamC3B1qK/WARlrT4XoN3FBC0gIOeCOmHwruXGO16FZ+4E
-      nuxKVds/X/qIBTqlsguuLY4eGi6eF88n7HUsQ65cMRQi7dNCj3CESp2V+z1or+iI
-      VlxEGNhYXAM6JsqCsSGqnJhb2Q1JlgJx1qactSHFkMXEZXpsWMsLUHxftnjY+k/C
-      8iWBel8V958+IkyGM/MT+yyO5u86RPhDdfr5fHDkqO3KiD2EOglc8nPp5vEMQ1ly
-      konIUX0grmv8NTnwGw0RCxWbLu9JF0WFwKijTYxSUyKXp4/EpfLws41fcJrkJocy
-      wk/pYy09Qqr00CWnuYXK95HPbdM5XuN5+0U1fBvZe/0A21nhMivspUzcLy1CSNZb
-      Pu3RA/VZtFwD7RRoKYw/Mi4hoFJeD9YUAidwTlwJs073srwmjspu96nRDSTKpOt5
-      MO6CYUTtNBIe2M3EImXsj0pnpxjnsPwHkPwsPLzAJYbo12dCwv9rPQyyS6KEW+xB
-      Ui7h6LFvIoWtUlU80FBn0l3Cftae9ggRrzqm9znVmMCWBVdGwj/hnBSfqJmghDIJ
-      2gGMv8aMlDMCmrY=
-      -----END CERTIFICATE-----
