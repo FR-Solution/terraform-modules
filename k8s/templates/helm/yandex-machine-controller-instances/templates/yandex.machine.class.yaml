@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.zone }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    helm.sh/hook: post-install
+    helm.sh/hook-weight: "3"
 spec:
   bootDiskSpec:
     autoDelete: true

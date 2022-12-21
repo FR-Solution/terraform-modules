@@ -1,29 +1,9 @@
-KUBELET_HOSTNAME="
-    --node-labels=node.kubernetes.io/${instance_type}
-"
-
 KUBELET_BASIC_ARGS="
-    --register-node=true
-    --cloud-provider=external
-    --image-pull-progress-deadline=2m
-    --feature-gates=RotateKubeletServerCertificate=true
     --cert-dir=/etc/kubernetes/pki/certs/kubelet
-    --authorization-mode=Webhook
-    --v=2
-"
-KUBELET_AUTH_ARGS="
-    --anonymous-auth="false"
-"
-KUBELET_CNI_ARGS="
-    --cni-bin-dir=/opt/cni/bin
-    --cni-conf-dir=/etc/cni/net.d
-    --network-plugin=cni
 "
 KUBELET_CONFIGS_ARGS="
     --config=${base_kubernetes_path}/kubelet/config.yaml
     --root-dir=/var/lib/kubelet
-    --register-node=true
-    --image-pull-progress-deadline=2m
     --v=2
 "
 KUBELET_KUBECONFIG_ARGS="

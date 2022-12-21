@@ -92,29 +92,10 @@ write_files:
       Wants=network-online.target
       After=network-online.target
       
+      
       [Service]
-      ExecStart=/usr/bin/kubelet \
-        --node-labels=node.kubernetes.io/worker \
-        --register-node=true \
-        --cloud-provider=external \
-        --image-pull-progress-deadline=2m \
-        --feature-gates=RotateKubeletServerCertificate=true \
-        --cert-dir=/etc/kubernetes/pki/certs/kubelet \
-        --authorization-mode=Webhook \
-        --v=2 \
-        --anonymous-auth="false" \
-        --cni-bin-dir=/opt/cni/bin \
-        --cni-conf-dir=/etc/cni/net.d \
-        --network-plugin=cni \
-        --config=/etc/kubernetes/kubelet/config.yaml \
-        --root-dir=/var/lib/kubelet \
-        --register-node=true \
-        --image-pull-progress-deadline=2m \
-        --kubeconfig=/etc/kubernetes/kubelet/kubeconfig \
-        --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig \
-        --container-runtime=remote \
-        --container-runtime-endpoint=/run/containerd/containerd.sock \
-        --pod-infra-container-image=k8s.gcr.io/pause:3.6
+      ExecStart=/usr/bin/kubelet
+      
       Restart=always
       StartLimitInterval=0
       RestartSec=10
@@ -122,11 +103,54 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+  - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Service]
+      EnvironmentFile=-/etc/kubernetes/kubelet/service/kubelet-args.env
+
+      ExecStart=
+      ExecStart=/usr/bin/kubelet \
+          $KUBELET_HOSTNAME \
+          $KUBELET_CNI_ARGS \
+          $KUBELET_RUNTIME_ARGS \
+          $KUBELET_AUTH_ARGS \
+          $KUBELET_CONFIGS_ARGS \
+          $KUBELET_BASIC_ARGS \
+          $KUBELET_KUBECONFIG_ARGS
+
+  - path: /etc/kubernetes/kubelet/service/kubelet-args.env
+    owner: root:root
+    permissions: '0644'
+    content: |
+      KUBELET_BASIC_ARGS="
+          --cert-dir=/etc/kubernetes/pki/certs/kubelet
+      "
+      KUBELET_CONFIGS_ARGS="
+          --config=/etc/kubernetes/kubelet/config.yaml
+          --root-dir=/var/lib/kubelet
+          --v=2
+      "
+      KUBELET_KUBECONFIG_ARGS="
+          --kubeconfig=/etc/kubernetes/kubelet/kubeconfig
+          --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig
+      "
+      KUBELET_RUNTIME_ARGS="
+          --container-runtime=remote
+          --container-runtime-endpoint=/run/containerd/containerd.sock
+          --pod-infra-container-image=k8s.gcr.io/pause:3.6
+      "
+
+
   - path: /etc/kubernetes/kubelet/config.yaml
     owner: root:root
     permissions: '0644'
     content: |
+      ---
       apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      registerNode: true
       authentication:
         anonymous:
           enabled: false
@@ -151,7 +175,6 @@ write_files:
       healthzPort: 10248
       httpCheckFrequency: 0s
       imageMinimumGCAge: 0s
-      kind: KubeletConfiguration
       logging:
         flushFrequency: 0
         options:
@@ -180,6 +203,7 @@ write_files:
       systemReserved:
         ephemeral-storage: 1Gi
       featureGates:
+        RotateKubeletServerCertificate: true
         APIPriorityAndFairness: true
         DownwardAPIHugePages: true
         PodSecurity: true
@@ -222,6 +246,7 @@ write_files:
       imageGCHighThresholdPercent: 55
       imageGCLowThresholdPercent: 50
 
+
   - path: /etc/systemd/system/containerd.service
     owner: root:root
     permissions: '0644'
@@ -260,3 +285,34 @@ write_files:
     content: |
       overlay
       br_netfilter
+
+  - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+    owner: root:root
+    permissions: '0644'
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIIEVzCCAj+gAwIBAgIUPLrkt9mHfTQftNmh9RnuHqNVIBIwDQYJKoZIhvcNAQEL
+      BQAwHzELMAkGA1UECBMCQ0ExEDAOBgNVBAMTB1Jvb3QgQ0EwHhcNMjIxMjIxMTgx
+      NjI5WhcNMzMwMjI2MTgxNjU5WjBHMQswCQYDVQQIEwJDQTETMBEGA1UEChMKS3Vi
+      ZXJuZXRlczEjMCEGA1UEAxMaS3ViZXJuZXRlcyBJbnRlcm1lZGlhdGUgQ0EwggEi
+      MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCsLXWFjUD8CrnoIuWhYKp2YPyg
+      U97dxSlqeW8xR677aR1qrH8vXnMMusd7Dw40RubuSPDzzD6f+GflSXGmfrv/Dhra
+      0zLl1lK62V5LNROwTZcx7F/YxNhFulF55ieFCR1nqMFUjb//bQZ3gMFGKqHj4OA4
+      yb2dKCTw9MmKjzgPnaqtcfI2uMixh/5bueQVmSRDSDCUBWp6Dg3+Tx7GgQwJCCrs
+      au0b6Lhm0e3b+62zMzzMWpbv8XqhHNBbeAAWAq9XvmkPSDA1Oyc48I0QKkP5dDnZ
+      uLc+t4ikILpIJgBD4DTBVwIUJkIo+jZ3ZiweInHdYBxrBa+LoKsHQHjWVS0/AgMB
+      AAGjYzBhMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
+      BBTKC34Joj96RyJuWqVkLQGFemVljzAfBgNVHSMEGDAWgBSBqSsnGPlRoEmUz2Lw
+      kxmxDBtQ/TANBgkqhkiG9w0BAQsFAAOCAgEAb/pdclTARr4NnHWciXQsDsOwaNNw
+      ZwtLGMWOL5HZQR6wxYzJ1gw/FqY2JXjqeUKAXErnkZHdzf1bh7dho1pjACFhy6l/
+      d04QR04t9tfaXdDwRqoHjnRn6aF4UvHqwEZ8NF0lxCumgysOYReDX16t6oWwRk6J
+      ATGL/3F4EfaTUSBzUJ/DbJG/cNXhihKNEIw4QXOX8CRRYdu/hK4b/RRPJHZpGGae
+      nfIXtmvPH+NqumRPbYyIbBXXanCumm8rnq5JeSFvwY8V9pmmlw+SaryrFPekFWdQ
+      zZ5p6KeL23fVnW7wR5yQi/uaewUUvWAQ9rnmrnDi4+1nMS1xGmHl2rK3FOYgzI5t
+      vx7EzW+PR4InZ9ATwAShdqLZoEcckzSqKR67605BEykSq9ii36Yv/rPtlUSw+bDx
+      IlDWjT+ddGpsxaKCWumc7CeMTA/v3NVVVqvEZTLMgG85oVgLIvTOe7dmRqQrAi3U
+      1y11D8p/bD5miZN8fKeH1sUDNq4JwqSwOI10mYCxwOHTj5+MKbmYosxWiWYqkVh9
+      6GGn2t2IKb3NaqpFopEIaLG0BeW5JbLUMbCyAsBkdVtsHQrNiqshRjWdvcU4x6Dd
+      PTSUvpah2QARTQ7EwYH6yn6Wn5efc3hmUrQStLu0hJfz+dIWiwD0O3bPN1TxRRuS
+      9gxujSippbX4aQE=
+      -----END CERTIFICATE-----

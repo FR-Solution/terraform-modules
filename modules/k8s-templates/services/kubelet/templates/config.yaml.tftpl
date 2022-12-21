@@ -1,4 +1,6 @@
 apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+registerNode: true
 authentication:
   anonymous:
     enabled: false
@@ -7,10 +9,6 @@ authentication:
     enabled: true
   x509:
     clientCAFile: "${ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem"
-%{ if instance_type != "worker"}
-tlsCertFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server.pem
-tlsPrivateKeyFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server-key.pem
-%{ endif }
 authorization:
   mode: Webhook
   webhook:
@@ -27,7 +25,6 @@ healthzBindAddress: 127.0.0.1
 healthzPort: 10248
 httpCheckFrequency: 0s
 imageMinimumGCAge: 0s
-kind: KubeletConfiguration
 logging:
   flushFrequency: 0
   options:
@@ -56,6 +53,7 @@ serializeImagePulls: false
 systemReserved:
   ephemeral-storage: 1Gi
 featureGates:
+  RotateKubeletServerCertificate: true
   APIPriorityAndFairness: true
   DownwardAPIHugePages: true
   PodSecurity: true

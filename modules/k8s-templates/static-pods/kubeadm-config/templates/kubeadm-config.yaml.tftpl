@@ -80,7 +80,7 @@ apiServer:
     service-account-issuer: https://kubernetes.default.svc.cluster.local
     kubelet-preferred-address-types: InternalIP,ExternalIP,Hostname
     kubelet-timeout: 5s
-    v: "2"
+    v: "4"
     cloud-provider: external
     oidc-ca-file: ${base_path.base_local_path_certs}/ca/oidc-ca.pem
     oidc-client-id: kubernetes-${cluster_name}
