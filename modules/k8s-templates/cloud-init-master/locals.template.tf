@@ -44,6 +44,7 @@ locals {
         kube-apiserver-audit                = module.static-pod-kube-apiserver.kube-apiserver-audit
 
         containerd-service                  = module.containerd-service.service
+        containerd-service-config           = module.containerd-service.service-config
         sysctl-network                      = module.sysctl.network
         modprobe-k8s                        = module.modprobe.k8s
         cni-base                            = module.cni.base

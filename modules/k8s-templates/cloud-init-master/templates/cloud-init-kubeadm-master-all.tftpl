@@ -249,6 +249,12 @@ write_files:
     content: |
       ${indent(6, containerd-service)}
 
+  - path: /etc/kubernetes/containerd/config.toml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      ${indent(6, containerd-service-config)}
+      
 
 ###--->
 ####### *** ############################################

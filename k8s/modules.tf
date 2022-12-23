@@ -53,7 +53,7 @@ module "k8s-yandex-cluster" {
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 3
+        count   = 1
 
         vpc_id            = yandex_vpc_network.cluster-vpc.id
         subnets           = yandex_vpc_subnet.master-subnets
@@ -62,9 +62,11 @@ module "k8s-yandex-cluster" {
         resources_overwrite = {
             master-1 = {
               zone    = "ru-central1-a"
+              # # fd8kdq6d0p8sij7h5qe3 | ubuntu-20-04-lts-v20220822
+              # # fd8ingbofbh3j5h7i8ll | ubuntu-22-04-lts-v20220810
               # disk = {
               #   boot = {
-              #     image_id  = "fd8dl9ahl649kf31vp4o"
+              #     image_id  = "fd8ingbofbh3j5h7i8ll"
               #   }
               # }
             }
@@ -83,7 +85,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8kdq6d0p8sij7h5qe3"
+              image_id  = "fd8ingbofbh3j5h7i8ll"
               size      = 30
               type      = "network-hdd"
             }

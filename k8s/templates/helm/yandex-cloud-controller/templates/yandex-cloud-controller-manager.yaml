@@ -69,9 +69,9 @@ spec:
                 name: yandex-cloud
                 key: vpc-id   
           - name: KUBERNETES_SERVICE_HOST
-            value: {{ .Values.k8s_api_server }}
+            value: "{{ .Values.k8s_api_server }}"
           - name: KUBERNETES_SERVICE_PORT_HTTPS
-            value: {{ .Values.k8s_api_server_port }}
+            value: "{{ .Values.k8s_api_server_port }}"
           - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
             valueFrom:
               secretKeyRef:
