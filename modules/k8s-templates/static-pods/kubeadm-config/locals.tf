@@ -13,7 +13,8 @@ locals {
         kube_apiserver_port             = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
         kube_api_fqdn                   = var.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
         cluster_name                    = var.k8s_global_vars.cluster_name
-
+        pod_cidr                        = var.k8s_global_vars.k8s-addresses.pod_cidr
+        node_cidr_mask                  = var.k8s_global_vars.k8s-addresses.node_cidr_mask
     })}
     ])
 

@@ -1,12 +1,25 @@
 kubeProxyReplacement: strict
-k8sServiceHost: api.cluster-2.dobry-kot.ru
-k8sServicePort: 443
+k8sServiceHost: ${k8s_api_server_fqdn}
+k8sServicePort: ${k8s_api_server_port}
 
 ipam:
+  mode: kubernetes
   operator:
-    clusterPoolIPv4MaskSize: 24
+    clusterPoolIPv4MaskSize: ${node_cidr_mask}
     clusterPoolIPv4PodCIDRList:
-      - 10.100.0.0/16
+      - ${service_cidr}
+
+bpf:
+  tproxy: true
+
+operator:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 resources:
   limits:

@@ -8,6 +8,8 @@ locals {
     etcd_server_lb_fqdn           = format("%s.%s.%s", "etcd"    , var.cluster_name, var.base_domain)
     kube_apiserver_lb_fqdn        = format("%s.%s.%s", "api"     , var.cluster_name, var.base_domain)
     kube_apiserver_lb_fqdn_local  = format("%s.%s.%s", "api-int" , var.cluster_name, var.base_domain)
-
+    
+    pod_cidr                      = var.pod_cidr
+    node_cidr_mask                = var.node_cidr_mask
   }
 }

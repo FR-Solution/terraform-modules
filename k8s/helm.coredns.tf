@@ -12,4 +12,6 @@ resource "helm_release" "coredns" {
   values = [
     file("${path.module}/templates/helm/coredns/values.yaml")
   ]
+  wait      = true
+  atomic    = true
 }

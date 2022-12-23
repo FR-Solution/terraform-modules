@@ -133,3 +133,13 @@ variable "ssh_rsa_path" {
   type        = string
   default     = "~/.ssh/id_rsa.pub"
 }
+
+variable "pod_cidr" {
+  type = string
+  default = null
+}
+
+variable "node_cidr_mask" {
+  type = string
+  default = null
+}

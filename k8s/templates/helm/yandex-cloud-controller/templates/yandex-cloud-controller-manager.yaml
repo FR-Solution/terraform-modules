@@ -4,20 +4,20 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: cloud-controller-manager
+  name: yandex-cloud-controller-manager
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cloud-controller-manager
+  name: yandex-cloud-controller-manager
 spec:
   progressDeadlineSeconds: 600
-  replicas: 1
+  replicas: 3
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: cloud-controller-manager
+      app: yandex-cloud-controller-manager
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -27,66 +27,77 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: cloud-controller-manager
+        app: yandex-cloud-controller-manager
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: yandex-cloud-controller-manager
       containers:
       - args:
-        - --leader-elect=true
-        - --cluster-cidr={{ .Values.pod_cidr }}
-        - --allocate-node-cidrs=true
-        - --configure-cloud-routes=true
-        - --cloud-provider=yandex
-        - --cluster-name={{ .Values.cluster_name }}
-        - --bind-address=$(HOST_IP)
-        - --secure-port=10471
-        - --v=2
+          - --leader-elect=true
+          - --cluster-cidr={{ .Values.pod_cidr }}
+          - --allocate-node-cidrs=true
+          - --configure-cloud-routes=true
+          - --cloud-provider=yandex
+          - --cluster-name={{ .Values.cluster_name }}
+          - --bind-address=$(BIND_IP)
+          - --secure-port=64321
+          - --v=2
         env:
-        - name: HOST_IP
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: status.hostIP
-        - name: YANDEX_CLUSTER_NAME
-          value: {{ .Values.cluster_name }}
-        - name: YANDEX_CLOUD_SERVICE_ACCOUNT_JSON
-          valueFrom:
-            secretKeyRef:
-              name: yandex-cloud
-              key: service-account-json
-        - name: YANDEX_CLOUD_DEFAULT_LB_LISTENER_SUBNET_ID
-        - name: YANDEX_CLOUD_DEFAULT_LB_TARGET_GROUP_NETWORK_ID
-          valueFrom:
-            secretKeyRef:
-              name: yandex-cloud
-              key: vpc-id   
-        - name: KUBERNETES_SERVICE_HOST
-          value: {{ .Values.k8s_api_server }}
-        - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
-          valueFrom:
-            secretKeyRef:
-              name: yandex-cloud
-              key: vpc-id   
-        - name: YANDEX_CLOUD_EXTERNAL_NETWORK_IDS
-        - name: YANDEX_CLOUD_ROUTE_TABLE_ID
-          valueFrom:
-            secretKeyRef:
-              name: yandex-cloud
-              key: route_table_id
+          - name: BIND_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.hostIP
+          - name: YANDEX_CLUSTER_NAME
+            value: {{ .Values.cluster_name }}
+          - name: YANDEX_CLOUD_SERVICE_ACCOUNT_JSON
+            valueFrom:
+              secretKeyRef:
+                name: yandex-cloud
+                key: service-account-json
+          - name: YANDEX_CLOUD_DEFAULT_LB_LISTENER_SUBNET_ID
+          - name: YANDEX_CLOUD_DEFAULT_LB_TARGET_GROUP_NETWORK_ID
+            valueFrom:
+              secretKeyRef:
+                name: yandex-cloud
+                key: vpc-id   
+          - name: KUBERNETES_SERVICE_HOST
+            value: {{ .Values.k8s_api_server }}
+          - name: KUBERNETES_SERVICE_PORT_HTTPS
+            value: {{ .Values.k8s_api_server_port }}
+          - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
+            valueFrom:
+              secretKeyRef:
+                name: yandex-cloud
+                key: vpc-id   
+          - name: YANDEX_CLOUD_EXTERNAL_NETWORK_IDS
+          - name: YANDEX_CLOUD_ROUTE_TABLE_ID
+            valueFrom:
+              secretKeyRef:
+                name: yandex-cloud
+                key: route_table_id
         image: registry.deckhouse.io/deckhouse/ce:bfbae39acd8fbe3ecb8b287214357906dd2815a805f5b56d548c48c9-1663920311654
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
           httpGet:
             path: /healthz
-            port: 10471
+            port: https
             scheme: HTTPS
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 1
-        name: yandex-cloud-controller-manager
+        name: yandex-yandex-cloud-controller-manager
         ports:
-        - containerPort: 10471
-          hostPort: 10471
+        - containerPort: 64321
+          hostPort: 64321
           name: https
           protocol: TCP
         readinessProbe:
@@ -99,34 +110,31 @@ spec:
           successThreshold: 1
           timeoutSeconds: 1
         resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
           requests:
+            cpu: 100m
+            memory: 128Mi
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /tmp
-          name: tmp
-      dnsPolicy: Default
       hostNetwork: true
-      # imagePullSecrets:
-      # - name: deckhouse-registry
+      dnsPolicy: ClusterFirst
       nodeSelector:
         node-role.kubernetes.io/control-plane: ""
       priorityClassName: system-cluster-critical
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext:
-        runAsGroup: 65534
+        runAsGroup: 1000
         runAsNonRoot: true
-        runAsUser: 65534
-      serviceAccount: cloud-controller-manager
-      serviceAccountName: cloud-controller-manager
+        runAsUser: 1000
+      serviceAccount: yandex-cloud-controller-manager
+      serviceAccountName: yandex-cloud-controller-manager
       terminationGracePeriodSeconds: 30
       tolerations:
       - operator: Exists
-      volumes:
-      - emptyDir: {}
-        name: tmp

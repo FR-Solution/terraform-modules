@@ -45,5 +45,7 @@ resource "helm_release" "ycsi" {
         cluster_name = var.cluster_name
     })
   ]
-  timeout = 6000
+  timeout   = 6000
+  wait      = true
+  atomic    = true
 }

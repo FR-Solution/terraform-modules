@@ -14,4 +14,6 @@ resource "helm_release" "certmanager" {
     templatefile("${path.module}/templates/helm/certmanager/values.yaml", {
     })
   ]
+  wait      = true
+  atomic    = true
 }

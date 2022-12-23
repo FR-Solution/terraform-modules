@@ -23,6 +23,11 @@ variable "pod_cidr" {
   default = "10.200.0.0/16"
 }
 
+variable "node_cidr_mask" {
+  type = string
+  default = "24"
+}
+
 variable "cloud_metadata" {
   type = object({
     folder_id = string
@@ -39,7 +44,7 @@ variable "master_group"{
     vpc_id = string
     subnets = any
     default_zone = string
-    subnet_id_overwrite = any
+    resources_overwrite = any
     resources = any
     ssh_username = string
     ssh_rsa_path = string
@@ -57,7 +62,7 @@ variable "master_group"{
     vpc_id = null
     subnets = null
     default_zone = "ru-central1-a"
-    subnet_id_overwrite = {}
+    resources_overwrite = {}
     resources = {
       core = 4
       memory = 8

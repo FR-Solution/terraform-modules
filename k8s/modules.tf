@@ -45,6 +45,7 @@ module "k8s-yandex-cluster" {
 
     service_cidr    = var.cidr.service
     pod_cidr        = var.cidr.pod
+    node_cidr_mask  = var.cidr.node_cidr_mask
 
     cloud_metadata = {
       folder_id = data.yandex_resourcemanager_folder.current.id
@@ -58,15 +59,20 @@ module "k8s-yandex-cluster" {
         subnets           = yandex_vpc_subnet.master-subnets
         default_zone      = "ru-central1-a"
 
-        subnet_id_overwrite = {
+        resources_overwrite = {
             master-1 = {
-                zone    = "ru-central1-a"
+              zone    = "ru-central1-a"
+              # disk = {
+              #   boot = {
+              #     image_id  = "fd8dl9ahl649kf31vp4o"
+              #   }
+              # }
             }
             master-2 = {
-                zone    = "ru-central1-b"
+              zone    = "ru-central1-b"
             }
             master-3 = {
-                zone    = "ru-central1-c"
+              zone    = "ru-central1-c"
             }
         }
 

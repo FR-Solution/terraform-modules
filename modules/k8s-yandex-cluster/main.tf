@@ -7,6 +7,8 @@ module "k8s-global-vars" {
     service_cidr          = var.service_cidr
     ssh_username          = var.master_group.ssh_username
     ssh_rsa_path          = var.master_group.ssh_rsa_path
+    pod_cidr              = var.pod_cidr
+    node_cidr_mask        = var.node_cidr_mask
 }
 
 module "k8s-vault" {

@@ -33,10 +33,6 @@ locals {
 }
 
 resource "helm_release" "ycc" {
-  # depends_on = [
-  #   helm_release.cilium,
-  #   helm_release.coredns
-  # ]
   name       = "ycc"
   chart      = "templates/helm/yandex-cloud-controller"
   namespace  = "fraima-ccm"
@@ -44,11 +40,13 @@ resource "helm_release" "ycc" {
   values = [
     templatefile("templates/helm/yandex-cloud-controller/values.yaml", {
         yandex_cloud_controller_sa = local.yandex-cloud-controller-sa
-        cluster_name    = var.cluster_name
-        pod_cidr        = var.cidr.pod
-        k8s_api_server  = module.k8s-yandex-cluster.kube-apiserver-lb-fqdn
+        cluster_name        = var.cluster_name
+        pod_cidr            = var.cidr.pod
+        k8s_api_server      = module.k8s-yandex-cluster.kube-apiserver-lb-fqdn
+        k8s_api_server_port = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
     })
   ]
   timeout   = 6000
-  wait      = "true"
+  wait      = true
+  atomic    = true
 }

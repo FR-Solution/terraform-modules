@@ -66,7 +66,7 @@ apiServer:
     audit-log-mode: batch
     audit-policy-file: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
     audit-log-path: /var/log/kubernetes/audit/audit.log
-    enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction
+    enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction,PodSecurity
     enable-bootstrap-token-auth: "true"
     runtime-config: api/all=true
     enable-aggregator-routing: "true"
@@ -151,9 +151,9 @@ controllerManager:
     # bind-address: "0.0.0.0"
     v: "2"
     secure-port: "10257"
-    cluster-cidr: 10.100.0.0/16
-    node-cidr-mask-size: "24"
     allocate-node-cidrs: "true"
+    cluster-cidr: "${ pod_cidr }"
+    node-cidr-mask-size: "${ node_cidr_mask }"
     cluster-name: kubernetes
     concurrent-deployment-syncs: "5"
     concurrent-endpoint-syncs: "5"

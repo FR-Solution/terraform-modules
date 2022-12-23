@@ -1,7 +1,6 @@
 resource "helm_release" "gatekeeper" {
   depends_on = [
     helm_release.coredns,
-    helm_release.ycc
   ]
   name       = "gatekeeper"
   chart      = "templates/helm/gatekeeper"
@@ -11,4 +10,6 @@ resource "helm_release" "gatekeeper" {
   values = [
     file("${path.module}/templates/helm/gatekeeper/values-extra.yaml")
   ]
+  wait      = true
+  atomic    = true
 }
