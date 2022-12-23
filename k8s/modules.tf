@@ -17,6 +17,11 @@ resource "yandex_vpc_network" "cluster-vpc" {
 resource "yandex_vpc_route_table" "cluster-vpc-route-table" {
   name = "vpc.clusters.route.table"
   network_id = "${yandex_vpc_network.cluster-vpc.id}"
+  lifecycle {
+    ignore_changes = [
+      static_route
+    ]
+  }
 }
 
 #### SUBNETS ######
@@ -31,62 +36,65 @@ resource "yandex_vpc_subnet" "master-subnets" {
     route_table_id = yandex_vpc_route_table.cluster-vpc-route-table.id
 }
 
-variable "master_availability_zones"{
-  type = object({
-    ru-central1-a = string
-    ru-central1-b = string
-    ru-central1-c = string
-  })
-  default = {
-    ru-central1-a = "10.1.0.0/16"
-    ru-central1-b = "10.2.0.0/16"
-    ru-central1-c = "10.3.0.0/16"
-  }
-}
 
 module "k8s-yandex-cluster" {
     source = "../modules/k8s-yandex-cluster"
     cluster_name    = var.cluster_name
-    base_domain     = "dobry-kot.ru"
-    vault_server    = "http://193.32.219.99:9200/"
-    
-    service_cidr    = "29.64.0.0/16"
-    
+    base_domain     = var.base_domain
+    vault_server    = var.vault_server
+
+    service_cidr    = var.cidr.service
+    pod_cidr        = var.cidr.pod
+
     cloud_metadata = {
       folder_id = data.yandex_resourcemanager_folder.current.id
     }
+
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 1
+        count   = 3
 
-        vpc_id          = yandex_vpc_network.cluster-vpc.id
-        default_subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
+        vpc_id            = yandex_vpc_network.cluster-vpc.id
+        subnets           = yandex_vpc_subnet.master-subnets
         default_zone      = "ru-central1-a"
 
         subnet_id_overwrite = {
             master-1 = {
-                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-a"].id
                 zone    = "ru-central1-a"
             }
             master-2 = {
-                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-b"].id
                 zone    = "ru-central1-b"
             }
             master-3 = {
-                subnet  = yandex_vpc_subnet.master-subnets["ru-central1-c"].id
                 zone    = "ru-central1-c"
             }
         }
+
         resources = {
           core            = 6
           memory          = 12
           core_fraction   = 100
-          etcd_disk       = 10
-          first_disk      = 30
+
+          disk = {
+            boot = {
+              image_id  = "fd8kdq6d0p8sij7h5qe3"
+              size      = 30
+              type      = "network-hdd"
+            }
+
+            secondary_disk = {
+              etcd = {
+                size        = 10
+                mode        = "READ_WRITE"
+                auto_delete = false
+                type        = "network-ssd"
+              }
+            }
+          }
         }
-        os_image = "fd8kdq6d0p8sij7h5qe3"
-        ssh_username = "dkot"
-        ssh_rsa_path = "~/.ssh/id_rsa.pub"
+
+        ssh_username  = "dkot"
+        ssh_rsa_path  = "~/.ssh/id_rsa.pub"
     }
 }
 

@@ -12,4 +12,16 @@ locals {
     item => {}
   }
 
+
+  instances_disk = flatten([
+  for disk_index, disk_name in keys(var.master_group.resources.disk.secondary_disk) : [
+      for instance_name in local.master_instance_list:
+        {"${disk_name}_${instance_name}" = {}}
+        ]
+      ]
+  )
+  instances_disk_map = { for item in local.instances_disk :
+    keys(item)[0] => values(item)[0]
+  }
+
 }

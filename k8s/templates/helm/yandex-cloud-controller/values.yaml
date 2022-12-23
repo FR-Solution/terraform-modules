@@ -13,3 +13,5 @@ yccm:
   route_table_id: ${ yandex_cloud_controller_sa.route_table_id }
 
 cluster_name: ${cluster_name}
+pod_cidr: ${pod_cidr}
+k8s_api_server: ${k8s_api_server}

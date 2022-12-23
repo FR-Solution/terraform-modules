@@ -15,3 +15,27 @@ resources:
   requests:
     cpu: 100m
     memory: 512Mi
+
+
+loadBalancer:
+  algorithm: random
+  mode: snat
+
+wellKnownIdentities:
+  enabled: true
+
+l2NeighDiscovery:
+  enabled: false
+
+ipv4NativeRoutingCIDR: "10.0.0.0/8"
+enableK8sEventHandover: true
+
+tunnel: "disabled"
+
+endpointRoutes:
+  enabled: true 
+
+enableIPv4Masquerade: true
+
+hostPort:
+  enabled: true

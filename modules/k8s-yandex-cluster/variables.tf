@@ -18,6 +18,11 @@ variable "service_cidr" {
   default = "172.16.0.0/16"
 }
 
+variable "pod_cidr" {
+  type = string
+  default = "10.200.0.0/16"
+}
+
 variable "cloud_metadata" {
   type = object({
     folder_id = string
@@ -32,30 +37,35 @@ variable "master_group"{
     name = string
     count = number
     vpc_id = string
-    default_subnet_id = string
+    subnets = any
     default_zone = string
     subnet_id_overwrite = any
     resources = any
-    os_image = string
     ssh_username = string
     ssh_rsa_path = string
 
   })
+  validation {
+      condition = (
+        contains([1,3,5], var.master_group.count) == true
+      )
+      error_message = "var.master_group.count is not correct. Number of master can be 1,3,5"
+  }
   default = {
     name = "master"
     count = 0
     vpc_id = null
-    default_subnet_id = null
+    subnets = null
     default_zone = "ru-central1-a"
     subnet_id_overwrite = {}
     resources = {
       core = 4
       memory = 8
       core_fraction = 100
+      disk = {}
       first_disk = 20
       etcd_disk = 60
     }
-    os_image = "fd8kdq6d0p8sij7h5qe3"
     ssh_username = "dkot"
     ssh_rsa_path = "~/.ssh/id_rsa"
 

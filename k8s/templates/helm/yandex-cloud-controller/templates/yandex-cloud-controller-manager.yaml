@@ -5,72 +5,6 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cloud-controller-manager
-# ---
-# apiVersion: apps/v1
-# kind: DaemonSet
-# metadata:
-#   name: yandex-cloud-controller-manager
-#   labels:
-#     k8s-app: yandex-cloud-controller-manager
-# spec:
-#   selector:
-#     matchLabels:
-#       k8s-app: yandex-cloud-controller-manager
-#   template:
-#     metadata:
-#       labels:
-#         k8s-app: yandex-cloud-controller-manager
-#     spec:
-#       hostNetwork: true
-#       dnsPolicy: Default
-#       serviceAccountName: cloud-controller-manager
-#       nodeSelector:
-#         # The CCM will only run on masters
-#         node-role.kubernetes.io/control-plane: ""
-#       tolerations:
-#         - key: node-role.kubernetes.io/master
-#         - key: node-role.kubernetes.io/control-plane
-#         - key: node.kubernetes.io/not-ready
-#         - key: node.kubernetes.io/out-of-disk
-#         - key: node.kubernetes.io/memory-pressure
-#         - key: node.kubernetes.io/disk-pressure
-#         - key: node.cloudprovider.kubernetes.io/uninitialized
-#           value: "true"
-#           effect: NoSchedule
-#       containers:
-#         - image: registry.deckhouse.io/yandex-cloud-controller-manager/yandex-cloud-controller-manager:v0.21.3
-#           name: yandex-cloud-controller-manager
-#           command:
-#             - /bin/yandex-cloud-controller-manager
-#             - --cloud-provider=yandex
-#             - --v=3
-#           resources:
-#             requests:
-#               cpu: 100m
-#               memory: 50Mi
-#           env:
-#             - name: YANDEX_CLOUD_SERVICE_ACCOUNT_JSON
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: yandex-cloud
-#                   key: service-account-json
-#             - name: YANDEX_CLOUD_FOLDER_ID
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: yandex-cloud
-#                   key: folder-id
-#             - name: YANDEX_CLOUD_DEFAULT_LB_TARGET_GROUP_NETWORK_ID
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: yandex-cloud
-#                   key: vpc-id    
-#             - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: yandex-cloud
-#                   key: vpc-id
-#             - name: YANDEX_CLUSTER_NAME
-#               value: {{ .Values.cluster_name }}
 
 ---
 apiVersion: apps/v1
@@ -98,11 +32,11 @@ spec:
       containers:
       - args:
         - --leader-elect=true
-        - --cluster-cidr=10.100.0.0/16
+        - --cluster-cidr={{ .Values.pod_cidr }}
         - --allocate-node-cidrs=true
         - --configure-cloud-routes=true
         - --cloud-provider=yandex
-        - --cluster-name=cluster-2
+        - --cluster-name={{ .Values.cluster_name }}
         - --bind-address=$(HOST_IP)
         - --secure-port=10471
         - --v=2
@@ -113,7 +47,7 @@ spec:
               apiVersion: v1
               fieldPath: status.hostIP
         - name: YANDEX_CLUSTER_NAME
-          value: cluster-2
+          value: {{ .Values.cluster_name }}
         - name: YANDEX_CLOUD_SERVICE_ACCOUNT_JSON
           valueFrom:
             secretKeyRef:
@@ -125,6 +59,8 @@ spec:
             secretKeyRef:
               name: yandex-cloud
               key: vpc-id   
+        - name: KUBERNETES_SERVICE_HOST
+          value: {{ .Values.k8s_api_server }}
         - name: YANDEX_CLOUD_INTERNAL_NETWORK_IDS
           valueFrom:
             secretKeyRef:
@@ -142,7 +78,7 @@ spec:
           failureThreshold: 3
           httpGet:
             path: /healthz
-            port: https
+            port: 10471
             scheme: HTTPS
           periodSeconds: 10
           successThreshold: 1

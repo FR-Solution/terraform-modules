@@ -25,26 +25,23 @@ variable "master_group"{
     name = string
     count = number
     vpc_id = string
-    default_subnet_id = string
+    subnets  = any
     default_zone = string
     subnet_id_overwrite = any
     resources = any
-    os_image = string
   })
   default = {
     name = "master"
     count = 0
     vpc_id = null
-    default_subnet_id = null
+    subnets = null
     default_zone = "ru-central1-a"
     subnet_id_overwrite = {}
     resources = {
       core = 4
       memory = 8
       core_fraction = 100
-      first_disk = 20
-      etcd_disk = 60
+      disk = {}
     }
-    os_image = "fd8kdq6d0p8sij7h5qe3"
   }
 }

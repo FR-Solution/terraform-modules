@@ -135,14 +135,11 @@ runcmd:
   - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client.pem; do sleep 1; done
   - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client-key.pem; do sleep 1; done
   # TODO вынести в голден image | Проверка на ускорение сетапа
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/coredns/coredns:1.9.3
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper-crds:v3.10.0-beta.2
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper:v3.10.0-beta.2
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/pause:3.6
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/etcd:3.5.3-0
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-apiserver:v1.23.12
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-controller-manager:v1.23.12
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-scheduler:v1.23.12
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/pause:3.6
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
@@ -150,6 +147,9 @@ runcmd:
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/livenessprobe:v2.0.0
   - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/coredns/coredns:1.9.3
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper-crds:v3.10.0-beta.2
+  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper:v3.10.0-beta.2
   - kubeadm init --skip-phases=preflight,certs,kubeconfig,kubelet-start,etcd,upload-certs,kubelet-finalize,addon,bootstrap-token --config=/etc/kubernetes/kubeadm/config.yaml
 
 write_files:

@@ -1,6 +1,10 @@
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 registerNode: true
+%{ if instance_type != "worker"}
+tlsCertFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server.pem
+tlsPrivateKeyFile: ${ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server-key.pem
+%{ endif }
 authentication:
   anonymous:
     enabled: false
