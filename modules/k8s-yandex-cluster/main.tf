@@ -12,6 +12,9 @@ module "k8s-global-vars" {
 }
 
 module "k8s-vault" {
+    depends_on = [
+      module.k8s-global-vars
+    ]
     source = "../k8s-vault"
     k8s_global_vars   = module.k8s-global-vars
 }

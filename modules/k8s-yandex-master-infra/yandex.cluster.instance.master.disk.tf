@@ -5,6 +5,6 @@ resource "yandex_compute_disk" "etcd" {
   labels = {}
   size = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].size
   type = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].type
-  zone = try(var.master_group.resources_overwrite["${split("-", split("_", each.key)[1])[0]}-${split("-", split("_", each.key)[1])[2]}"].zone, var.master_group.default_zone)
+  zone = try(var.master_group.resources_overwrite.group["${split("-", split("_", each.key)[1])[0]}-${split("-", split("_", each.key)[1])[2]}"].zone, var.master_group.default_zone)
 
 }

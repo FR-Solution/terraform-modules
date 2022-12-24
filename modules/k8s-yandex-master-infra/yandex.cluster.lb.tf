@@ -7,7 +7,7 @@ resource "yandex_lb_target_group" "master-tg" {
   dynamic "target" {
     for_each = "${local.master_instance_list_map}"
     content {
-      subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite["${split("-", target.key)[0]}-${split("-", target.key)[2]}"].zone, var.master_group.default_zone)]).id
+      subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite.group["${split("-", target.key)[0]}-${split("-", target.key)[2]}"].zone, var.master_group.default_zone)]).id
       address   = "${yandex_compute_instance.master[target.key].network_interface.0.ip_address}"
     }
   }

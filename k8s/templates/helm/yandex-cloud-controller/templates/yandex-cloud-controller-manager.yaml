@@ -8,12 +8,12 @@ metadata:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: Daemonset
 metadata:
   name: yandex-cloud-controller-manager
 spec:
   progressDeadlineSeconds: 600
-  replicas: 3
+  # replicas: 3
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -29,26 +29,26 @@ spec:
       labels:
         app: yandex-cloud-controller-manager
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchLabels:
-                    app: yandex-cloud-controller-manager
+      # affinity:
+      #   podAntiAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #       - weight: 1
+      #         podAffinityTerm:
+      #           topologyKey: kubernetes.io/hostname
+      #           labelSelector:
+      #             matchLabels:
+      #               app: yandex-cloud-controller-manager
       containers:
-      - args:
-          - --leader-elect=true
-          - --cluster-cidr={{ .Values.pod_cidr }}
-          - --allocate-node-cidrs=true
-          - --configure-cloud-routes=true
-          - --cloud-provider=yandex
-          - --cluster-name={{ .Values.cluster_name }}
-          - --bind-address=$(BIND_IP)
-          - --secure-port=64321
-          - --v=2
+        - args:
+            - --leader-elect=true
+            - --cluster-cidr={{ .Values.pod_cidr }}
+            - --allocate-node-cidrs=true
+            - --configure-cloud-routes=true
+            - --cloud-provider=yandex
+            - --cluster-name={{ .Values.cluster_name }}
+            - --bind-address=$(BIND_IP)
+            - --secure-port=64321
+            - --v=2
         env:
           - name: BIND_IP
             valueFrom:
@@ -124,8 +124,6 @@ spec:
         terminationMessagePolicy: File
       hostNetwork: true
       dnsPolicy: ClusterFirst
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
       priorityClassName: system-cluster-critical
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -137,4 +135,6 @@ spec:
       serviceAccountName: yandex-cloud-controller-manager
       terminationGracePeriodSeconds: 30
       tolerations:
-      - operator: Exists
+        - operator: Exists
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
