@@ -64,6 +64,7 @@ module "k8s-yandex-cluster" {
               zone    = "ru-central1-a"
               # # fd8kdq6d0p8sij7h5qe3 | ubuntu-20-04-lts-v20220822
               # # fd8ingbofbh3j5h7i8ll | ubuntu-22-04-lts-v20220810
+              # # fd8uji8asiui2oetvqps | custom
               # disk = {
               #   boot = {
               #     image_id  = "fd8ingbofbh3j5h7i8ll"
@@ -85,7 +86,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8ingbofbh3j5h7i8ll"
+              image_id  = "fd8uji8asiui2oetvqps"
               size      = 30
               type      = "network-hdd"
             }

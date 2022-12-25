@@ -1,2 +1,15 @@
 subnet_id: ${subnet_id}
 zone: ${zone}
+
+cloud_secret:
+  id: ${ yandex_cloud_controller_sa.id }
+  service_account_id: ${ yandex_cloud_controller_sa.service_account_id }
+  created_at: ${ yandex_cloud_controller_sa.created_at }
+  key_algorithm: ${ yandex_cloud_controller_sa.key_algorithm }
+  public_key: |-
+    ${ indent(4 ,yandex_cloud_controller_sa.public_key) }
+  private_key: |-
+    ${ indent(4 ,yandex_cloud_controller_sa.private_key) }
+folder_id: ${ yandex_cloud_controller_sa.folder_id }
+k8s_api_server_fqdn: ${k8s_api_server_fqdn}
+k8s_api_server_port: ${k8s_api_server_port}

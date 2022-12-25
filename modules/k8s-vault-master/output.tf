@@ -26,33 +26,33 @@
 # }
 
 
-output "secret_id_cert" {
-  value = vault_approle_auth_backend_role_secret_id.kubernetes-sign-master
-}
-output "role_id_cert" {
-  value = vault_approle_auth_backend_role.kubernetes-sign-master
-}
+# output "secret_id_cert" {
+#   value = vault_approle_auth_backend_role_secret_id.kubernetes-sign-master
+# }
+# output "role_id_cert" {
+#   value = vault_approle_auth_backend_role.kubernetes-sign-master
+# }
 
-output "secret_id_ca" {
-  value = vault_approle_auth_backend_role_secret_id.kubernetes-ca-master
-}
-output "role_id_ca" {
-  value = vault_approle_auth_backend_role.kubernetes-ca-master
-}
+# output "secret_id_ca" {
+#   value = vault_approle_auth_backend_role_secret_id.kubernetes-ca-master
+# }
+# output "role_id_ca" {
+#   value = vault_approle_auth_backend_role.kubernetes-ca-master
+# }
 
-output "secret_id_external_ca" {
-  value = vault_approle_auth_backend_role_secret_id.external-ca-master
-}
-output "role_id_external_ca" {
-  value = vault_approle_auth_backend_role.external-ca-master
-}
+# output "secret_id_external_ca" {
+#   value = vault_approle_auth_backend_role_secret_id.external-ca-master
+# }
+# output "role_id_external_ca" {
+#   value = vault_approle_auth_backend_role.external-ca-master
+# }
 
-output "secret_id_kv" {
-  value = vault_approle_auth_backend_role_secret_id.kubernetes-kv
-}
-output "role_id_kv" {
-  value = vault_approle_auth_backend_role.kubernetes-kv
-}
+# output "secret_id_kv" {
+#   value = vault_approle_auth_backend_role_secret_id.kubernetes-kv
+# }
+# output "role_id_kv" {
+#   value = vault_approle_auth_backend_role.kubernetes-kv
+# }
 
 output "secret_id_all" {
   value = vault_approle_auth_backend_role_secret_id.all_masters

@@ -1,8 +1,319 @@
 apiVersion: v1
-data:
-  folderID: YjFnNzIyMG5zM3I1ZHRzMWxoYTM=
-  serviceAccountJSON: ewogICAiaWQiOiAiYWplYXM4ZnNraTExbTM0cDllcXAiLAogICAic2VydmljZV9hY2NvdW50X2lkIjogImFqZTdma3M2MWJkNWlzM3ZtaXVoIiwKICAgImNyZWF0ZWRfYXQiOiAiMjAyMi0xMi0xN1QxOTozNjoyNS42MjM4MjM1NThaIiwKICAgImtleV9hbGdvcml0aG0iOiAiUlNBXzIwNDgiLAogICAicHVibGljX2tleSI6ICItLS0tLUJFR0lOIFBVQkxJQyBLRVktLS0tLVxuTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF0dkRRbVdiRHk4L3JiOFpuMjhoalxuR20xVlFqQTZkYXBkR3h2UzhaWmhaalVpaUp3SnZxWmI5b1cvNDFheEJIRnBGUmgwRXk2YWxuazFWZ2JoRXArVFxuWjhTTWNWTlE4OEh3UUVQU2p4ZmJISTA0THpVczJseXZ3WGYzV0ZIY1VkVjZieVEwVTdXNGZ5T25JUE9Vazh3U1xudjVRWks4dk1HZWR3Q3pWZEprNVN0RzAyajkxbkEwK0wxUk55ZmdRK0ZLdFdHcXhWUFA2cHgrMitpZ3cwZjJ6RFxubEhScmxyRnNoV3F2NVZQd3Y1Qno0Skc4alIzbmZPa2tqT1pFWjR3QTdaUTJHSXM1K2FWejNXNFZvRUxqa0dTcFxuTnNSSFFKNnpKVWxEN1NxRHYydSttZmxOYjJxRUE0UWxtZDJlSjV6cXc0S2dmNStGQ2dpamNkTytickFycUp0UFxuOFFJREFRQUJcbi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLVxuIiwKICAgInByaXZhdGVfa2V5IjogIi0tLS0tQkVHSU4gUFJJVkFURSBLRVktLS0tLVxuTUlJRXZnSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2d3Z2dTa0FnRUFBb0lCQVFDMjhOQ1pac1BMeit0dlxueG1mYnlHTWFiVlZDTURwMXFsMGJHOUx4bG1GbU5TS0luQW0rcGx2MmhiL2pWckVFY1drVkdIUVRMcHFXZVRWV1xuQnVFU241Tm54SXh4VTFEendmQkFROUtQRjlzY2pUZ3ZOU3phWEsvQmQvZFlVZHhSMVhwdkpEUlR0YmgvSTZjZ1xuODVTVHpCSy9sQmtyeTh3WjUzQUxOVjBtVGxLMGJUYVAzV2NEVDR2VkUzSitCRDRVcTFZYXJGVTgvcW5IN2I2S1xuRERSL2JNT1VkR3VXc1d5RmFxL2xVL0Mva0hQZ2tieU5IZWQ4NlNTTTVrUm5qQUR0bERZWWl6bjVwWFBkYmhXZ1xuUXVPUVpLazJ4RWRBbnJNbFNVUHRLb08vYTc2WitVMXZhb1FEaENXWjNaNG5uT3JEZ3FCL240VUtDS054MDc1dVxuc0N1b20wL3hBZ01CQUFFQ2dnRUFCVlk4N0JkbERqUyt0d081RTBJNGhKU0R1emtqMmExYmJqV1V6N09wZjRZblxuVGQyYkNBOWJlWE9GcDZ0bmI3cUY3R0JuQnUwZWtnN0V1RmI2WHBwaDAzelBueXVlRDd5ZWk4TXV3ZVRMNzdWb1xuUzl5MTBwbHJLeTVGaXQ0cktPbzVUQXErQXJnTXd3MHk0Yi9FRFlYM0hadmdHbFVYVzAvaGVKQjFvLzAzMTFZSlxuVHE3N1E4M2F4NWpxS04rNjNXSnlGYWE3MytVT2wvZU15TW5OK3NZUkhwRUZMY2FOanFpR1ROT1J5RjNaMnp1T1xuSTh5b2JjRW1SL0U3R1pZRE1zc0NacEJpZEpIb0ZRb0s4aFZLZlk5QVo2K2dNcXVYL0trNGZnaUdnZk96UG1xS1xuTzlHNXhPTEZuR3gyT1dPekVUTzh2blBqQnc2NlB5OUpPYUUxcEttdERRS0JnUUM1NnYzYzdpRk5uUE1qUlp4U1xuRFE5NE9DTUhJYlFGWmdvK1RHV2ZPN1VpZTYwQ3NPN2c3VVZ5TWJGSVRBQ2pJUnBOdEVZS1FCNnF6YmxEcDhrOFxuWUNjYTgvalR3RTBIVTFaOUVRb1h2YUE0UEZqMTZJRGtOVTBDWWgrZHZoZnY3WEkyY2x0aTc3SzdRM0tqWjRhcVxuZDZ4THJkSGxMbUxpS2wyYjdLVXRQK2dPZ3dLQmdRRDc1b1Q0bDg0d1pacUFwSG9xMENJVEtlbjRJamdHTnZaV1xuOEpSMm9Od3lzYkFTTUNPNTdNSTRpV3BIaEdEQjIrckNhWHN3d0FZVjY1T2J5TE85am1VcVNUTWV3ZjR4WU5IV1xuS25mbm9vSk15Z2h0TXo5ckV2NldEeFJaQlIrRUQ4NDQ0Rm5FSFVDZWNWWXlxbWZQRTFRS09pekRKNy94amRYN1xuT2pNemloS2Rld0tCZ0hiaUtCRUZDTENyZ3VIMEdrQnhiNG50UTZERTBXdCtVMkNBMDU2ZHZIYmZaTU5LeG9WM1xuMDZkdzFTOG93bU9Od0ZjZHhvZTVkcUs3eUJMV0VKMFYwd3V1SkZlcktOWmRXUG5DVXBUWndjRVQvY0xKT05vMFxucHhpMkRBZC9UYWt6U1l3OVZlaU80OWhSQ2RZcFZmaGRiQVE4a3ZJYzFraE8xT3JteUx5Rmwrcm5Bb0dCQVBOZlxuRmwxdm5ZQll5ZHM4RGVSTFRvQ2hZREdpTGVxak00RnYwcUNDYmZ4MGZCNDJjRzN6ZHZwVW1XQWJYN2dzbHpYWlxuMzNHTU5OVDgwNUlSYU1iZFNwUitRR3VaRmRQekxRano0d0RpbTIxQlRMN2tZb002eU1tR0xDeU5ySk5WQ2ZNZFxubnR6QlBtdFdLT2V1aDdramZYQ2NJQjgweWxmQXAxcWdNbE83Tkp6OUFvR0JBSVZwWmRNUklQeWw1NDdxZ0RmK1xuZ25yWVY4VGZxTlpVLzkySzg3QXpCbi82UHAxcGVQaHNFcDAvUE5yVUR3ZGF3Sk9JQk8xM2lHSndxZXdxRDV5QlxueGNFbXQ5NXIvSlArVGRIYndTRWZ2bTU0OE12TnlDVFBuQjFLMmdhSSt2TlI4c2xjVEdtam9WUjFNRDhodlN6WlxubG1oMTZHRDhRMnF5V0hGS3laTFRRYUtyXG4tLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tXG4iCn0=
-  userData: I2Nsb3VkLWNvbmZpZwp2ZXJzaW9uOiB2MQoKdXNlcnM6CiAgLSBuYW1lOiBka290CiAgICBzdWRvOiBBTEw9KEFMTCkgTk9QQVNTV0Q6QUxMCiAgICBncm91cHM6IHVzZXJzLCBhZG1pbgogICAgc2hlbGw6IC9iaW4vYmFzaAogICAgbG9ja19wYXNzd2Q6IHRydWUKICAgIHNzaF9hdXRob3JpemVkX2tleXM6CiAgICAgIC0gc3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FEQktwMEc4Vmx5aTlYZ3hvTDl4QTIwc1krVmM0c3pKNVBuUDNCcEF5YVRodEVJUHR6LzZ3OERZeTFxTUdSNWxxMk10akhLbzBnaEFwQ0VNNzhyWmY4UE1SL0VGVzVoT2VaemdpSFpaVk9VSVRoRHdOQWs5WFFIS0crNk9PUzUrZ3B2K1ZMQjNEVFh4bFBKc0dkaUkzL1NCVG1NZlVDRFpWUjZMQTk0VWg1dGdOeXBQcVJSSXY2NXRXMEtiR2pzWW5NUXhLRnZPOWxNSGVGdEptMWJBc2IvK2RibTFNYWZXWVhnM3lFR3I2cHlpSGdhaXdZZ3gyc0t0SVZxa2c4SVlOeExYempJeVM0a3dCL1dDa3YzQ0VFSURMOEtJaStIR25mdjJ0Rnp2dGp3TGd6MnJ0RzczdFZMenZqdXBsd0cyNEZ4NXZnQ2NUbldmRnZBV2lHNXI4K0lhSFo5WnZPOVRPZUFsT0FXakIzaWVIakE1WlMzUjlKM1dPQWxmQVFDQTVqejZpMnRGeEF0SVBCZFdMMFp6WUtVVkxSNTYxcWQxQVk1djlha3FocXVWSVpxc0pNemFMZENnMGVvTE5OZEtnZFFMWEpvaE1QbHFSOTZsUittYnltN1VJL0ZuN0Z2VVJpYlJnYjc4MVo4NkFMZmVZVkhMWWlkVmtybWh1dUh6dVU9IGRrQGRvYnJ5LWtvdC1zeXN0ZW0KCnBhY2thZ2VzOgogIC0gd2dldAogIC0ganEKICAtIHRyZWUKICAtIGlycWJhbGFuY2UKICAtIG5ldC10b29scwogIC0gc29jYXQgCiAgLSBjb25udHJhY2sKICAtIGlwc2V0CiAgLSBldGh0b29sCiAgLSB1bnppcAogIC0geGZzcHJvZ3MKCiMgaHR0cHM6Ly9rdWJlcm5ldGVzLmlvL2RvY3Mvc2V0dXAvcHJvZHVjdGlvbi1lbnZpcm9ubWVudC9jb250YWluZXItcnVudGltZXMvCmJvb3RjbWQ6CiAgLSBzdWRvIG1vZHByb2JlIG92ZXJsYXkKICAtIHN1ZG8gbW9kcHJvYmUgYnJfbmV0ZmlsdGVyCiAgLSBzdWRvIHN5c2N0bCAtLXN5c3RlbQoKcnVuY21kOiAKICAtIHdnZXQgLU8gL3Vzci9iaW4va3ViZWN0bCAgICAgICBodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb20va3ViZXJuZXRlcy1yZWxlYXNlL3JlbGVhc2UvdjEuMjMuMTIvYmluL2xpbnV4L2FtZDY0L2t1YmVjdGwKICAtIHdnZXQgLU8gL3Vzci9iaW4va3ViZWxldCAgICAgICBodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb20va3ViZXJuZXRlcy1yZWxlYXNlL3JlbGVhc2UvdjEuMjMuMTIvYmluL2xpbnV4L2FtZDY0L2t1YmVsZXQKICAtIHdnZXQgLU8gL3Vzci9iaW4vcnVuYyAgICAgICAgICBodHRwczovL2dpdGh1Yi5jb20vb3BlbmNvbnRhaW5lcnMvcnVuYy9yZWxlYXNlcy9kb3dubG9hZC92MS4xLjMvcnVuYy5hbWQ2NAogIC0gd2dldCAtTyAvdG1wL2NvbnRhaW5lcmQudGFyLmd6IGh0dHBzOi8vZ2l0aHViLmNvbS9jb250YWluZXJkL2NvbnRhaW5lcmQvcmVsZWFzZXMvZG93bmxvYWQvdjEuNi44L2NvbnRhaW5lcmQtMS42LjgtbGludXgtYW1kNjQudGFyLmd6CiAgLSB3Z2V0IC1PIC90bXAvY3JpY3RsLnRhci5neiAgICAgaHR0cHM6Ly9naXRodWIuY29tL2t1YmVybmV0ZXMtc2lncy9jcmktdG9vbHMvcmVsZWFzZXMvZG93bmxvYWQvdjEuMjMuMC9jcmljdGwtdjEuMjMuMC1saW51eC1hbWQ2NC50YXIuZ3oKICAtIGNobW9kICt4IC91c3IvYmluL2t1YmVsZXQgCiAgLSBjaG1vZCAreCAvdXNyL2Jpbi9rdWJlY3RsIAogIC0gY2htb2QgK3ggL3Vzci9iaW4vcnVuYwogIC0gbWtkaXIgLXAgL3RtcC9jb250YWluZXJkCiAgLSB0YXIgLUMgIi90bXAvY29udGFpbmVyZCIgIC14dmYgL3RtcC9jb250YWluZXJkLnRhci5negogIC0gdGFyIC1DICIvdXNyL2JpbiIgICAgICAgICAteHZmIC90bXAvY3JpY3RsLnRhci5negogIC0gY3AgL3RtcC9jb250YWluZXJkL2Jpbi8qICAgL3Vzci9iaW4vCiAgLSBzeXN0ZW1jdGwgZGFlbW9uLXJlbG9hZAogIC0gc3lzdGVtY3RsIGVuYWJsZSAga3ViZWxldC5zZXJ2aWNlCiAgLSBzeXN0ZW1jdGwgZW5hYmxlICBjb250YWluZXJkLnNlcnZpY2UKICAtIHN5c3RlbWN0bCBzdGFydCAgIGt1YmVsZXQuc2VydmljZQogIC0gc3lzdGVtY3RsIHN0YXJ0ICAgY29udGFpbmVyZC5zZXJ2aWNlIAogIC0gc3lzdGVtY3RsIGVuYWJsZSAgc3lzdGVtZC1yZXNvbHZlZC5zZXJ2aWNlCiAgLSBzeXN0ZW1jdGwgc3RhcnQgICBzeXN0ZW1kLXJlc29sdmVkLnNlcnZpY2UKICAtIHN5c2N0bCAtLXN5c3RlbQoKd3JpdGVfZmlsZXM6CgojIyMjIyMjIEtVQkVDT05GSUdTINC00LvRjyDQv9C+0LTQutC70Y7Rh9C10L3QuNGPINC6INC60LvQsNGB0YLQtdGA0YMKCgogIC0gcGF0aDogL2V0Yy9rdWJlcm5ldGVzL2t1YmVsZXQvYm9vdHN0cmFwLWt1YmVjb25maWcKICAgIG93bmVyOiByb290OnJvb3QKICAgIHBlcm1pc3Npb25zOiAnMDY0NCcKICAgIGNvbnRlbnQ6IHwKICAgICAgLS0tCiAgICAgIGFwaVZlcnNpb246IHYxCiAgICAgIGNsdXN0ZXJzOgogICAgICAtIGNsdXN0ZXI6CiAgICAgICAgICBpbnNlY3VyZS1za2lwLXRscy12ZXJpZnk6IHRydWUKICAgICAgICAgIHNlcnZlcjogaHR0cHM6Ly9hcGkuY2x1c3Rlci0yLmRvYnJ5LWtvdC5ydQogICAgICAgIG5hbWU6IGJvb3RzdHJhcAogICAgICBjb250ZXh0czoKICAgICAgLSBjb250ZXh0OgogICAgICAgICAgY2x1c3RlcjogYm9vdHN0cmFwCiAgICAgICAgICB1c2VyOiBrdWJlbGV0LWJvb3RzdHJhcAogICAgICAgIG5hbWU6IGJvb3RzdHJhcAogICAgICBjdXJyZW50LWNvbnRleHQ6IGJvb3RzdHJhcAogICAgICBraW5kOiBDb25maWcKICAgICAgcHJlZmVyZW5jZXM6IHt9CiAgICAgIHVzZXJzOgogICAgICAtIG5hbWU6IGt1YmVsZXQtYm9vdHN0cmFwCiAgICAgICAgdXNlcjoKICAgICAgICAgIHRva2VuOiA8PEJPT1RTVFJBUF9UT0tFTj4+CgojIyMjIyMjINCd0LDRgdGC0YDQvtC50LrQsCBrdWJlbGV0ICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIyMtLS0+CiAgLSBwYXRoOiAvZXRjL3N5c3RlbWQvc3lzdGVtL2t1YmVsZXQuc2VydmljZQogICAgb3duZXI6IHJvb3Q6cm9vdAogICAgcGVybWlzc2lvbnM6ICcwNjQ0JwogICAgY29udGVudDogfAogICAgICBbVW5pdF0KICAgICAgRGVzY3JpcHRpb249a3ViZWxldDogVGhlIEt1YmVybmV0ZXMgTm9kZSBBZ2VudAogICAgICBEb2N1bWVudGF0aW9uPWh0dHBzOi8va3ViZXJuZXRlcy5pby9kb2NzL2hvbWUvCiAgICAgIFdhbnRzPW5ldHdvcmstb25saW5lLnRhcmdldAogICAgICBBZnRlcj1uZXR3b3JrLW9ubGluZS50YXJnZXQKICAgICAgCiAgICAgIAogICAgICBbU2VydmljZV0KICAgICAgRXhlY1N0YXJ0PS91c3IvYmluL2t1YmVsZXQKICAgICAgCiAgICAgIFJlc3RhcnQ9YWx3YXlzCiAgICAgIFN0YXJ0TGltaXRJbnRlcnZhbD0wCiAgICAgIFJlc3RhcnRTZWM9MTAKICAgICAgCiAgICAgIFtJbnN0YWxsXQogICAgICBXYW50ZWRCeT1tdWx0aS11c2VyLnRhcmdldAoKICAtIHBhdGg6IC9ldGMvc3lzdGVtZC9zeXN0ZW0va3ViZWxldC5zZXJ2aWNlLmQvMTAtZnJhaW1hLmNvbmYKICAgIG93bmVyOiByb290OnJvb3QKICAgIHBlcm1pc3Npb25zOiAnMDY0NCcKICAgIGNvbnRlbnQ6IHwKICAgICAgW1NlcnZpY2VdCiAgICAgIEVudmlyb25tZW50RmlsZT0tL2V0Yy9rdWJlcm5ldGVzL2t1YmVsZXQvc2VydmljZS9rdWJlbGV0LWFyZ3MuZW52CgogICAgICBFeGVjU3RhcnQ9CiAgICAgIEV4ZWNTdGFydD0vdXNyL2Jpbi9rdWJlbGV0IFwKICAgICAgICAgICRLVUJFTEVUX0hPU1ROQU1FIFwKICAgICAgICAgICRLVUJFTEVUX0NOSV9BUkdTIFwKICAgICAgICAgICRLVUJFTEVUX1JVTlRJTUVfQVJHUyBcCiAgICAgICAgICAkS1VCRUxFVF9BVVRIX0FSR1MgXAogICAgICAgICAgJEtVQkVMRVRfQ09ORklHU19BUkdTIFwKICAgICAgICAgICRLVUJFTEVUX0JBU0lDX0FSR1MgXAogICAgICAgICAgJEtVQkVMRVRfS1VCRUNPTkZJR19BUkdTIFwKICAgICAgICAgICRLVUJFTEVUX0NMT1VEX0FSR1MgXAoKICAtIHBhdGg6IC9ldGMva3ViZXJuZXRlcy9rdWJlbGV0L3NlcnZpY2Uva3ViZWxldC1hcmdzLmVudgogICAgb3duZXI6IHJvb3Q6cm9vdAogICAgcGVybWlzc2lvbnM6ICcwNjQ0JwogICAgY29udGVudDogfAogICAgICBLVUJFTEVUX0JBU0lDX0FSR1M9IgogICAgICAgICAgLS1jZXJ0LWRpcj0vZXRjL2t1YmVybmV0ZXMvcGtpL2NlcnRzL2t1YmVsZXQKICAgICAgIgogICAgICBLVUJFTEVUX0NPTkZJR1NfQVJHUz0iCiAgICAgICAgICAtLWNvbmZpZz0vZXRjL2t1YmVybmV0ZXMva3ViZWxldC9jb25maWcueWFtbAogICAgICAgICAgLS1yb290LWRpcj0vdmFyL2xpYi9rdWJlbGV0CiAgICAgICAgICAtLXY9MgogICAgICAiCiAgICAgIEtVQkVMRVRfS1VCRUNPTkZJR19BUkdTPSIKICAgICAgICAgIC0ta3ViZWNvbmZpZz0vZXRjL2t1YmVybmV0ZXMva3ViZWxldC9rdWJlY29uZmlnCiAgICAgICAgICAtLWJvb3RzdHJhcC1rdWJlY29uZmlnPS9ldGMva3ViZXJuZXRlcy9rdWJlbGV0L2Jvb3RzdHJhcC1rdWJlY29uZmlnCiAgICAgICIKICAgICAgS1VCRUxFVF9SVU5USU1FX0FSR1M9IgogICAgICAgICAgLS1jb250YWluZXItcnVudGltZT1yZW1vdGUKICAgICAgICAgIC0tY29udGFpbmVyLXJ1bnRpbWUtZW5kcG9pbnQ9L3J1bi9jb250YWluZXJkL2NvbnRhaW5lcmQuc29jawogICAgICAgICAgLS1wb2QtaW5mcmEtY29udGFpbmVyLWltYWdlPWs4cy5nY3IuaW8vcGF1c2U6My42CiAgICAgICIKICAgICAgS1VCRUxFVF9DTE9VRF9BUkdTPSIKICAgICAgICAgIC0tY2xvdWQtcHJvdmlkZXI9ZXh0ZXJuYWwKICAgICAgIgoKCiAgLSBwYXRoOiAvZXRjL2t1YmVybmV0ZXMva3ViZWxldC9jb25maWcueWFtbAogICAgb3duZXI6IHJvb3Q6cm9vdAogICAgcGVybWlzc2lvbnM6ICcwNjQ0JwogICAgY29udGVudDogfAogICAgICAtLS0KICAgICAgYXBpVmVyc2lvbjoga3ViZWxldC5jb25maWcuazhzLmlvL3YxYmV0YTEKICAgICAga2luZDogS3ViZWxldENvbmZpZ3VyYXRpb24KICAgICAgcmVnaXN0ZXJOb2RlOiB0cnVlCiAgICAgIGF1dGhlbnRpY2F0aW9uOgogICAgICAgIGFub255bW91czoKICAgICAgICAgIGVuYWJsZWQ6IGZhbHNlCiAgICAgICAgd2ViaG9vazoKICAgICAgICAgIGNhY2hlVFRMOiAwcwogICAgICAgICAgZW5hYmxlZDogdHJ1ZQogICAgICAgIHg1MDk6CiAgICAgICAgICBjbGllbnRDQUZpbGU6ICIvZXRjL2t1YmVybmV0ZXMvcGtpL2NhL2t1YmVybmV0ZXMtY2EucGVtIgogICAgICBhdXRob3JpemF0aW9uOgogICAgICAgIG1vZGU6IFdlYmhvb2sKICAgICAgICB3ZWJob29rOgogICAgICAgICAgY2FjaGVBdXRob3JpemVkVFRMOiAwcwogICAgICAgICAgY2FjaGVVbmF1dGhvcml6ZWRUVEw6IDBzCiAgICAgIGNncm91cERyaXZlcjogc3lzdGVtZAogICAgICBjbHVzdGVyRE5TOgogICAgICAgIC0gIjI5LjY0LjAuMTAiCiAgICAgIGNsdXN0ZXJEb21haW46IGNsdXN0ZXIubG9jYWwKICAgICAgY3B1TWFuYWdlclJlY29uY2lsZVBlcmlvZDogMHMKICAgICAgZXZpY3Rpb25QcmVzc3VyZVRyYW5zaXRpb25QZXJpb2Q6IDBzCiAgICAgIGZpbGVDaGVja0ZyZXF1ZW5jeTogMHMKICAgICAgaGVhbHRoekJpbmRBZGRyZXNzOiAxMjcuMC4wLjEKICAgICAgaGVhbHRoelBvcnQ6IDEwMjQ4CiAgICAgIGh0dHBDaGVja0ZyZXF1ZW5jeTogMHMKICAgICAgaW1hZ2VNaW5pbXVtR0NBZ2U6IDBzCiAgICAgIGxvZ2dpbmc6CiAgICAgICAgZmx1c2hGcmVxdWVuY3k6IDAKICAgICAgICBvcHRpb25zOgogICAgICAgICAganNvbjoKICAgICAgICAgICAgaW5mb0J1ZmZlclNpemU6ICIwIgogICAgICAgIHZlcmJvc2l0eTogMAogICAgICBtZW1vcnlTd2FwOiB7fQogICAgICBub2RlU3RhdHVzUmVwb3J0RnJlcXVlbmN5OiAxcwogICAgICBub2RlU3RhdHVzVXBkYXRlRnJlcXVlbmN5OiAxcwogICAgICByZXNvbHZDb25mOiAvcnVuL3N5c3RlbWQvcmVzb2x2ZS9yZXNvbHYuY29uZgogICAgICByb3RhdGVDZXJ0aWZpY2F0ZXM6IGZhbHNlCiAgICAgIHJ1bnRpbWVSZXF1ZXN0VGltZW91dDogMHMKICAgICAgc2VydmVyVExTQm9vdHN0cmFwOiB0cnVlCiAgICAgIHNodXRkb3duR3JhY2VQZXJpb2Q6IDE1cwogICAgICBzaHV0ZG93bkdyYWNlUGVyaW9kQ3JpdGljYWxQb2RzOiA1cwogICAgICBzdGF0aWNQb2RQYXRoOiAiL2V0Yy9rdWJlcm5ldGVzL21hbmlmZXN0cyIKICAgICAgc3RyZWFtaW5nQ29ubmVjdGlvbklkbGVUaW1lb3V0OiAwcwogICAgICBzeW5jRnJlcXVlbmN5OiAwcwogICAgICB2b2x1bWVTdGF0c0FnZ1BlcmlvZDogMHMKICAgICAgY29udGFpbmVyTG9nTWF4U2l6ZTogNTBNaQogICAgICBtYXhQb2RzOiAyNTAKICAgICAga3ViZUFQSVFQUzogNTAKICAgICAga3ViZUFQSUJ1cnN0OiAxMDAKICAgICAgcG9kUGlkc0xpbWl0OiA0MDk2CiAgICAgIHNlcmlhbGl6ZUltYWdlUHVsbHM6IGZhbHNlCiAgICAgIHN5c3RlbVJlc2VydmVkOgogICAgICAgIGVwaGVtZXJhbC1zdG9yYWdlOiAxR2kKICAgICAgZmVhdHVyZUdhdGVzOgogICAgICAgIFJvdGF0ZUt1YmVsZXRTZXJ2ZXJDZXJ0aWZpY2F0ZTogdHJ1ZQogICAgICAgIEFQSVByaW9yaXR5QW5kRmFpcm5lc3M6IHRydWUKICAgICAgICBEb3dud2FyZEFQSUh1Z2VQYWdlczogdHJ1ZQogICAgICAgIFBvZFNlY3VyaXR5OiB0cnVlCiAgICAgICAgQ1NJTWlncmF0aW9uQVdTOiBmYWxzZQogICAgICAgIENTSU1pZ3JhdGlvbkF6dXJlRmlsZTogZmFsc2UKICAgICAgICBDU0lNaWdyYXRpb25HQ0U6IGZhbHNlCiAgICAgICAgQ1NJTWlncmF0aW9udlNwaGVyZTogZmFsc2UKICAgICAgcm90YXRlQ2VydGlmaWNhdGVzOiBmYWxzZQogICAgICBzZXJ2ZXJUTFNCb290c3RyYXA6IHRydWUKICAgICAgdGxzTWluVmVyc2lvbjogVmVyc2lvblRMUzEyCiAgICAgIHRsc0NpcGhlclN1aXRlczoKICAgICAgICAtIFRMU19FQ0RIRV9FQ0RTQV9XSVRIX0FFU18xMjhfR0NNX1NIQTI1NgogICAgICAgIC0gVExTX0VDREhFX1JTQV9XSVRIX0FFU18xMjhfR0NNX1NIQTI1NgogICAgICAgIC0gVExTX0VDREhFX0VDRFNBX1dJVEhfQUVTXzI1Nl9HQ01fU0hBMzg0CiAgICAgICAgLSBUTFNfRUNESEVfUlNBX1dJVEhfQUVTXzI1Nl9HQ01fU0hBMzg0CiAgICAgICAgLSBUTFNfRUNESEVfRUNEU0FfV0lUSF9DSEFDSEEyMF9QT0xZMTMwNV9TSEEyNTYKICAgICAgICAtIFRMU19FQ0RIRV9SU0FfV0lUSF9DSEFDSEEyMF9QT0xZMTMwNV9TSEEyNTYKICAgICAgYWxsb3dlZFVuc2FmZVN5c2N0bHM6CiAgICAgICAgLSAibmV0LmNvcmUuc29tYXhjb25uIgogICAgICBldmljdGlvblNvZnQ6IAogICAgICAgIG1lbW9yeS5hdmFpbGFibGU6IDNHaSAKICAgICAgICBub2RlZnMuYXZhaWxhYmxlOiAyNSUKICAgICAgICBub2RlZnMuaW5vZGVzRnJlZTogMTUlCiAgICAgICAgaW1hZ2Vmcy5hdmFpbGFibGU6IDMwJQogICAgICAgIGltYWdlZnMuaW5vZGVzRnJlZTogMjUlCiAgICAgIGV2aWN0aW9uU29mdEdyYWNlUGVyaW9kOiAgCiAgICAgICAgbWVtb3J5LmF2YWlsYWJsZTogMm0zMHMKICAgICAgICBub2RlZnMuYXZhaWxhYmxlOiAybTMwcwogICAgICAgIG5vZGVmcy5pbm9kZXNGcmVlOiAybTMwcwogICAgICAgIGltYWdlZnMuYXZhaWxhYmxlOiAybTMwcwogICAgICAgIGltYWdlZnMuaW5vZGVzRnJlZTogMm0zMHMKICAgICAgZXZpY3Rpb25IYXJkOgogICAgICAgIG1lbW9yeS5hdmFpbGFibGU6IDJHaQogICAgICAgIG5vZGVmcy5hdmFpbGFibGU6IDIwJQogICAgICAgIG5vZGVmcy5pbm9kZXNGcmVlOiAxMCUKICAgICAgICBpbWFnZWZzLmF2YWlsYWJsZTogMjUlCiAgICAgICAgaW1hZ2Vmcy5pbm9kZXNGcmVlOiAxNSUKICAgICAgZXZpY3Rpb25QcmVzc3VyZVRyYW5zaXRpb25QZXJpb2Q6IDVzIAogICAgICBpbWFnZU1pbmltdW1HQ0FnZTogMTJoIAogICAgICBpbWFnZUdDSGlnaFRocmVzaG9sZFBlcmNlbnQ6IDU1CiAgICAgIGltYWdlR0NMb3dUaHJlc2hvbGRQZXJjZW50OiA1MAoKCiAgLSBwYXRoOiAvZXRjL3N5c3RlbWQvc3lzdGVtL2NvbnRhaW5lcmQuc2VydmljZQogICAgb3duZXI6IHJvb3Q6cm9vdAogICAgcGVybWlzc2lvbnM6ICcwNjQ0JwogICAgY29udGVudDogfAogICAgICBbVW5pdF0KICAgICAgRGVzY3JpcHRpb249Y29udGFpbmVyZCBjb250YWluZXIgcnVudGltZQogICAgICBEb2N1bWVudGF0aW9uPWh0dHBzOi8vY29udGFpbmVyZC5pbwogICAgICBBZnRlcj1uZXR3b3JrLnRhcmdldAogICAgICAKICAgICAgW1NlcnZpY2VdCiAgICAgIEV4ZWNTdGFydFByZT0vc2Jpbi9tb2Rwcm9iZSBvdmVybGF5CiAgICAgIEV4ZWNTdGFydD0vdXNyL2Jpbi9jb250YWluZXJkCiAgICAgIFJlc3RhcnQ9YWx3YXlzCiAgICAgIFJlc3RhcnRTZWM9NQogICAgICBEZWxlZ2F0ZT15ZXMKICAgICAgS2lsbE1vZGU9cHJvY2VzcwogICAgICBPT01TY29yZUFkanVzdD0tOTk5CiAgICAgIExpbWl0Tk9GSUxFPTEwNDg1NzYKICAgICAgTGltaXROUFJPQz1pbmZpbml0eQogICAgICBMaW1pdENPUkU9aW5maW5pdHkKICAgICAgCiAgICAgIFtJbnN0YWxsXQogICAgICBXYW50ZWRCeT1tdWx0aS11c2VyLnRhcmdldAoKICAtIHBhdGg6IC9ldGMvc3lzY3RsLmQvOTktbmV0d29yay5jb25mCiAgICBvd25lcjogcm9vdDpyb290CiAgICBwZXJtaXNzaW9uczogJzA2NDQnCiAgICBjb250ZW50OiB8CiAgICAgIG5ldC5icmlkZ2UuYnJpZGdlLW5mLWNhbGwtaXB0YWJsZXM9MQogICAgICBuZXQuYnJpZGdlLmJyaWRnZS1uZi1jYWxsLWlwNnRhYmxlcz0xCiAgICAgIG5ldC5pcHY0LmlwX2ZvcndhcmQ9MQoKICAtIHBhdGg6IC9ldGMvbW9kdWxlcy1sb2FkLmQvazhzLmNvbmYKICAgIG93bmVyOiByb290OnJvb3QKICAgIHBlcm1pc3Npb25zOiAnMDY0NCcKICAgIGNvbnRlbnQ6IHwKICAgICAgb3ZlcmxheQogICAgICBicl9uZXRmaWx0ZXIKCiAgLSBwYXRoOiAvZXRjL2t1YmVybmV0ZXMvcGtpL2NhL2t1YmVybmV0ZXMtY2EucGVtCiAgICBvd25lcjogcm9vdDpyb290CiAgICBwZXJtaXNzaW9uczogJzA2NDQnCiAgICBjb250ZW50OiB8CiAgICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgICBNSUlFVnpDQ0FqK2dBd0lCQWdJVVBMcmt0OW1IZlRRZnRObWg5Um51SHFOVklCSXdEUVlKS29aSWh2Y05BUUVMCiAgICAgIEJRQXdIekVMTUFrR0ExVUVDQk1DUTBFeEVEQU9CZ05WQkFNVEIxSnZiM1FnUTBFd0hoY05Nakl4TWpJeE1UZ3gKICAgICAgTmpJNVdoY05Nek13TWpJMk1UZ3hOalU1V2pCSE1Rc3dDUVlEVlFRSUV3SkRRVEVUTUJFR0ExVUVDaE1LUzNWaQogICAgICBaWEp1WlhSbGN6RWpNQ0VHQTFVRUF4TWFTM1ZpWlhKdVpYUmxjeUJKYm5SbGNtMWxaR2xoZEdVZ1EwRXdnZ0VpCiAgICAgIE1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRQ3NMWFdGalVEOENybm9JdVdoWUtwMllQeWcKICAgICAgVTk3ZHhTbHFlVzh4UjY3N2FSMXFySDh2WG5NTXVzZDdEdzQwUnVidVNQRHp6RDZmK0dmbFNYR21mcnYvRGhyYQogICAgICAwekxsMWxLNjJWNUxOUk93VFpjeDdGL1l4TmhGdWxGNTVpZUZDUjFucU1GVWpiLy9iUVozZ01GR0txSGo0T0E0CiAgICAgIHliMmRLQ1R3OU1tS2p6Z1BuYXF0Y2ZJMnVNaXhoLzVidWVRVm1TUkRTRENVQldwNkRnMytUeDdHZ1F3SkNDcnMKICAgICAgYXUwYjZMaG0wZTNiKzYyek16ek1XcGJ2OFhxaEhOQmJlQUFXQXE5WHZta1BTREExT3ljNDhJMFFLa1A1ZERuWgogICAgICB1TGMrdDRpa0lMcElKZ0JENERUQlZ3SVVKa0lvK2paM1ppd2VJbkhkWUJ4ckJhK0xvS3NIUUhqV1ZTMC9BZ01CCiAgICAgIEFBR2pZekJoTUE0R0ExVWREd0VCL3dRRUF3SUJCakFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVcKICAgICAgQkJUS0MzNEpvajk2UnlKdVdxVmtMUUdGZW1WbGp6QWZCZ05WSFNNRUdEQVdnQlNCcVNzbkdQbFJvRW1VejJMdwogICAgICBreG14REJ0US9UQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FnRUFiL3BkY2xUQVJyNE5uSFdjaVhRc0RzT3dhTk53CiAgICAgIFp3dExHTVdPTDVIWlFSNnd4WXpKMWd3L0ZxWTJKWGpxZVVLQVhFcm5rWkhkemYxYmg3ZGhvMXBqQUNGaHk2bC8KICAgICAgZDA0UVIwNHQ5dGZhWGREd1Jxb0hqblJuNmFGNFV2SHF3RVo4TkYwbHhDdW1neXNPWVJlRFgxNnQ2b1d3Ums2SgogICAgICBBVEdMLzNGNEVmYVRVU0J6VUovRGJKRy9jTlhoaWhLTkVJdzRRWE9YOENSUllkdS9oSzRiL1JSUEpIWnBHR2FlCiAgICAgIG5mSVh0bXZQSCtOcXVtUlBiWXlJYkJYWGFuQ3VtbThybnE1SmVTRnZ3WThWOXBtbWx3K1NhcnlyRlBla0ZXZFEKICAgICAgelo1cDZLZUwyM2ZWblc3d1I1eVFpL3VhZXdVVXZXQVE5cm5tcm5EaTQrMW5NUzF4R21IbDJySzNGT1lnekk1dAogICAgICB2eDdFelcrUFI0SW5aOUFUd0FTaGRxTFpvRWNja3pTcUtSNjc2MDVCRXlrU3E5aWkzNll2L3JQdGxVU3crYkR4CiAgICAgIElsRFdqVCtkZEdwc3hhS0NXdW1jN0NlTVRBL3YzTlZWVnF2RVpUTE1nRzg1b1ZnTEl2VE9lN2RtUnFRckFpM1UKICAgICAgMXkxMUQ4cC9iRDVtaVpOOGZLZUgxc1VETnE0SndxU3dPSTEwbVlDeHdPSFRqNStNS2JtWW9zeFdpV1lxa1ZoOQogICAgICA2R0duMnQySUtiM05hcXBGb3BFSWFMRzBCZVc1SmJMVU1iQ3lBc0JrZFZ0c0hRck5pcXNoUmpXZHZjVTR4NkRkCiAgICAgIFBUU1V2cGFoMlFBUlRRN0V3WUg2eW42V241ZWZjM2htVXJRU3RMdTBoSmZ6K2RJV2l3RDBPM2JQTjFUeFJSdVMKICAgICAgOWd4dWpTaXBwYlg0YVFFPQogICAgICAtLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+stringData:
+  serviceAccountJSON: |
+    {{ .Values.cloud_secret | toJson | indent 4 }}
+  folderID: {{ .Values.folder_id }}
+  userData: |-
+    #cloud-config
+    version: v1
+    users:
+      - name: dkot
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        groups: users, admin
+        shell: /bin/bash
+        lock_passwd: true
+        ssh_authorized_keys:
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBKp0G8Vlyi9XgxoL9xA20sY+Vc4szJ5PnP3BpAyaThtEIPtz/6w8DYy1qMGR5lq2MtjHKo0ghApCEM78rZf8PMR/EFW5hOeZzgiHZZVOUIThDwNAk9XQHKG+6OOS5+gpv+VLB3DTXxlPJsGdiI3/SBTmMfUCDZVR6LA94Uh5tgNypPqRRIv65tW0KbGjsYnMQxKFvO9lMHeFtJm1bAsb/+dbm1MafWYXg3yEGr6pyiHgaiwYgx2sKtIVqkg8IYNxLXzjIyS4kwB/WCkv3CEEIDL8KIi+HGnfv2tFzvtjwLgz2rtG73tVLzvjuplwG24Fx5vgCcTnWfFvAWiG5r8+IaHZ9ZvO9TOeAlOAWjB3ieHjA5ZS3R9J3WOAlfAQCA5jz6i2tFxAtIPBdWL0ZzYKUVLR561qd1AY5v9akqhquVIZqsJMzaLdCg0eoLNNdKgdQLXJohMPlqR96lR+mbym7UI/Fn7FvURibRgb781Z86ALfeYVHLYidVkrmhuuHzuU= dk@dobry-kot-system
+
+    packages:
+      - wget
+      - jq
+      - tree
+      - irqbalance
+      - net-tools
+      - socat 
+      - conntrack
+      - ipset
+      - ethtool
+      - unzip
+      - xfsprogs
+
+    bootcmd:
+      - sudo modprobe overlay
+      - sudo modprobe br_netfilter
+      - sudo sysctl --system
+
+    runcmd:
+      - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
+      - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
+      - wget -O /usr/bin/runc          https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+      - wget -O /tmp/containerd.tar.gz https://github.com/containerd/containerd/releases/download/v1.6.8/containerd-1.6.8-linux-amd64.tar.gz
+      - wget -O /tmp/crictl.tar.gz     https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
+      - chmod +x /usr/bin/kubelet 
+      - chmod +x /usr/bin/kubectl 
+      - chmod +x /usr/bin/runc
+      - mkdir -p /tmp/containerd
+      - tar -C "/tmp/containerd"  -xvf /tmp/containerd.tar.gz
+      - tar -C "/usr/bin"         -xvf /tmp/crictl.tar.gz
+      - cp /tmp/containerd/bin/*   /usr/bin/
+      - systemctl daemon-reload
+      - systemctl enable  kubelet.service
+      - systemctl enable  containerd.service
+      - systemctl start   kubelet.service
+      - systemctl start   containerd.service 
+      - systemctl enable  systemd-resolved.service
+      - systemctl start   systemd-resolved.service
+      - sysctl --system
+
+    write_files:
+
+      - path: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+        owner: root:root
+        permissions: '0644'
+        content: |
+          ---
+          apiVersion: v1
+          clusters:
+          - cluster:
+              insecure-skip-tls-verify: true
+              server: https://{{ .Values.k8s_api_server_fqdn }}:{{ .Values.k8s_api_server_port }}
+            name: bootstrap
+          contexts:
+          - context:
+              cluster: bootstrap
+              user: kubelet-bootstrap
+            name: bootstrap
+          current-context: bootstrap
+          kind: Config
+          preferences: {}
+          users:
+          - name: kubelet-bootstrap
+            user:
+              token: <<BOOTSTRAP_TOKEN>>
+
+      - path: /etc/systemd/system/kubelet.service
+        owner: root:root
+        permissions: '0644'
+        content: |
+          [Unit]
+          Description=kubelet: The Kubernetes Node Agent
+          Documentation=https://kubernetes.io/docs/home/
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          ExecStart=/usr/bin/kubelet
+          
+          Restart=always
+          StartLimitInterval=0
+          RestartSec=10
+          
+          [Install]
+          WantedBy=multi-user.target
+      - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
+        owner: root:root
+        permissions: '0644'
+        content: |
+          [Service]
+          EnvironmentFile=-/etc/kubernetes/kubelet/service/kubelet-args.env
+
+          ExecStart=
+          ExecStart=/usr/bin/kubelet \
+              $KUBELET_HOSTNAME \
+              $KUBELET_CNI_ARGS \
+              $KUBELET_RUNTIME_ARGS \
+              $KUBELET_AUTH_ARGS \
+              $KUBELET_CONFIGS_ARGS \
+              $KUBELET_BASIC_ARGS \
+              $KUBELET_KUBECONFIG_ARGS \
+              $KUBELET_CLOUD_ARGS \
+      - path: /etc/kubernetes/kubelet/service/kubelet-args.env
+        owner: root:root
+        permissions: '0644'
+        content: |
+          KUBELET_BASIC_ARGS="
+              --cert-dir=/etc/kubernetes/pki/certs/kubelet
+          "
+          KUBELET_CONFIGS_ARGS="
+              --config=/etc/kubernetes/kubelet/config.yaml
+              --root-dir=/var/lib/kubelet
+              --v=2
+          "
+          KUBELET_KUBECONFIG_ARGS="
+              --kubeconfig=/etc/kubernetes/kubelet/kubeconfig
+              --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig
+          "
+          KUBELET_RUNTIME_ARGS="
+              --container-runtime=remote
+              --container-runtime-endpoint=/run/containerd/containerd.sock
+              --pod-infra-container-image=k8s.gcr.io/pause:3.6
+          "
+          KUBELET_CLOUD_ARGS="
+              --cloud-provider=external
+          "
+
+      - path: /etc/kubernetes/kubelet/config.yaml
+        owner: root:root
+        permissions: '0644'
+        content: |
+          ---
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          kind: KubeletConfiguration
+          registerNode: true
+          authentication:
+            anonymous:
+              enabled: false
+            webhook:
+              cacheTTL: 0s
+              enabled: true
+            x509:
+              clientCAFile: "/etc/kubernetes/pki/ca/kubernetes-ca.pem"
+          authorization:
+            mode: Webhook
+            webhook:
+              cacheAuthorizedTTL: 0s
+              cacheUnauthorizedTTL: 0s
+          cgroupDriver: systemd
+          clusterDNS:
+            - "29.64.0.10"
+          clusterDomain: cluster.local
+          cpuManagerReconcilePeriod: 0s
+          evictionPressureTransitionPeriod: 0s
+          fileCheckFrequency: 0s
+          healthzBindAddress: 127.0.0.1
+          healthzPort: 10248
+          httpCheckFrequency: 0s
+          imageMinimumGCAge: 0s
+          logging:
+            flushFrequency: 0
+            options:
+              json:
+                infoBufferSize: "0"
+            verbosity: 0
+          memorySwap: {}
+          nodeStatusReportFrequency: 1s
+          nodeStatusUpdateFrequency: 1s
+          resolvConf: /run/systemd/resolve/resolv.conf
+          rotateCertificates: false
+          runtimeRequestTimeout: 0s
+          serverTLSBootstrap: true
+          shutdownGracePeriod: 15s
+          shutdownGracePeriodCriticalPods: 5s
+          staticPodPath: "/etc/kubernetes/manifests"
+          streamingConnectionIdleTimeout: 0s
+          syncFrequency: 0s
+          volumeStatsAggPeriod: 0s
+          containerLogMaxSize: 50Mi
+          maxPods: 250
+          kubeAPIQPS: 50
+          kubeAPIBurst: 100
+          podPidsLimit: 4096
+          serializeImagePulls: false
+          systemReserved:
+            ephemeral-storage: 1Gi
+          featureGates:
+            RotateKubeletServerCertificate: true
+            APIPriorityAndFairness: true
+            DownwardAPIHugePages: true
+            PodSecurity: true
+            CSIMigrationAWS: false
+            CSIMigrationAzureFile: false
+            CSIMigrationGCE: false
+            CSIMigrationvSphere: false
+          rotateCertificates: false
+          serverTLSBootstrap: true
+          tlsMinVersion: VersionTLS12
+          tlsCipherSuites:
+            - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+            - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+            - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+            - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+          allowedUnsafeSysctls:
+            - "net.core.somaxconn"
+          evictionSoft: 
+            memory.available: 3Gi 
+            nodefs.available: 25%
+            nodefs.inodesFree: 15%
+            imagefs.available: 30%
+            imagefs.inodesFree: 25%
+          evictionSoftGracePeriod:  
+            memory.available: 2m30s
+            nodefs.available: 2m30s
+            nodefs.inodesFree: 2m30s
+            imagefs.available: 2m30s
+            imagefs.inodesFree: 2m30s
+          evictionHard:
+            memory.available: 2Gi
+            nodefs.available: 20%
+            nodefs.inodesFree: 10%
+            imagefs.available: 25%
+            imagefs.inodesFree: 15%
+          evictionPressureTransitionPeriod: 5s 
+          imageMinimumGCAge: 12h 
+          imageGCHighThresholdPercent: 55
+          imageGCLowThresholdPercent: 50
+
+      - path: /etc/systemd/system/containerd.service
+        owner: root:root
+        permissions: '0644'
+        content: |
+          [Unit]
+          Description=containerd container runtime
+          Documentation=https://containerd.io
+          After=network.target
+          
+          [Service]
+          ExecStartPre=/sbin/modprobe overlay
+          ExecStart=/usr/bin/containerd
+          Restart=always
+          RestartSec=5
+          Delegate=yes
+          KillMode=process
+          OOMScoreAdjust=-999
+          LimitNOFILE=1048576
+          LimitNPROC=infinity
+          LimitCORE=infinity
+          
+          [Install]
+          WantedBy=multi-user.target
+
+      - path: /etc/sysctl.d/99-network.conf
+        owner: root:root
+        permissions: '0644'
+        content: |
+          net.bridge.bridge-nf-call-iptables=1
+          net.bridge.bridge-nf-call-ip6tables=1
+          net.ipv4.ip_forward=1
+
+      - path: /etc/modules-load.d/k8s.conf
+        owner: root:root
+        permissions: '0644'
+        content: |
+          overlay
+          br_netfilter
+
+      - path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+        owner: root:root
+        permissions: '0644'
+        content: |
+          -----BEGIN CERTIFICATE-----
+          MIIEVzCCAj+gAwIBAgIUPLrkt9mHfTQftNmh9RnuHqNVIBIwDQYJKoZIhvcNAQEL
+          BQAwHzELMAkGA1UECBMCQ0ExEDAOBgNVBAMTB1Jvb3QgQ0EwHhcNMjIxMjIxMTgx
+          NjI5WhcNMzMwMjI2MTgxNjU5WjBHMQswCQYDVQQIEwJDQTETMBEGA1UEChMKS3Vi
+          ZXJuZXRlczEjMCEGA1UEAxMaS3ViZXJuZXRlcyBJbnRlcm1lZGlhdGUgQ0EwggEi
+          MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCsLXWFjUD8CrnoIuWhYKp2YPyg
+          U97dxSlqeW8xR677aR1qrH8vXnMMusd7Dw40RubuSPDzzD6f+GflSXGmfrv/Dhra
+          0zLl1lK62V5LNROwTZcx7F/YxNhFulF55ieFCR1nqMFUjb//bQZ3gMFGKqHj4OA4
+          yb2dKCTw9MmKjzgPnaqtcfI2uMixh/5bueQVmSRDSDCUBWp6Dg3+Tx7GgQwJCCrs
+          au0b6Lhm0e3b+62zMzzMWpbv8XqhHNBbeAAWAq9XvmkPSDA1Oyc48I0QKkP5dDnZ
+          uLc+t4ikILpIJgBD4DTBVwIUJkIo+jZ3ZiweInHdYBxrBa+LoKsHQHjWVS0/AgMB
+          AAGjYzBhMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
+          BBTKC34Joj96RyJuWqVkLQGFemVljzAfBgNVHSMEGDAWgBSBqSsnGPlRoEmUz2Lw
+          kxmxDBtQ/TANBgkqhkiG9w0BAQsFAAOCAgEAb/pdclTARr4NnHWciXQsDsOwaNNw
+          ZwtLGMWOL5HZQR6wxYzJ1gw/FqY2JXjqeUKAXErnkZHdzf1bh7dho1pjACFhy6l/
+          d04QR04t9tfaXdDwRqoHjnRn6aF4UvHqwEZ8NF0lxCumgysOYReDX16t6oWwRk6J
+          ATGL/3F4EfaTUSBzUJ/DbJG/cNXhihKNEIw4QXOX8CRRYdu/hK4b/RRPJHZpGGae
+          nfIXtmvPH+NqumRPbYyIbBXXanCumm8rnq5JeSFvwY8V9pmmlw+SaryrFPekFWdQ
+          zZ5p6KeL23fVnW7wR5yQi/uaewUUvWAQ9rnmrnDi4+1nMS1xGmHl2rK3FOYgzI5t
+          vx7EzW+PR4InZ9ATwAShdqLZoEcckzSqKR67605BEykSq9ii36Yv/rPtlUSw+bDx
+          IlDWjT+ddGpsxaKCWumc7CeMTA/v3NVVVqvEZTLMgG85oVgLIvTOe7dmRqQrAi3U
+          1y11D8p/bD5miZN8fKeH1sUDNq4JwqSwOI10mYCxwOHTj5+MKbmYosxWiWYqkVh9
+          6GGn2t2IKb3NaqpFopEIaLG0BeW5JbLUMbCyAsBkdVtsHQrNiqshRjWdvcU4x6Dd
+          PTSUvpah2QARTQ7EwYH6yn6Wn5efc3hmUrQStLu0hJfz+dIWiwD0O3bPN1TxRRuS
+          9gxujSippbX4aQE=
+          -----END CERTIFICATE-----
 kind: Secret
 metadata:
   name: treska-{{ .Values.zone }}

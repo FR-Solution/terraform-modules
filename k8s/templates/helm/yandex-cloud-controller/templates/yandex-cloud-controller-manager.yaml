@@ -8,12 +8,12 @@ metadata:
 
 ---
 apiVersion: apps/v1
-kind: Daemonset
+kind: Deployment
 metadata:
   name: yandex-cloud-controller-manager
 spec:
   progressDeadlineSeconds: 600
-  # replicas: 3
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -29,26 +29,26 @@ spec:
       labels:
         app: yandex-cloud-controller-manager
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     preferredDuringSchedulingIgnoredDuringExecution:
-      #       - weight: 1
-      #         podAffinityTerm:
-      #           topologyKey: kubernetes.io/hostname
-      #           labelSelector:
-      #             matchLabels:
-      #               app: yandex-cloud-controller-manager
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: yandex-cloud-controller-manager
       containers:
-        - args:
-            - --leader-elect=true
-            - --cluster-cidr={{ .Values.pod_cidr }}
-            - --allocate-node-cidrs=true
-            - --configure-cloud-routes=true
-            - --cloud-provider=yandex
-            - --cluster-name={{ .Values.cluster_name }}
-            - --bind-address=$(BIND_IP)
-            - --secure-port=64321
-            - --v=2
+      - args:
+          - --leader-elect=true
+          - --cluster-cidr={{ .Values.pod_cidr }}
+          - --allocate-node-cidrs=true
+          - --configure-cloud-routes=true
+          - --cloud-provider=yandex
+          - --cluster-name={{ .Values.cluster_name }}
+          - --bind-address=$(BIND_IP)
+          - --secure-port=64321
+          - --v=2
         env:
           - name: BIND_IP
             valueFrom:

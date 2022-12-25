@@ -1,0 +1,172 @@
+
+---
+- name: SETUP K8S DATA-PLANE COMPONENTS FOR MASTERS.
+  hosts: all
+  tasks:
+    - name: test
+      set_fact:
+        basic_packages:
+          - wget
+          - jq
+          - tree
+          - irqbalance
+          - net-tools
+          - socat 
+          - conntrack
+          - ipset
+          - ethtool
+          - unzip
+          - xfsprogs
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ k8s_component_path }}"
+        state: directory
+        mode: '0775'
+      loop: 
+        - /root/etcd/bin/
+        - /root/containerd/bin/
+        - /root/etcd
+        - /opt/cni/bin
+        - /root/containerd
+        - /etc/kubernetes/containerd/
+        - /var/lib/key-keeper/vault
+      loop_control:
+        loop_var: k8s_component_path
+
+    - name: INSTALL BASIC PACKAGES.
+      ansible.builtin.package:
+        name: "{{ basic_packages }}"
+        state: latest
+
+    - name: key-keeper
+      get_url:
+        url: https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20221209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20221209T150205Z&X-Amz-Expires=2592000&X-Amz-Signature=00FA1FD0CEE97750A7EBAD9723FE85B22170A8B7204323045B7D7C946E6ECF25&X-Amz-SignedHeaders=host
+        dest: /usr/bin/key-keeper
+        mode: '0775'
+
+    - name: kubectl
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
+        dest: /usr/bin/kubectl
+        mode: '0775'
+
+    - name: kubelet
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
+        dest: /usr/bin/kubelet
+        mode: '0775'
+
+    - name: kubeadm
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubeadm
+        dest: /usr/bin/kubeadm
+        mode: '0775'
+
+    - name: runc
+      get_url:
+        url: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+        dest: /usr/bin/runc
+        mode: '0775'
+
+    - name: yc
+      get_url:
+        url: https://storage.yandexcloud.net/yandexcloud-yc/release/0.96.0/linux/amd64/yc
+        dest: /usr/bin/yc
+        mode: '0775'
+
+    - name: cni
+      ansible.builtin.unarchive:
+        src: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+        dest: /opt/cni/bin
+        mode: '0775'
+        remote_src: yes
+
+    - name: containerd
+      ansible.builtin.unarchive:
+        src: https://github.com/containerd/containerd/releases/download/v1.6.8/containerd-1.6.8-linux-amd64.tar.gz
+        dest: /root/containerd
+        mode: '0775'
+        remote_src: yes
+
+    - name: FIND ALL CONTAINERD COMPONENTS. 
+      find:
+        paths: /root/containerd/bin/
+      register: containerd_components
+      tags:
+        - update_containerd
+
+    - name: COPY CONTAINERD COMPONENT BY FOLDERS.
+      copy:
+        src: "{{ containerd_component.path }}"
+        dest: /usr/bin/
+        mode: 0775
+        remote_src: true
+      loop: "{{ containerd_components.files }}"
+      loop_control:
+        loop_var: containerd_component
+      tags:
+        - update_containerd
+
+    - name: crictl
+      ansible.builtin.unarchive:
+        src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
+        dest: /usr/bin/
+        mode: '0775'
+        remote_src: yes
+
+    - name: etcd
+      ansible.builtin.unarchive:
+        src: https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
+        dest: /root/etcd
+        mode: '0775'
+        remote_src: yes
+
+    - name: Template a containerd-config
+      ansible.builtin.template:
+        src: containerd-config.toml.j2
+        dest: /etc/kubernetes/containerd/config.toml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Template a containerd-service
+      ansible.builtin.template:
+        src: containerd.service.j2
+        dest: /etc/systemd/system/containerd.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Start service containerd, if not started
+      ansible.builtin.service:
+        name: containerd
+        state: started
+        enabled: yes
+      loop:
+        - containerd.service
+        - systemd-resolved.service
+
+    - name: pull an image
+      shell:
+        crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull  {{ component_image }}
+      loop:
+        - k8s.gcr.io/pause:3.6
+        - k8s.gcr.io/etcd:3.5.3-0
+        - k8s.gcr.io/kube-apiserver:v1.23.12
+        - k8s.gcr.io/kube-controller-manager:v1.23.12
+        - k8s.gcr.io/kube-scheduler:v1.23.12
+        - k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+        - k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+        - k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
+        - k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+        - k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
+        - quay.io/k8scsi/livenessprobe:v2.0.0
+        - quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
+        - docker.io/coredns/coredns:1.9.3
+        - docker.io/openpolicyagent/gatekeeper-crds:v3.10.0-beta.2
+        - docker.io/openpolicyagent/gatekeeper:v3.10.0-beta.2
+      loop_control:
+        loop_var: component_image
+      tags:
+        - pull

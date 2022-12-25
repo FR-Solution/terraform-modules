@@ -3,14 +3,14 @@
 
 resource "yandex_compute_instance" "master" {
   depends_on = [
-    yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_kv,
-    yandex_lockbox_secret_version.master_key_keeper_approles_role_id_kv,
-    yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_ca,
-    yandex_lockbox_secret_version.master_key_keeper_approles_role_id_ca,
-    yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_certificates,
-    yandex_lockbox_secret_version.master_key_keeper_approles_role_id_certificates,
-    yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_external_ca,
-    yandex_lockbox_secret_version.master_key_keeper_approles_role_id_external_ca,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_kv,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_kv,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_ca,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_ca,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_certificates,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_certificates,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_external_ca,
+    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_external_ca,
     yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_all,
     yandex_lockbox_secret_version.master_key_keeper_approles_role_id_all,
   ]
@@ -24,6 +24,10 @@ resource "yandex_compute_instance" "master" {
   zone                = try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)
   
   service_account_id  = yandex_iam_service_account.master-sa[each.key].id
+
+  # placement_policy {
+  #   placement_group_id = 
+  # }
 
   resources {
     cores         = var.master_group.resources.core
@@ -53,7 +57,6 @@ resource "yandex_compute_instance" "master" {
     subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)]).id
     nat = true
   }
-
 
   lifecycle {
     ignore_changes = [

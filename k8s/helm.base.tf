@@ -13,23 +13,31 @@ resource "vault_approle_auth_backend_role_secret_id" "k8s-vault-secret" {
 }
 
 
-resource "helm_release" "base" {
+resource "helm_release" "base-roles" {
+  depends_on = [
+    module.k8s-yandex-cluster,
+  ]
+  name       = "base-roles"
+  chart      = "templates/helm/base-roles"
+  namespace  = "kube-system"
+  values = []
+}
+
+resource "helm_release" "base-vault-node-csr" {
   depends_on = [
     helm_release.certmanager,
     helm_release.gatekeeper
     ]
-  name       = "base"
-  chart      = "templates/helm/base"
+  name       = "base-vault-node-csr"
+  chart      = "templates/helm/base-vault-node-csr"
   namespace  = "kube-system"
   values = [
-    templatefile("templates/helm/base/values.yaml", {
-
+    templatefile("templates/helm/base-vault-node-csr/values.yaml", {
         vaut_approle_secretid:              base64encode(vault_approle_auth_backend_role_secret_id.k8s-vault-secret.secret_id)
         vaut_approle_roleid:                vault_approle_auth_backend_role.k8s-vault-role.role_id
         vaut_sign_path:                     "${module.k8s-yandex-cluster.k8s_global_vars.ssl.intermediate.kubernetes-ca.path}/sign/kubelet-peer-k8s-certmanager"
-        vaut_server:                        "http://193.32.219.99:9200"
+        vaut_server:                        var.vault_server
         vaut_approle_path:                  module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path_approle
-
     })
   ]
 }

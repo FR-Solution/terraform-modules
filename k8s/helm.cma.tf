@@ -1,7 +1,7 @@
 
 resource "helm_release" "cma" {
   depends_on = [
-    helm_release.coredns
+    helm_release.ycc
   ]
   name       = "cma"
   chart      = "templates/helm/cluster-machine-approver"
