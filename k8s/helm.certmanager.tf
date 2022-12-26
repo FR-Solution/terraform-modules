@@ -1,7 +1,6 @@
 resource "helm_release" "certmanager" {
   depends_on = [
     helm_release.coredns,
-    helm_release.ycc
   ]
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"

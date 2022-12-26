@@ -6,3 +6,7 @@ output "kube-apiserver-lb" {
 #   value = yandex_vpc_network.cluster-vpc.id
 # }
 
+
+output "master_sa_policy" {
+  value = local.iam_admin_members
+}

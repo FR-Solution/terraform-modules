@@ -21,6 +21,7 @@ resource "helm_release" "base-roles" {
   chart      = "templates/helm/base-roles"
   namespace  = "kube-system"
   values = []
+  atomic    = true
 }
 
 resource "helm_release" "base-vault-node-csr" {
@@ -31,6 +32,7 @@ resource "helm_release" "base-vault-node-csr" {
   name       = "base-vault-node-csr"
   chart      = "templates/helm/base-vault-node-csr"
   namespace  = "kube-system"
+  atomic    = true
   values = [
     templatefile("templates/helm/base-vault-node-csr/values.yaml", {
         vaut_approle_secretid:              base64encode(vault_approle_auth_backend_role_secret_id.k8s-vault-secret.secret_id)
