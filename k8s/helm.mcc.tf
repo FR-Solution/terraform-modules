@@ -1,7 +1,8 @@
 
 resource "helm_release" "mcc" {
   depends_on = [
-    helm_release.coredns
+    helm_release.certmanager,
+    helm_release.gatekeeper
   ]
   name       = "mcc"
   chart      = "templates/helm/machine-controller-manager"

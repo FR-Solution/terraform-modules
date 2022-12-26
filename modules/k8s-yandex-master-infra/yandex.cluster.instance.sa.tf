@@ -23,4 +23,9 @@ data "yandex_iam_policy" "admin" {
 resource "yandex_resourcemanager_folder_iam_policy" "folder_admin_policy" {
   folder_id   = var.cloud_metadata.folder_id
   policy_data = data.yandex_iam_policy.admin.policy_data
+  lifecycle {
+    ignore_changes = [
+      policy_data
+    ]
+  }
 }

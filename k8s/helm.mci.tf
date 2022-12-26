@@ -1,7 +1,7 @@
 
 resource "helm_release" "mci-ru-central1-a" {
   depends_on = [
-    helm_release.certmanager,
+    helm_release.mcc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
   name       = "mci-ru-central1-a"

@@ -13,7 +13,7 @@ locals {
 
 resource "helm_release" "ycsi" {
   depends_on = [
-    helm_release.coredns,
+    helm_release.ycc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
   name       = "ycsi"

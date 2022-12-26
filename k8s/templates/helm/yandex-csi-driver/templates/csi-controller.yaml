@@ -207,7 +207,7 @@ spec:
         volumeMounts:
         - mountPath: /csi
           name: socket-dir
-      dnsPolicy: ClusterFirstWithHostNet
+      dnsPolicy: Default
       hostNetwork: true
       priorityClassName: system-cluster-critical
       restartPolicy: Always
