@@ -1,19 +1,31 @@
 # kubernetes
 
 ```bash
-cd vault && terraform init --upgrade && cd -
+cd base  && terraform init --upgrade && cd -
 cd k8s   && terraform init --upgrade && cd -
 
-CLUSTER_NAME="example" terraform apply \
-  -chdir=k8s \
-  -var cluster_name="$CLUSTER_NAME" \
-  -var vault_server="http:/auth.example.com"  \
+# Настраивает базовое окружение для VAULT и KEYCLOAK
+terraform apply \
+  -chdir=base \
   -auto-approve  \
-  -state states/$CLUSTER_NAME
+  -state states/base
+
+export CLUSTER_NAME="example" 
+export VAULT_ADDRESS="http://vault.ru" 
+
+# Устанавливает кластер
+terraform apply \
+  -chdir=k8s \
+  -var cluster_name="${CLUSTER_NAME}" \
+  -var vault_server="${VAULT_ADDRESS}"  \
+  -auto-approve  \
+  -state states/${CLUSTER_NAME}
 ```
 
+### INFO
 ```
-Вся информация по сертификатам находится в файле vault.variables.tf:
+Вся информация по сертификатам находится в modules/k8s-config-vars/locals.certs.tf
+#! Данный модуль подключается первым и в нем происходит рендер, общего переменного окружения, для остальных модулей.
 
 ssl.global-args.issuers-args                                            - там описаны дефолтные значения для vault roles
 ssl.global-args.key-keeper-args                                         - описаны дефолтные значения для заказа сертификата
@@ -25,18 +37,25 @@ ssl.intermediate[“*”].issuers[“*”].certificates                         
 ssl.intermediate[“*”].issuers[“*”].certificates[“*”].key-keeper-args    - список аргументов для заказа сертификатов *(мержится с global-args.key-keeper-args 
 ```
 
-### Настройка kubeconfig
+### Установка kubectl login
 ```bash
-export CLUSTER_NAME=cluster-1
-export CLUSTER_DOMAIN=example.com
-export CLUSTER_API_PORT=6443
-export CLUSTER_API=https://api.${CLUSTER_NAME}.${CLUSTER_DOMAIN}:${CLUSTER_API_PORT}
+# PROJECT -> https://github.com/int128/kubelogin
+kubectl krew install oidc-login
+```
+
+### Настройка kubeconfig
+
+```bash
+export CLUSTER_NAME="cluster-1"
+export CLUSTER_DOMAIN="example.com"
+export CLUSTER_API_PORT="6443"
+export CLUSTER_API="https://api.${CLUSTER_NAME}.${CLUSTER_DOMAIN}:${CLUSTER_API_PORT}"
 export EMAIL="admin.example.com"
 export PASSWORD=""
-export CA_BUNDLE_PATH=oidc-ca.pem
-export OIDC_CLIENT_SECRET=kube-client-secret
-export OIDC_CLIENT_ID=kubernetes
-export OIDC_ISSUER=https://auth.example.com/auth/realms/master
+export CA_BUNDLE_PATH="oidc-ca.pem"
+export OIDC_CLIENT_SECRET="kube-client-secret"
+export OIDC_CLIENT_ID="kubernetes-${CLUSTER_NAME}"
+export OIDC_ISSUER="https://auth.example.com/auth/realms/master"
 
 kubectl config set-cluster ${CLUSTER_NAME} --server=${CLUSTER_API} --insecure-skip-tls-verify
 
@@ -61,15 +80,26 @@ kubectl config use-context ${CLUSTER_NAME}
 
 ### Обновление мастеров из нового golden-image
 ```bash
-CLUSTER_NAME="example" terraform  apply \
+export CLUSTER_NAME="example" 
+export EXTRA_CLUSTER_NAME=$(echo -n ${CLUSTER_NAME} | sha256sum | head -c 8)
+export VAULT_ADDRESS="http://vault.ru"
+
+# Перед этим надо переопределить значение image.id
+# в module.k8s-yandex-cluster -> master_group.resources_overwrite.master-1.disk.boot.image_id
+terraform  apply \
   -chdir=k8s \
-  -var cluster_name="example" \
-  -var vault_server="http:/auth.example.com"  \
-  -var base_os_image="$ID" \                                                                  # ID нового golden-image
+  -var cluster_name=${CLUSTER_NAME} \
+  -var vault_server="${VAULT_ADDRESS}" \
   -auto-approve \
   -state states/example  \
-  -replace=module.k8s-vault.vault_token.kubernetes-all-login-bootstrap-master[\"master-0\"] \ # Пересоздаст временный токен для доступа в vault
-  -replace=module.k8s-control-plane.yandex_compute_instance.master[\"master-0\"]              # Пересоздаст VM с мастером
-  -refresh=false \                                                                            # Отключаем рефреш, что бы не проверять наполнение куба
+  -replace=module.k8s-control-plane.yandex_compute_instance.master[\"master-${EXTRA_CLUSTER_NAME}-0\"]
+  -refresh=false
+
+terraform apply \
+  -chdir=k8s  \
+  -var cluster_name="${CLUSTER_NAME}"  \
+  -state states/cluster-2 \
+  -auto-approve \
+  -replace helm_release.mci-debian-11
 
 ```

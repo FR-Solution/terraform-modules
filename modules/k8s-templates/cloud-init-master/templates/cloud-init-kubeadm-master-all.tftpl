@@ -24,6 +24,10 @@ packages:
   - ethtool
   - unzip
   - xfsprogs
+# TODO
+# {{ if .Values.resolved | default false }}
+#       - systemd-resolved
+# {{ end }}
 
 # https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 bootcmd:

@@ -36,7 +36,14 @@ resource "yandex_vpc_subnet" "master-subnets" {
     route_table_id = yandex_vpc_route_table.cluster-vpc-route-table.id
 }
 
-
+# OPENSUSE not installed systemd-resolved
+# CENTOS7 not installed systemd-resolved
+# ALMALINUX-9 not installed systemd-resolved
+# FEDORA not installed systemd-resolved
+#root@master-4a383428-1:/home/dkot# kg no -o wide
+#VERSION           OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME       YANDEX-IMAGE-ID
+#v1.23.12          Astra Linux          5.15.0-33-generic   containerd://1.6.8      fd81pgsokk5vtjm1qgie
+#
 module "k8s-yandex-cluster" {
     source = "../modules/k8s-yandex-cluster"
     cluster_name    = var.cluster_name
@@ -86,7 +93,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8uji8asiui2oetvqps"
+              image_id  = "fd8kdq6d0p8sij7h5qe3"
               size      = 30
               type      = "network-hdd"
             }
@@ -100,8 +107,11 @@ module "k8s-yandex-cluster" {
               }
             }
           }
-        }
 
+        }
+        metadata = {
+          user_data_template = "all" # all | packer
+        }
         ssh_username  = "dkot"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
     }

@@ -13,3 +13,6 @@ cloud_secret:
 folder_id: ${ yandex_cloud_controller_sa.folder_id }
 k8s_api_server_fqdn: ${k8s_api_server_fqdn}
 k8s_api_server_port: ${k8s_api_server_port}
+
+image_id: ${image_id}
+resolved: ${resolved}

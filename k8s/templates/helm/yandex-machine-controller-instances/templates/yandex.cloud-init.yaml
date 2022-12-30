@@ -14,7 +14,8 @@ stringData:
         lock_passwd: true
         ssh_authorized_keys:
           - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBKp0G8Vlyi9XgxoL9xA20sY+Vc4szJ5PnP3BpAyaThtEIPtz/6w8DYy1qMGR5lq2MtjHKo0ghApCEM78rZf8PMR/EFW5hOeZzgiHZZVOUIThDwNAk9XQHKG+6OOS5+gpv+VLB3DTXxlPJsGdiI3/SBTmMfUCDZVR6LA94Uh5tgNypPqRRIv65tW0KbGjsYnMQxKFvO9lMHeFtJm1bAsb/+dbm1MafWYXg3yEGr6pyiHgaiwYgx2sKtIVqkg8IYNxLXzjIyS4kwB/WCkv3CEEIDL8KIi+HGnfv2tFzvtjwLgz2rtG73tVLzvjuplwG24Fx5vgCcTnWfFvAWiG5r8+IaHZ9ZvO9TOeAlOAWjB3ieHjA5ZS3R9J3WOAlfAQCA5jz6i2tFxAtIPBdWL0ZzYKUVLR561qd1AY5v9akqhquVIZqsJMzaLdCg0eoLNNdKgdQLXJohMPlqR96lR+mbym7UI/Fn7FvURibRgb781Z86ALfeYVHLYidVkrmhuuHzuU= dk@dobry-kot-system
-
+    
+    package_reboot_if_required: true
     packages:
       - wget
       - jq
@@ -27,6 +28,9 @@ stringData:
       - ethtool
       - unzip
       - xfsprogs
+{{ if .Values.resolved | default false }}
+      - systemd-resolved
+{{ end }}
 
     bootcmd:
       - sudo modprobe overlay
@@ -34,6 +38,7 @@ stringData:
       - sudo sysctl --system
 
     runcmd:
+      - hostnamectl set-hostname  $(cat /proc/sys/kernel/hostname | awk -F '.' '{print $1}')
       - wget -O /usr/bin/kubectl       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
       - wget -O /usr/bin/kubelet       https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
       - wget -O /usr/bin/runc          https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
@@ -89,58 +94,27 @@ stringData:
           Description=kubelet: The Kubernetes Node Agent
           Documentation=https://kubernetes.io/docs/home/
           Wants=network-online.target
-          After=network-online.target
+          After=network-online.target containerd.service
 
           [Service]
-          ExecStart=/usr/bin/kubelet
-          
+          ExecStart=/usr/bin/kubelet \
+            --cert-dir=/etc/kubernetes/pki/certs/kubelet \
+            --config=/etc/kubernetes/kubelet/config.yaml \
+            --root-dir=/var/lib/kubelet \
+            --v=2 \
+            --kubeconfig=/etc/kubernetes/kubelet/kubeconfig \
+            --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig \
+            --container-runtime=remote \
+            --container-runtime-endpoint=/run/containerd/containerd.sock \
+            --pod-infra-container-image=k8s.gcr.io/pause:3.6 \
+            --cloud-provider=external
           Restart=always
           StartLimitInterval=0
           RestartSec=10
+          AmbientCapabilities=CAP_SYS_RAWIO
           
           [Install]
           WantedBy=multi-user.target
-      - path: /etc/systemd/system/kubelet.service.d/10-fraima.conf
-        owner: root:root
-        permissions: '0644'
-        content: |
-          [Service]
-          EnvironmentFile=-/etc/kubernetes/kubelet/service/kubelet-args.env
-
-          ExecStart=
-          ExecStart=/usr/bin/kubelet \
-              $KUBELET_HOSTNAME \
-              $KUBELET_CNI_ARGS \
-              $KUBELET_RUNTIME_ARGS \
-              $KUBELET_AUTH_ARGS \
-              $KUBELET_CONFIGS_ARGS \
-              $KUBELET_BASIC_ARGS \
-              $KUBELET_KUBECONFIG_ARGS \
-              $KUBELET_CLOUD_ARGS \
-      - path: /etc/kubernetes/kubelet/service/kubelet-args.env
-        owner: root:root
-        permissions: '0644'
-        content: |
-          KUBELET_BASIC_ARGS="
-              --cert-dir=/etc/kubernetes/pki/certs/kubelet
-          "
-          KUBELET_CONFIGS_ARGS="
-              --config=/etc/kubernetes/kubelet/config.yaml
-              --root-dir=/var/lib/kubelet
-              --v=2
-          "
-          KUBELET_KUBECONFIG_ARGS="
-              --kubeconfig=/etc/kubernetes/kubelet/kubeconfig
-              --bootstrap-kubeconfig=/etc/kubernetes/kubelet/bootstrap-kubeconfig
-          "
-          KUBELET_RUNTIME_ARGS="
-              --container-runtime=remote
-              --container-runtime-endpoint=/run/containerd/containerd.sock
-              --pod-infra-container-image=k8s.gcr.io/pause:3.6
-          "
-          KUBELET_CLOUD_ARGS="
-              --cloud-provider=external
-          "
 
       - path: /etc/kubernetes/kubelet/config.yaml
         owner: root:root
@@ -256,7 +230,7 @@ stringData:
           
           [Service]
           ExecStartPre=/sbin/modprobe overlay
-          ExecStart=/usr/bin/containerd
+          ExecStart=/usr/bin/containerd --config=/etc/kubernetes/containerd/config.toml
           Restart=always
           RestartSec=5
           Delegate=yes
@@ -268,6 +242,26 @@ stringData:
           
           [Install]
           WantedBy=multi-user.target
+
+      - path: /etc/kubernetes/manifests
+        owner: root:root
+        permissions: '0644'
+
+      - path: /etc/kubernetes/containerd/config.toml
+        owner: root:root
+        permissions: '0644'
+        content: |
+          disabled_plugins = []
+
+          version = 2
+          [plugins]
+            [plugins."io.containerd.grpc.v1.cri"]
+            [plugins."io.containerd.grpc.v1.cri".containerd]
+                [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+                  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+                    runtime_type = "io.containerd.runc.v2"
+                    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+                      SystemdCgroup = true
 
       - path: /etc/sysctl.d/99-network.conf
         owner: root:root
@@ -316,7 +310,7 @@ stringData:
           -----END CERTIFICATE-----
 kind: Secret
 metadata:
-  name: treska-{{ .Values.zone }}
+  name: treska-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook-weight": "1"

@@ -46,6 +46,7 @@ variable "master_group"{
     default_zone = string
     resources_overwrite = any
     resources = any
+    metadata = any
     ssh_username = string
     ssh_rsa_path = string
 
@@ -63,6 +64,7 @@ variable "master_group"{
     subnets = null
     default_zone = "ru-central1-a"
     resources_overwrite = {}
+    metadata = {}
     resources = {
       core = 4
       memory = 8

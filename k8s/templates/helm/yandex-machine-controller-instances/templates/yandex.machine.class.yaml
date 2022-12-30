@@ -1,14 +1,14 @@
 apiVersion: machine.sapcloud.io/v1alpha1
 kind: YandexMachineClass
 metadata:
-  name: {{ .Values.zone }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   annotations:
     helm.sh/hook-weight: "3"
 spec:
   bootDiskSpec:
     autoDelete: true
-    imageID: fd8kdq6d0p8sij7h5qe3
+    imageID: {{ .Values.image_id }}
     size: 21474836480
     typeID: network-hdd
   labels:
@@ -26,6 +26,6 @@ spec:
     memory: 8589934592
   schedulingPolicy: {}
   secretRef:
-    name: treska-{{ .Values.zone }}
+    name: treska-{{ .Release.Name }}
     namespace: {{ .Release.Namespace }}
   zoneID: {{ .Values.zone }}

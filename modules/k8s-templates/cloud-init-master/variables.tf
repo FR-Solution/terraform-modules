@@ -29,3 +29,8 @@ variable "master_instance_list" {
   type        = any
   default     = {}
 }
+
+variable "node_group_metadata" {
+  type        = any
+  default     = {}
+}
