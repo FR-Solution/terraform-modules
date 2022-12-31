@@ -55,7 +55,7 @@ resource "yandex_compute_instance" "master" {
 
   network_interface {
     subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)]).id
-    nat = true
+    nat = var.master_group.resources.network_interface.nat
   }
 
   lifecycle {

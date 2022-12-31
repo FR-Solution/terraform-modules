@@ -5,6 +5,9 @@ resource "tls_private_key" "kube_apiserver_sa_key" {
 } 
 
 resource "vault_kv_secret_v2" "kube_apiserver_sa" {
+  depends_on = [
+    vault_mount.kubernetes-secrets
+  ]
   mount = "${vault_mount.kubernetes-secrets.path}"
   name                       = "kube-apiserver-sa"
   cas                        = 1

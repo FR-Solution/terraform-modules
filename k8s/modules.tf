@@ -14,9 +14,18 @@ resource "yandex_vpc_network" "cluster-vpc" {
   name = "vpc.clusters"
 }
 
+resource "yandex_vpc_gateway" "cluster-vpc-gateway" {
+  name = "gw-${var.cluster_name}"
+  shared_egress_gateway {}
+}
+
 resource "yandex_vpc_route_table" "cluster-vpc-route-table" {
-  name = "vpc.clusters.route.table"
+  name = "vpc-clusters-route-table"
   network_id = "${yandex_vpc_network.cluster-vpc.id}"
+  static_route {
+    destination_prefix = "0.0.0.0/0"
+    gateway_id         = yandex_vpc_gateway.cluster-vpc-gateway.id
+  }
   lifecycle {
     ignore_changes = [
       static_route
@@ -24,8 +33,6 @@ resource "yandex_vpc_route_table" "cluster-vpc-route-table" {
   }
 }
 
-#### SUBNETS ######
-##-->
 resource "yandex_vpc_subnet" "master-subnets" {
     for_each = var.master_availability_zones
     
@@ -36,14 +43,6 @@ resource "yandex_vpc_subnet" "master-subnets" {
     route_table_id = yandex_vpc_route_table.cluster-vpc-route-table.id
 }
 
-# OPENSUSE not installed systemd-resolved
-# CENTOS7 not installed systemd-resolved
-# ALMALINUX-9 not installed systemd-resolved
-# FEDORA not installed systemd-resolved
-#root@master-4a383428-1:/home/dkot# kg no -o wide
-#VERSION           OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME       YANDEX-IMAGE-ID
-#v1.23.12          Astra Linux          5.15.0-33-generic   containerd://1.6.8      fd81pgsokk5vtjm1qgie
-#
 module "k8s-yandex-cluster" {
     source = "../modules/k8s-yandex-cluster"
     cluster_name    = var.cluster_name
@@ -93,7 +92,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8kdq6d0p8sij7h5qe3"
+              image_id  = "fd8ueg1g3ifoelgdaqhb"
               size      = 30
               type      = "network-hdd"
             }
@@ -106,6 +105,9 @@ module "k8s-yandex-cluster" {
                 type        = "network-ssd"
               }
             }
+          }
+          network_interface = {
+            nat = true
           }
 
         }

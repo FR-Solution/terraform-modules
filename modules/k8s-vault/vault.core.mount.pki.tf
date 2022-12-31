@@ -25,5 +25,3 @@ resource "vault_mount" "kubernetes-secrets" {
   description = "KV Version 2 for K8S CP secrets"
   options     = {}
 }
-
-

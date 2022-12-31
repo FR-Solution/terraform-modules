@@ -9,9 +9,6 @@ ipam:
     clusterPoolIPv4PodCIDRList:
       - ${service_cidr}
 
-bpf:
-  tproxy: true
-
 operator:
   resources:
     limits:
@@ -29,26 +26,91 @@ resources:
     cpu: 100m
     memory: 512Mi
 
-
+# -- Configure service load balancing
 loadBalancer:
   algorithm: random
   mode: snat
 
 wellKnownIdentities:
+  # -- Enable the use of well-known identities.
   enabled: true
 
-l2NeighDiscovery:
-  enabled: false
+# l2NeighDiscovery:
+#   enabled: false
 
+# -- Allows to explicitly specify the IPv4 CIDR for native routing.
+# When specified, Cilium assumes networking for this CIDR is preconfigured and
+# hands traffic destined for that range to the Linux network stack without
+# applying any SNAT.
+# Generally speaking, specifying a native routing CIDR implies that Cilium can
+# depend on the underlying networking stack to route packets to their
+# destination. To offer a concrete example, if Cilium is configured to use
+# direct routing and the Kubernetes CIDR is included in the native routing CIDR,
+# the user must configure the routes to reach pods, either manually or by
+# setting the auto-direct-node-routes flag.
+#
+# Deprecated in favor of ipv4NativeRoutingCIDR, will be removed in 1.12.
+# nativeRoutingCIDR:
+
+# -- Allows to explicitly specify the IPv4 CIDR for native routing.
+# When specified, Cilium assumes networking for this CIDR is preconfigured and
+# hands traffic destined for that range to the Linux network stack without
+# applying any SNAT.
+# Generally speaking, specifying a native routing CIDR implies that Cilium can
+# depend on the underlying networking stack to route packets to their
+# destination. To offer a concrete example, if Cilium is configured to use
+# direct routing and the Kubernetes CIDR is included in the native routing CIDR,
+# the user must configure the routes to reach pods, either manually or by
+# setting the auto-direct-node-routes flag.
+# ipv4NativeRoutingCIDR:
 ipv4NativeRoutingCIDR: "10.0.0.0/8"
+
+# -- Configures the use of the KVStore to optimize Kubernetes event handling by
+# mirroring it into the KVstore for reduced overhead in large clusters.
 enableK8sEventHandover: true
 
+# -- Configure the encapsulation configuration for communication between nodes.
+# Possible values:
+#   - disabled
+#   - vxlan (default)
+#   - geneve
 tunnel: "disabled"
 
 endpointRoutes:
+  # -- Enable use of per endpoint routes instead of routing via
+  # the cilium_host interface.
   enabled: true 
 
-enableIPv4Masquerade: true
+# -- Enables masquerading of IPv4 traffic leaving the node from endpoints.
+enableIPv4Masquerade: false
 
+# -- Enables masquerading of IPv6 traffic leaving the node from endpoints.
+enableIPv6Masquerade: false
+
+# -- Enable hostPort service support.
 hostPort:
   enabled: true
+
+# Disable iptables
+
+# -- Enable Layer 7 network policy.
+l7Proxy: false
+
+# TODO: Add documentation
+enableIdentityMark: false
+
+# -- Configure whether to install iptables rules to allow for TPROXY
+# (L7 proxy injection), iptables-based masquerading and compatibility
+# with kube-proxy.
+installIptablesRules: false
+
+bpf:
+  # -- Configure the eBPF-based TPROXY to reduce reliance on iptables rules
+  # for implementing Layer 7 policy.
+  tproxy: true
+
+  # -- Enable native IP masquerade support in eBPF
+  masquerade: true
+
+
+#TODO NodePort=Enabled

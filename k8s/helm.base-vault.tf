@@ -1,4 +1,7 @@
 resource "vault_approle_auth_backend_role" "k8s-vault-role" {
+  depends_on = [
+    module.k8s-yandex-cluster
+  ]
   backend         = module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path_approle
   role_name       = "kubelet-peer-k8s-certmanager"
   token_policies  = ["${module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path}/certificates/cp-kubelet-peer-k8s-certmanager"]
@@ -10,18 +13,6 @@ resource "vault_approle_auth_backend_role" "k8s-vault-role" {
 resource "vault_approle_auth_backend_role_secret_id" "k8s-vault-secret" {
   backend   = module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path_approle
   role_name = vault_approle_auth_backend_role.k8s-vault-role.role_name
-}
-
-
-resource "helm_release" "base-roles" {
-  depends_on = [
-    module.k8s-yandex-cluster,
-  ]
-  name       = "base-roles"
-  chart      = "templates/helm/base-roles"
-  namespace  = "kube-system"
-  values = []
-  atomic    = true
 }
 
 resource "helm_release" "base-vault-node-csr" {

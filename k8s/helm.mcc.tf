@@ -13,4 +13,3 @@ resource "helm_release" "mcc" {
   wait              = true
   atomic            = true
 }
-
