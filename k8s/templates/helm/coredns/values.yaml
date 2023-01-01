@@ -12,4 +12,9 @@ fullnameOverride: coredns
 replicaCount: 3
 service:
   # TODO вывести в переменную под указанную подсеть
-  clusterIP: 29.64.0.10
+  clusterIP: ${clusterIP}
+
+readinessProbe:
+  initialDelaySeconds: 0
+  failureThreshold: 15
+  periodSeconds: 5

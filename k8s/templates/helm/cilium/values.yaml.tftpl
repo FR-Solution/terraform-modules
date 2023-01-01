@@ -1,15 +1,33 @@
+# -- Configure the kube-proxy replacement in Cilium BPF datapath
+# Valid options are "disabled", "probe", "partial", "strict".
+# ref: https://docs.cilium.io/en/stable/gettingstarted/kubeproxy-free/
 kubeProxyReplacement: strict
+
 k8sServiceHost: ${k8s_api_server_fqdn}
 k8sServicePort: ${k8s_api_server_port}
 
+cluster:
+  # -- Name of the cluster. Only required for Cluster Mesh.
+  name: ${cluster_name}
+  # -- (int) Unique ID of the cluster. Must be unique across all connected
+  # clusters and in the range of 1 to 255. Only required for Cluster Mesh.
+  id: ${cluster_id} 
+
 ipam:
+  # -- Configure IP Address Management mode.
+  # ref: https://docs.cilium.io/en/stable/concepts/networking/ipam/
   mode: kubernetes
   operator:
+    # -- IPv4 CIDR mask size to delegate to individual nodes for IPAM.
     clusterPoolIPv4MaskSize: ${node_cidr_mask}
+
+    # -- IPv4 CIDR list range to delegate to individual nodes for IPAM.
     clusterPoolIPv4PodCIDRList:
       - ${service_cidr}
 
 operator:
+  # -- cilium-operator resource limits & requests
+  # ref: https://kubernetes.io/docs/user-guide/compute-resources/
   resources:
     limits:
       cpu: 1000m
@@ -28,15 +46,22 @@ resources:
 
 # -- Configure service load balancing
 loadBalancer:
+  # -- algorithm is the name of the load balancing algorithm for backend
+  # selection e.g. random or maglev
   algorithm: random
+
+  # -- mode is the operation mode of load balancing for remote backends
+  # e.g. snat, dsr, hybrid
   mode: snat
+  # dsrDispatch: opt
 
 wellKnownIdentities:
   # -- Enable the use of well-known identities.
   enabled: true
 
-# l2NeighDiscovery:
-#   enabled: false
+l2NeighDiscovery:
+   # -- Enable L2 neighbor discovery in the agent
+  enabled: true
 
 # -- Allows to explicitly specify the IPv4 CIDR for native routing.
 # When specified, Cilium assumes networking for this CIDR is preconfigured and
@@ -48,21 +73,6 @@ wellKnownIdentities:
 # direct routing and the Kubernetes CIDR is included in the native routing CIDR,
 # the user must configure the routes to reach pods, either manually or by
 # setting the auto-direct-node-routes flag.
-#
-# Deprecated in favor of ipv4NativeRoutingCIDR, will be removed in 1.12.
-# nativeRoutingCIDR:
-
-# -- Allows to explicitly specify the IPv4 CIDR for native routing.
-# When specified, Cilium assumes networking for this CIDR is preconfigured and
-# hands traffic destined for that range to the Linux network stack without
-# applying any SNAT.
-# Generally speaking, specifying a native routing CIDR implies that Cilium can
-# depend on the underlying networking stack to route packets to their
-# destination. To offer a concrete example, if Cilium is configured to use
-# direct routing and the Kubernetes CIDR is included in the native routing CIDR,
-# the user must configure the routes to reach pods, either manually or by
-# setting the auto-direct-node-routes flag.
-# ipv4NativeRoutingCIDR:
 ipv4NativeRoutingCIDR: "10.0.0.0/8"
 
 # -- Configures the use of the KVStore to optimize Kubernetes event handling by
@@ -91,26 +101,86 @@ enableIPv6Masquerade: false
 hostPort:
   enabled: true
 
-# Disable iptables
-
 # -- Enable Layer 7 network policy.
 l7Proxy: false
 
-# TODO: Add documentation
-enableIdentityMark: false
+# -- Enable setting identity mark for local traffic.
+enableIdentityMark: true
 
 # -- Configure whether to install iptables rules to allow for TPROXY
 # (L7 proxy injection), iptables-based masquerading and compatibility
 # with kube-proxy.
-installIptablesRules: false
+installIptablesRules: true
 
 bpf:
   # -- Configure the eBPF-based TPROXY to reduce reliance on iptables rules
   # for implementing Layer 7 policy.
   tproxy: true
+  hostLegacyRouting: false
 
-  # -- Enable native IP masquerade support in eBPF
-  masquerade: true
+# -- Configure N-S k8s service loadbalancing
+nodePort:
+  # -- Enable the Cilium NodePort service implementation.
+  enabled: false
 
+  # -- Set to true to prevent applications binding to service ports.
+  bindProtection: false
+  
+  # -- Append NodePort range to ip_local_reserved_ports if clash with ephemeral
+  # ports is detected.
+  autoProtectPortRange: false
+  
+  # -- Enable healthcheck nodePort server for NodePort services
+  enableHealthCheck: false
 
-#TODO NodePort=Enabled
+clustermesh:
+  # -- Deploy clustermesh-apiserver for clustermesh
+  useAPIServer: false
+
+# -- cilium-monitor sidecar.
+monitor:
+  # -- Enable the cilium-monitor sidecar.
+  enabled: true
+
+hubble:
+  # -- Enable Hubble (true by default).
+  enabled: true
+
+  # -- Hubble metrics configuration.
+  # See https://docs.cilium.io/en/stable/operations/metrics/#hubble-metrics
+  # for more comprehensive documentation about Hubble metrics.
+  metrics:
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - flow
+      - icmp
+      - http
+
+  relay:
+    # -- Enable Hubble Relay (requires hubble.enabled=true)
+    enabled: true
+
+  ui:
+    # -- Whether to enable the Hubble UI.
+    enabled: false
+
+# -- Enable Local Redirect Policy.
+localRedirectPolicy: true
+
+# -- Configure external workloads support
+externalWorkloads:
+  # -- Enable support for external workloads, such as VMs (false by default).
+  enabled: false
+
+endpointRoutes:
+  # -- Enable use of per endpoint routes instead of routing via
+  # the cilium_host interface. (required "false" if bpf.hostLegacyRouting=false)
+  enabled: false
+
+# -- Install Iptables rules to skip netfilter connection tracking on all pod
+# traffic. This option is only effective when Cilium is running in direct
+# routing and full KPR mode. Moreover, this option cannot be enabled when Cilium
+# is running in a managed Kubernetes environment or in a chained CNI setup.
+installNoConntrackIptablesRules: true

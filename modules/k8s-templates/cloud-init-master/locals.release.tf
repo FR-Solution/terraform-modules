@@ -42,7 +42,7 @@ locals {
         
       }
       containerd = {
-        url = "https://github.com/containerd/containerd/releases/download/v1.6.8/containerd-1.6.8-linux-amd64.tar.gz"
+        url = "https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz"
         
       }
       crictl = {

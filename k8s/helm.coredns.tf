@@ -10,7 +10,10 @@ resource "helm_release" "coredns" {
   create_namespace  = true
 
   values = [
-    file("${path.module}/templates/helm/coredns/values.yaml")
+    templatefile("${path.module}/templates/helm/coredns/values.yaml", {
+      clusterIP = module.k8s-yandex-cluster.k8s_global_vars.k8s-addresses.dns_address
+    })
+    
   ]
   wait      = true
   atomic    = true
