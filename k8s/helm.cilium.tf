@@ -15,7 +15,7 @@ resource "helm_release" "cilium" {
       kube_apiserver_lb_fqdn  = module.k8s-yandex-cluster.kube-apiserver-lb
       kube_apiserver_port_lb  = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
       service_cidr            = var.cidr.service
-      k8s_api_server_fqdn     = module.k8s-yandex-cluster.kube-apiserver-lb-fqdn
+      k8s_api_server_fqdn     = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
       k8s_api_server_port     = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
       node_cidr_mask          = var.cidr.node_cidr_mask
       cluster_name            = var.cluster_name
