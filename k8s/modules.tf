@@ -59,7 +59,7 @@ module "k8s-yandex-cluster" {
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 1
+        count   = 3
 
         vpc_id            = yandex_vpc_network.cluster-vpc.id
         subnets           = yandex_vpc_subnet.master-subnets
@@ -92,7 +92,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8ueg1g3ifoelgdaqhb"
+              image_id  = "fd8uji8asiui2oetvqps"
               size      = 30
               type      = "network-hdd"
             }
@@ -112,7 +112,7 @@ module "k8s-yandex-cluster" {
 
         }
         metadata = {
-          user_data_template = "all" # all | packer
+          user_data_template = "packer" # all | packer
         }
         ssh_username  = "dkot"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
