@@ -1,5 +1,5 @@
 module "k8s-yandex-cluster" {
-    source = "../modules/k8s-yandex-cluster"
+    source = "../modules/k8s-yandex-cluster-infra"
     cluster_name    = var.cluster_name
     base_domain     = var.base_domain
     vault_server    = var.vault_server

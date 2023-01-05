@@ -1,9 +1,0 @@
-%{ for master in master_instance_list ~}
-path "auth/${base_vault_path_approle}/role/${role_name}-${master}/role-id" {
-  capabilities = [ "read" ]
-}
-
-path "auth/${base_vault_path_approle}/role/${role_name}-${master}/secret-id" {
-  capabilities = [ "update" ]
-}
-%{ endfor }

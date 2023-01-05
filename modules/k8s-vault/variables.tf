@@ -3,8 +3,3 @@ variable "k8s_global_vars" {
   type        = any
   default     = {}
 }
-
-variable "master-instance-count" {
-  type = number
-  default = null
-}

@@ -13,10 +13,3 @@ variable "master_instance_list_map" {
   type        = any
   default     = null
 }
-
-# variable "vault_policy_kubernetes_sign_approle" {
-#   description = "module:VAULT: policy for cert roles"
-#   type        = any
-#   default     = {}
-# }
-

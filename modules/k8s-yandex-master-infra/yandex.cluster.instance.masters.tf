@@ -3,14 +3,6 @@
 
 resource "yandex_compute_instance" "master" {
   depends_on = [
-    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_kv,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_kv,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_ca,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_ca,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_certificates,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_certificates,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_external_ca,
-    # yandex_lockbox_secret_version.master_key_keeper_approles_role_id_external_ca,
     yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_all,
     yandex_lockbox_secret_version.master_key_keeper_approles_role_id_all,
   ]

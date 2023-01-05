@@ -4,7 +4,7 @@ resource "vault_approle_auth_backend_role" "all_masters" {
   backend                 = var.k8s_global_vars.global_path.base_vault_path_approle
   role_name               = each.key
   token_ttl               = 60
-  token_policies          = [vault_policy.kubernetes-all-bootstrap-master[each.key].name]
+  token_policies          = [vault_policy.kubernetes-bootstrap-master.name]
   secret_id_bound_cidrs   = []
   token_bound_cidrs       = []
 
