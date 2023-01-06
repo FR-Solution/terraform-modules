@@ -33,14 +33,6 @@ output "ssl_for_each_map" {
   value         = local.ssl_for_each_map
 }
 
-# output "master_instance_list" {
-#   value         = local.master_instance_list
-# }
-
-output "worker_instance_list" {
-  value         = local.worker_instance_list
-}
-
 output "base_domain" {
   value         = var.base_domain
 }

@@ -9,6 +9,5 @@ module "k8s-cloud-init-master" {
 module "k8s-vault-master" {
     source = "../k8s-vault-master"
     k8s_global_vars   = var.k8s_global_vars
-    master_instance_list = local.master_instance_list
     master_instance_list_map = local.master_instance_list_map
 }   

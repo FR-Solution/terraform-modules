@@ -6,12 +6,6 @@ variable "instance_type" {
   default     = null
 }
 
-variable "cluster_name" {
-  description = "K8S: cluster_name"
-  type        = string
-  default     = null
-}
-
 variable "k8s_global_vars" {
   description = "module:K8S-CERTIFICATE-VARS: base certificate vars"
   type        = any

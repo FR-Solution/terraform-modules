@@ -34,12 +34,6 @@ variable "kube_apiserver_lb_fqdn_local" {
   default     = null
 }
 
-variable "k8s_service_kube_apiserver_address" {
-  description = "K8S: kube-apiserver internal service IP"
-  type        = string
-  default     = null
-}
-
 variable "base_local_path_certs" {
   description = "K8S: base path for kubernetes certs"
   type        = string
@@ -87,24 +81,6 @@ variable "base_kubernetes_path" {
   type        = string
   default     = null
 }
-
-
-
-
-
-variable "master_instance_count" {
-  description = "K8S: masters number"
-  type = number
-  default = 0
-}
-
-variable "worker_instance_count" {
-  description = "K8S: workers number"
-  type = number
-  default = 0
-}
-
-
 
 variable "vault_server" {
   type = string

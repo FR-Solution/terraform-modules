@@ -4,11 +4,6 @@ variable "k8s_global_vars" {
   default     = {}
 }
 
-variable "master_instance_list" {
-  type        = any
-  default     = null
-}
-
 variable "master_instance_list_map" {
   type        = any
   default     = null

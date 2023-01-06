@@ -1,6 +1,5 @@
 module "static-pod-etcd" {
     source = "../static-pods/etcd"
-    instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
     etcd_image    = local.release-vars[var.actual-release].etcd.registry
     etcd_version  = local.release-vars[var.actual-release].etcd.version
@@ -9,7 +8,6 @@ module "static-pod-etcd" {
 
 module "static-pod-kube-apiserver" {
     source = "../static-pods/kube-apiserver"
-    instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
     kube_apiserver_image          = local.release-vars[var.actual-release].kube-apiserver.registry
     kube_apiserver_image_version  = local.release-vars[var.actual-release].kube-apiserver.version
@@ -40,7 +38,6 @@ module "static-pod-kube-apiserver" {
 
 module "static-pod-kubeadm-config" {
     source = "../static-pods/kubeadm-config"
-    instance_type = "master"
     k8s_global_vars = var.k8s_global_vars
     kubernetes_version    = local.release-vars[var.actual-release].kubernetes.version
     instance_list_map = var.master_instance_list_map

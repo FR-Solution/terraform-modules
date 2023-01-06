@@ -6,11 +6,6 @@ variable "k8s_global_vars" {
   default     = {}
 }
 
-variable "vault_policy_kubernetes_sign_approle" {
-  type     = any
-  default  = {}
-}
-
 variable "cloud_metadata" {
   type = object({
     folder_id = string

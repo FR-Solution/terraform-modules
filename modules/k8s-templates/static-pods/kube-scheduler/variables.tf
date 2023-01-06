@@ -16,12 +16,6 @@ variable "kube_scheduler_version" {
   default     = null
 }
 
-variable "instance_type" {
-  description = "K8S: node type"
-  type        = string
-  default     = null
-}
-
 variable "instance_list_map" {
   description = "K8S: node type"
   type        = any
