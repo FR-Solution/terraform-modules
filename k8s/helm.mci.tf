@@ -19,7 +19,7 @@
 #         k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
 #         image_id = "fd8ueg1g3ifoelgdaqhb"
 #         resolved = true
-#         replicas = 5
+#         replicas = 2
 #     })
 #   ]
 # }
