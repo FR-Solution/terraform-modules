@@ -1,0 +1,406 @@
+apiVersion: v1
+stringData:
+  serviceAccountJSON: |
+    {{ .Values.cloud_secret | toJson | indent 4 }}
+  folderID: {{ .Values.folder_id }}
+  userData: |-
+    #cloud-config
+    version: v1
+    users:
+      - name: dkot
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        groups: users, admin
+        shell: /bin/bash
+        lock_passwd: true
+        ssh_authorized_keys:
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBKp0G8Vlyi9XgxoL9xA20sY+Vc4szJ5PnP3BpAyaThtEIPtz/6w8DYy1qMGR5lq2MtjHKo0ghApCEM78rZf8PMR/EFW5hOeZzgiHZZVOUIThDwNAk9XQHKG+6OOS5+gpv+VLB3DTXxlPJsGdiI3/SBTmMfUCDZVR6LA94Uh5tgNypPqRRIv65tW0KbGjsYnMQxKFvO9lMHeFtJm1bAsb/+dbm1MafWYXg3yEGr6pyiHgaiwYgx2sKtIVqkg8IYNxLXzjIyS4kwB/WCkv3CEEIDL8KIi+HGnfv2tFzvtjwLgz2rtG73tVLzvjuplwG24Fx5vgCcTnWfFvAWiG5r8+IaHZ9ZvO9TOeAlOAWjB3ieHjA5ZS3R9J3WOAlfAQCA5jz6i2tFxAtIPBdWL0ZzYKUVLR561qd1AY5v9akqhquVIZqsJMzaLdCg0eoLNNdKgdQLXJohMPlqR96lR+mbym7UI/Fn7FvURibRgb781Z86ALfeYVHLYidVkrmhuuHzuU= dk@dobry-kot-system
+
+    runcmd:
+      - hostnamectl set-hostname  $(cat /proc/sys/kernel/hostname | awk -F '.' '{print $1}')
+      - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraima-main-v1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230109%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230109T154222Z&X-Amz-Expires=2592000&X-Amz-Signature=16F593DF2BEC0189DB6F64FE9FC650D2B7F5425C689DE9DD9F4000BA72218F5C&X-Amz-SignedHeaders=host"
+      - chmod +x /usr/bin/fraimactl
+      - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
+
+    write_files:
+
+      - path: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+        owner: root:root
+        permissions: '0644'
+        content: |
+          ---
+          apiVersion: v1
+          clusters:
+          - cluster:
+              insecure-skip-tls-verify: true
+              server: https://{{ .Values.k8s_api_server_fqdn }}:{{ .Values.k8s_api_server_port }}
+            name: bootstrap
+          contexts:
+          - context:
+              cluster: bootstrap
+              user: kubelet-bootstrap
+            name: bootstrap
+          current-context: bootstrap
+          kind: Config
+          preferences: {}
+          users:
+          - name: kubelet-bootstrap
+            user:
+              token: <<BOOTSTRAP_TOKEN>>
+
+
+      - path: /etc/kubernetes/fraimactl/config.yaml
+        owner: root:root
+        permissions: '0644'
+        content: |
+          ---
+          - apiVersion: fraima.io/v1alpha
+            kind: DownloadConfiguration
+            spec:
+              - name: cotainerd
+                src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
+                path: /usr/bin/
+                owner: root:root
+                permission: 0645
+                unzip:
+                  status: true
+                  files: 
+                    - bin/containerd
+                    - bin/containerd-shim
+                    - bin/containerd-shim-runc-v1
+                    - bin/containerd-shim-runc-v2
+                    - bin/containerd-stress
+                    - bin/ctr
+
+              - name: crictl
+                src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
+                path: /usr/bin/
+                owner: root:root
+                permission: 0645
+                unzip:
+                  status: true
+                  files: 
+                    - "crictl"
+
+              - name: kubectl
+                src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
+                path: /usr/bin/
+                owner: root:root
+                permission: 0645
+
+              - name: kubelet
+                src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
+                path: /usr/bin/
+                owner: root:root
+                permission: 0645
+
+              - name: runc
+                src: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+                path: /usr/bin/
+                owner: root:root
+                permission: 0645
+
+          - apiVersion: fraima.io/v1alpha
+            kind: ContainerdConfiguration
+            spec:
+              version: 2
+              plugins:
+                io.containerd.grpc.v1.cri:
+                  containerd:
+                    runtimes:
+                      runc:
+                        runtime_type: "io.containerd.runc.v2"
+                        options:
+                          SystemdCgroup: true
+
+          - apiVersion: fraima.io/v1alpha
+            kind: SysctlConfiguration
+            spec:
+              net.ipv4.ip_forward: 1
+
+          - apiVersion: fraima.io/v1alpha
+            kind: ModProbConfiguration
+            spec:
+              - br_netfilter
+              - overlay
+
+          - apiVersion: fraima.io/v1alpha
+            kind: KubeletService
+            spec:
+              # Number for the log level verbosity
+              v: 2
+              # The directory where the TLS certs are located. 
+              # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
+              # Default: /var/lib/kubelet/pki
+              cert-dir: /etc/kubernetes/pki/certs/kubelet
+              # The Kubelet will load its initial configuration from this file. 
+              # The path may be absolute or relative; relative paths start at the Kubelet's current working directory. 
+              # Omit this flag to use the built-in default configuration values. 
+              # Command-line flags override configuration from this file.
+              config: /etc/kubernetes/kubelet/config.yaml
+              # Path to a kubeconfig file, specifying how to connect to the API server. 
+              # Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
+              kubeconfig: /etc/kubernetes/kubelet/kubeconfig
+              # Path to a kubeconfig file that will be used to get client certificate for kubelet. 
+              # If the file specified by --kubeconfig does not exist, 
+              # the bootstrap kubeconfig is used to request a client certificate from the API server. 
+              # On success, a kubeconfig file referencing the generated client certificate and key is written to the path specified by --kubeconfig. 
+              # The client certificate and key file will be stored in the directory pointed by --cert-dir.
+              bootstrap-kubeconfig: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+              # The endpoint of remote runtime service. Unix Domain Sockets are supported on Linux, 
+              # while npipe and tcp endpoints are supported on windows. 
+              # Examples: unix:///path/to/runtime.sock, npipe:////./pipe/runtime.
+              container-runtime-endpoint: /run/containerd/containerd.sock
+              # Specified image will not be pruned by the image garbage collector. 
+              # When container-runtime is set to docker, all containers in each pod will use the network/IPC namespaces from this image. 
+              # Other CRI implementations have their own configuration to set this image.
+              # Default: registry.k8s.io/pause:3.6
+              pod-infra-container-image: k8s.gcr.io/pause:3.6
+              # The provider for cloud services. Set to empty string for running with no cloud provider.
+              # If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine 
+              # if and how the hostname is used). 
+              # (DEPRECATED: will be removed in 1.24 or later, in favor of removing cloud provider code from Kubelet.)
+              cloud-provider: external
+
+          - apiVersion: fraima.io/v1alpha
+            kind: ContainerdService
+            spec:
+              # This document provides the description of the CRI plugin configuration. 
+              # The CRI plugin config is part of the containerd config
+              # Default: /etc/containerd/config.toml
+              config: /etc/kubernetes/containerd/config.toml
+
+          - apiVersion: kubelet.config.k8s.io/v1beta1
+            kind: KubeletConfiguration
+            spec:
+              # tlsCertFile is the file containing x509 Certificate for HTTPS. 
+              # (CA cert, if any, concatenated after server cert). 
+              # If tlsCertFile and tlsPrivateKeyFile are not provided, 
+              # a self-signed certificate and key are generated for the public address and saved to the directory 
+              # passed to the Kubelet's --cert-dir flag. 
+              # Default: ""
+              tlsCertFile: /etc/kubernetes/pki/certs/kubelet/kubelet-server.pem
+              # tlsPrivateKeyFile is the file containing x509 private key matching tlsCertFile. 
+              # Default: ""
+              tlsPrivateKeyFile: /etc/kubernetes/pki/certs/kubelet/kubelet-server-key.pem
+              # authentication specifies how requests to the Kubelet's server are authenticated. 
+              # Defaults: anonymous: enabled
+              authentication:
+                # Default: enabled: true
+                webhook:
+                  # Default: cacheTTL: "2m"
+                  cacheTTL: "30s"
+                x509:
+                  clientCAFile: "/etc/kubernetes/pki/ca/kubernetes-ca.pem"
+              # authorization specifies how requests to the Kubelet's server are authorized. 
+              # Defaults: mode: Webhook 
+              authorization:
+                webhook:
+                  # Default: cacheAuthorizedTTL: "5m"
+                  cacheAuthorizedTTL: 0s
+                  # Default: cacheUnauthorizedTTL: "30s"
+                  cacheUnauthorizedTTL: 0s
+              # cgroupDriver is the driver kubelet uses to manipulate CGroups on the host (cgroupfs or systemd). 
+              # Default: "cgroupfs"
+              cgroupDriver: systemd
+              # clusterDNS is a list of IP addresses for the cluster DNS server. 
+              # If set, kubelet will configure all containers to use this for DNS resolution instead of the host's DNS servers. 
+              # Default: nil
+              clusterDNS:
+                - "29.64.0.10"
+              # clusterDomain is the DNS domain for this cluster. 
+              # If set, kubelet will configure all containers to search this domain in addition to the host's search domains. 
+              # Default: ""
+              clusterDomain: cluster.local
+              # cpuManagerReconcilePeriod is the reconciliation period for the CPU Manager. 
+              # Requires the CPUManager feature gate to be enabled. 
+              # Default: "10s"
+              cpuManagerReconcilePeriod: 0s
+              # evictionPressureTransitionPeriod is the duration for which the kubelet has to wait 
+              # before transitioning out of an eviction pressure condition. 
+              # Default: "5m"
+              evictionPressureTransitionPeriod: 0s
+              # fileCheckFrequency is the duration between checking config files for new data. 
+              # Default: "20s"
+              fileCheckFrequency: 0s
+              # httpCheckFrequency is the duration between checking http for new data. 
+              # Default: "20s"
+              httpCheckFrequency: 0s
+              # imageMinimumGCAge is the minimum age for an unused image before it is garbage collected. 
+              # Default: "2m"
+              imageMinimumGCAge: 0s
+              # logging specifies the options of logging. Refer to Logs Options for more information. 
+              # Default: Format: text
+              logging:
+                flushFrequency: 0
+                options:
+                  json:
+                    infoBufferSize: 0s
+                verbosity: 0
+              memorySwap: {}
+              # nodeStatusReportFrequency is the frequency that kubelet posts node status to master if node status does not change. 
+              # Kubelet will ignore this frequency and post node status immediately if any change is detected. 
+              # It is only used when node lease feature is enabled. nodeStatusReportFrequency's default value is 5m. 
+              # But if nodeStatusUpdateFrequency is set explicitly, 
+              # nodeStatusReportFrequency's default value will be set to nodeStatusUpdateFrequency for backward compatibility. 
+              # Default: "5m"
+              nodeStatusReportFrequency: 1s
+              # nodeStatusUpdateFrequency is the frequency that kubelet computes node status. 
+              # If node lease feature is not enabled, it is also the frequency that kubelet posts node status to master. 
+              # Note: When node lease feature is not enabled, be cautious when changing the constant, 
+              # it must work with nodeMonitorGracePeriod in nodecontroller. 
+              # Default: "10s"
+              nodeStatusUpdateFrequency: 1s
+              # resolvConf is the resolver configuration file used as the basis for the container DNS resolution configuration. 
+              # If set to the empty string, will override the default and effectively disable DNS lookups. 
+              # Default: "/etc/resolv.conf"
+              resolvConf: /run/systemd/resolve/resolv.conf
+              rotateCertificates: true
+              # runtimeRequestTimeout is the timeout for all runtime requests except long running requests  - pull, logs, exec and attach. 
+              # Default: "2m"
+              runtimeRequestTimeout: 0s
+              # serverTLSBootstrap enables server certificate bootstrap. Instead of self signing a serving certificate, 
+              # the Kubelet will request a certificate from the 'certificates.k8s.io' API. 
+              # This requires an approver to approve the certificate signing requests (CSR). 
+              # The RotateKubeletServerCertificate feature must be enabled when setting this field. 
+              # Default: false
+              serverTLSBootstrap: true
+              # shutdownGracePeriod specifies the total duration that the node should delay the shutdown and total grace period 
+              # for pod termination during a node shutdown. 
+              # Default: "0s"
+              shutdownGracePeriod: 15s
+              # shutdownGracePeriodCriticalPods specifies the duration used to terminate critical pods during a node shutdown. 
+              # This should be less than shutdownGracePeriod. 
+              # For example, if shutdownGracePeriod: 30s, and shutdownGracePeriodCriticalPods: 10s, 
+              # during a node shutdown the first 20 seconds would be reserved for gracefully terminating normal pods, 
+              # and the last 10 seconds would be reserved for terminating critical pods. 
+              # Default: "0s"
+              shutdownGracePeriodCriticalPods: 5s
+              # staticPodPath is the path to the directory containing local (static) pods to run, 
+              # or the path to a single static pod file. 
+              # Default: ""
+              staticPodPath: "/etc/kubernetes/manifests"
+              # streamingConnectionIdleTimeout is the maximum time a streaming connection can be idle before the connection is automatically closed. 
+              # Default: "4h"
+              streamingConnectionIdleTimeout: 0s
+              # syncFrequency is the max period between synchronizing running containers and config. 
+              # Default: "1m"
+              syncFrequency: 0s
+              # volumeStatsAggPeriod is the frequency for calculating and caching volume disk usage for all pods. 
+              # Default: "1m"
+              volumeStatsAggPeriod: 0s
+              # containerLogMaxSize is a quantity defining the maximum size of the container log file before it is rotated. 
+              # For example: "5Mi" or "256Ki". 
+              # Default: "10Mi"
+              containerLogMaxSize: 50Mi
+              # maxPods is the maximum number of Pods that can run on this Kubelet. 
+              # The value must be a non-negative integer. 
+              # Default: 110
+              maxPods: 250
+              # kubeAPIQPS is the QPS to use while talking with kubernetes apiserver. 
+              # Default: 5
+              kubeAPIQPS: 50
+              # kubeAPIBurst is the burst to allow while talking with kubernetes API server. 
+              # This field cannot be a negative number. 
+              # Default: 10
+              kubeAPIBurst: 100
+              # podPidsLimit is the maximum number of PIDs in any pod. 
+              # Default: -1
+              podPidsLimit: 4096
+              # serializeImagePulls when enabled, tells the Kubelet to pull images one at a time. 
+              # We recommend not changing the default value on nodes that run docker daemon with version < 1.9 or an Aufs storage backend. 
+              # Issue #10959 has more details. 
+              # Default: true
+              serializeImagePulls: false
+              # systemReserved is a set of ResourceName: ResourceQuantity (e.g. cpu: 200m,memory: 150G) 
+              # pairs that describe resources reserved for non-kubernetes components. 
+              # Currently only cpu and memory are supported. See http://kubernetes.io/docs/user-guide/compute-resources for more detail. 
+              # Default: nil
+              systemReserved:
+                ephemeral-storage: 1Gi
+              # featureGates is a map of feature names to bools that enable or disable experimental features. 
+              # This field modifies piecemeal the built-in default values from "k8s.io/kubernetes/pkg/features/kube_features.go". 
+              # Default: nil
+              featureGates:
+                # RotateKubeletServerCertificate: true
+                # APIPriorityAndFairness: true
+                # DownwardAPIHugePages: true
+                # PodSecurity: true
+                CSIMigrationAWS: false
+                CSIMigrationAzureFile: false
+                CSIMigrationGCE: false
+                CSIMigrationvSphere: false
+              # tlsMinVersion is the minimum TLS version supported. 
+              # Values are from tls package constants (https://golang.org/pkg/crypto/tls/#pkg-constants). 
+              # Default: ""
+              tlsMinVersion: VersionTLS12
+              # tlsCipherSuites is the list of allowed cipher suites for the server. 
+              # Values are from tls package constants (https://golang.org/pkg/crypto/tls/#pkg-constants). 
+              # Default: nil
+              tlsCipherSuites:
+                - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+                - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+                - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+                - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+                - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+                - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+              # A comma separated whitelist of unsafe sysctls or sysctl patterns (ending in *). 
+              # Unsafe sysctl groups are kernel.shm*, kernel.msg*, kernel.sem, fs.mqueue.*, and net.*. 
+              # For example: "kernel.msg*,net.ipv4.route.min_pmtu" 
+              # Default: []
+              allowedUnsafeSysctls:
+                - "net.core.somaxconn"
+              # evictionSoft is a map of signal names to quantities that defines soft eviction thresholds. 
+              # For example: {"memory.available": "300Mi"}. 
+              # Default: nil
+              evictionSoft: 
+                memory.available: 3Gi 
+                nodefs.available: 25%
+                nodefs.inodesFree: 15%
+                imagefs.available: 30%
+                imagefs.inodesFree: 25%
+              # evictionSoftGracePeriod is a map of signal names to quantities that defines grace periods for each soft eviction signal. 
+              # For example: {"memory.available": "30s"}. 
+              # Default: nil
+              evictionSoftGracePeriod:  
+                memory.available: 2m30s
+                nodefs.available: 2m30s
+                nodefs.inodesFree: 2m30s
+                imagefs.available: 2m30s
+                imagefs.inodesFree: 2m30s
+              # evictionHard is a map of signal names to quantities that defines hard eviction thresholds. 
+              # For example: {"memory.available": "300Mi"}. 
+              # To explicitly disable, pass a 0% or 100% threshold on an arbitrary resource. 
+              # Default: memory.available: "100Mi" nodefs.available: "10%" nodefs.inodesFree: "5%" imagefs.available: "15%"
+              evictionHard:
+                memory.available: 2Gi
+                nodefs.available: 20%
+                nodefs.inodesFree: 10%
+                imagefs.available: 25%
+                imagefs.inodesFree: 15%
+              # evictionPressureTransitionPeriod is the duration for which the kubelet has to wait before 
+              # transitioning out of an eviction pressure condition. 
+              # Default: "5m"
+              evictionPressureTransitionPeriod: 5s
+              # imageMinimumGCAge is the minimum age for an unused image before it is garbage collected. 
+              # Default: "2m"
+              imageMinimumGCAge: 12h 
+              # imageGCHighThresholdPercent is the percent of disk usage after which image garbage collection is always run. 
+              # The percent is calculated by dividing this field value by 100, so this field must be between 0 and 100, inclusive. 
+              # When specified, the value must be greater than imageGCLowThresholdPercent. 
+              # Default: 85
+              imageGCHighThresholdPercent: 55
+              # imageGCLowThresholdPercent is the percent of disk usage before which image garbage collection is never run. 
+              # Lowest disk usage to garbage collect to. 
+              # The percent is calculated by dividing this field value by 100, so the field value must be between 0 and 100, inclusive. 
+              # When specified, the value must be less than imageGCHighThresholdPercent. 
+              # Default: 80
+              imageGCLowThresholdPercent: 50
+
+
+kind: Secret
+metadata:
+  name: fraima-bp-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook-weight": "1"
+type: Opaque

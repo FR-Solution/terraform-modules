@@ -26,6 +26,6 @@ spec:
     memory: 8589934592
   schedulingPolicy: {}
   secretRef:
-    name: treska-{{ .Release.Name }}
+    name: fraima-{{ .Release.Name }}
     namespace: {{ .Release.Namespace }}
   zoneID: {{ .Values.zone }}
