@@ -61,13 +61,13 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: yandex-cloud
-                key: service-account-json
+                key: serviceAccountJSON
           - name: YANDEX_CLOUD_DEFAULT_LB_LISTENER_SUBNET_ID
           - name: YANDEX_CLOUD_DEFAULT_LB_TARGET_GROUP_NETWORK_ID
             valueFrom:
               secretKeyRef:
                 name: yandex-cloud
-                key: vpc-id   
+                key: vpcID
           - name: KUBERNETES_SERVICE_HOST
             value: "{{ .Values.k8s_api_server }}"
           - name: KUBERNETES_SERVICE_PORT_HTTPS
@@ -76,13 +76,13 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: yandex-cloud
-                key: vpc-id   
+                key: vpcID 
           - name: YANDEX_CLOUD_EXTERNAL_NETWORK_IDS
           - name: YANDEX_CLOUD_ROUTE_TABLE_ID
             valueFrom:
               secretKeyRef:
                 name: yandex-cloud
-                key: route_table_id
+                key: routeTableID
         image: registry.deckhouse.io/deckhouse/ce:bfbae39acd8fbe3ecb8b287214357906dd2815a805f5b56d548c48c9-1663920311654
         imagePullPolicy: IfNotPresent
         livenessProbe:

@@ -4,6 +4,9 @@ locals {
 }
 
 resource "keycloak_openid_client" "kube" {
+  depends_on = [
+    module.k8s-yandex-cluster
+  ]
   realm_id                     = local.idp_provider_realm
   client_id                    = "kubernetes-${var.cluster_name}"
   name                         = "kubernetes-${var.cluster_name}"

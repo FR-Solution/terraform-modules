@@ -3,7 +3,7 @@ stringData:
   serviceAccountJSON: |
     {{ .Values.cloud_secret | toJson | indent 4 }}
   folderID: {{ .Values.folder_id }}
-  userData: |-
+  userData: |
     #cloud-config
     version: v1
     users:

@@ -4,7 +4,7 @@ resource "vault_approle_auth_backend_role" "k8s-vault-role" {
   ]
   backend         = module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path_approle
   role_name       = "kubelet-peer-k8s-certmanager"
-  token_policies  = ["${module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path}/certificates/cp-kubelet-peer-k8s-certmanager"]
+  token_policies  = ["${module.k8s-yandex-cluster.k8s_global_vars.global_path.base_vault_path}/certificates/vault-cluster-policy"]
   token_ttl               = 60
   secret_id_bound_cidrs   = []
   token_bound_cidrs       = []

@@ -19,6 +19,14 @@ module "k8s-vault" {
     k8s_global_vars   = module.k8s-global-vars
 }
 
+module "k8s-vault-cluster" {
+    depends_on = [
+      module.k8s-vault
+    ]
+    source = "../k8s-vault-cluster"
+    k8s_global_vars   = module.k8s-global-vars
+}
+
 module "k8s-yandex-master-infra" {
     depends_on = [
       module.k8s-vault,

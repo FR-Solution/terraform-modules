@@ -82,12 +82,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: yandex-cloud
-                  key: service-account-json
+                  key: serviceAccountJSON
             - name: YANDEX_FOLDER_ID
               valueFrom:
                 secretKeyRef:
                   name: yandex-cloud
-                  key: folder-id
+                  key: folderID
             - name: INSTANCE_NAME_LAYOUT
               value: '^\w*:\w*:(.*)'
             - name: KubeHost
