@@ -14,7 +14,6 @@ release = '0.1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -26,3 +25,10 @@ language = 'ru'
 
 # html_theme = 'alabaster'
 html_static_path = ['_static']
+
+extensions = [
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    "sphinx_tabs.tabs"
+]
+html_theme = 'sphinx_rtd_theme'

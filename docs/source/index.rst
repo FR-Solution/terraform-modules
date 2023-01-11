@@ -2,4 +2,5 @@ Contents
 --------
 
 .. toctree::
-   usage
+   introduction/fraima
+   controllers/index
