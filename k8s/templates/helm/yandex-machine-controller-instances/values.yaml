@@ -1,19 +1,50 @@
-subnet_id: ${subnet_id}
-zone: ${zone}
 
-cloud_secret:
-  id: ${ yandex_cloud_controller_sa.id }
-  service_account_id: ${ yandex_cloud_controller_sa.service_account_id }
-  created_at: ${ yandex_cloud_controller_sa.created_at }
-  key_algorithm: ${ yandex_cloud_controller_sa.key_algorithm }
-  public_key: |-
-    ${ indent(4 ,yandex_cloud_controller_sa.public_key) }
-  private_key: |-
-    ${ indent(4 ,yandex_cloud_controller_sa.private_key) }
-folder_id: ${ yandex_cloud_controller_sa.folder_id }
-k8s_api_server_fqdn: ${k8s_api_server_fqdn}
-k8s_api_server_port: ${k8s_api_server_port}
 
-image_id: ${image_id}
-resolved: ${resolved}
+clusterUrl: ${k8s_api_server_fqdn}
+clusterPort: ${k8s_api_server_port}
+
 replicas: ${replicas}
+minReadySeconds: 300
+
+strategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  type: RollingUpdate
+
+selector:
+  matchLabels:
+    instance-group: monitoring
+
+template:
+  metadata:
+    labels:
+      instance-group: monitoring
+    nodeLabels:
+      node-role.kubernetes.io/monitoring: ""
+    cloudLabels:
+      treska: critical
+      
+  spec:
+    bootDisk:
+      imageID: ${image_id}
+      typeID: network-hdd
+      autoDelete: true
+      size: 20
+
+    resources:
+      cpu: 8
+      coreFraction: 20
+      memory: 8
+
+    networkInterfaces:
+      nat: true
+      regionID: ru-central1
+      subnetID: "${subnet_id}"
+      zoneID: "${zone}"
+      networkType: STANDARD
+
+    provider:
+      type: YandexCloud
+      name: yandex-cloud
+

@@ -1,0 +1,9 @@
+docs/build/*
+k8s/.terraform/*
+k8s/.terraform*
+k8s/states/*
+base/.terraform/*
+base/.terraform*
+base/states/*
+
+k8s/providers-dev.tf
