@@ -316,3 +316,16 @@ write_files:
       PTSUvpah2QARTQ7EwYH6yn6Wn5efc3hmUrQStLu0hJfz+dIWiwD0O3bPN1TxRRuS
       9gxujSippbX4aQE=
       -----END CERTIFICATE-----
+
+
+ssh pfm-prod-msk3-control
+
+ssh pfm-prod-msk3-worker
+puppet agent -tv --environment=K8S_3329
+
+
+19
+
+pfm-prod-msk3-worker17
+pfm-prod-msk3-worker16
+
