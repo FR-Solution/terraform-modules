@@ -120,3 +120,10 @@ time terraform -chdir=k8s apply \
 -var master_availability_zones="{\"ru-central1-a\": \"10.220.0.0/16\",\"ru-central1-b\": \"10.221.0.0/16\",\"ru-central1-c\": \"10.222.0.0/26\"}" \
 -var cluster_name="cluster-3" \
 -var cidr="{\"pod\": \"10.11.0.0/16\",\"node_cidr_mask\": \"24\",\"service\": \"29.64.0.0/16\"}"
+
+time terraform -chdir=k8s apply \
+-state states/cluster-4 \
+-auto-approve \
+-var master_availability_zones="{\"ru-central1-a\": \"10.230.0.0/16\",\"ru-central1-b\": \"10.231.0.0/16\",\"ru-central1-c\": \"10.232.0.0/26\"}" \
+-var cluster_name="cluster-4" \
+-var cidr="{\"pod\": \"10.12.0.0/16\",\"node_cidr_mask\": \"24\",\"service\": \"29.64.0.0/16\"}"
