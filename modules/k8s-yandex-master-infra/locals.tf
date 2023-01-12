@@ -1,17 +1,6 @@
 
-data "yandex_iam_policy" "admin" {
-  binding {
-    role = "admin"
-    members = local.iam_admin_members
-  }
-}
 
 locals {
-  iam_admin_members = flatten([
-    for member, member_value in local.master_instance_list_map : 
-          "serviceAccount:${yandex_iam_service_account.master-sa[member].id}"
-          ]
-    )
 
   master_instance_list        = flatten([
     for master-index in range(var.master_group.count): [

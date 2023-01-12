@@ -7,3 +7,4 @@ base/.terraform*
 base/states/*
 
 k8s/providers-dev.tf
+base/providers-dev.tf

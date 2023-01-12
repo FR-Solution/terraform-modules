@@ -2,7 +2,6 @@
 resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
   depends_on = [
     helm_release.mcc,
-    yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
   name       = "mg-ubuntu-22-ru-central1-b"
 
@@ -31,7 +30,6 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
 resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
   depends_on = [
     helm_release.mcc,
-    yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
   name       = "mg-ubuntu-22-ru-central1-c"
 
@@ -59,7 +57,6 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
 # resource "helm_release" "mci-almalinux-9" {
 #   depends_on = [
 #     helm_release.mcc,
-#     yandex_resourcemanager_folder_iam_policy.k8s-policy
 #   ]
 #   name       = "mci-almalinux-9"
 #   chart      = "templates/helm/yandex-machine-controller-instances"
@@ -84,7 +81,6 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
 # resource "helm_release" "astralinux-alse" {
 #   depends_on = [
 #     helm_release.mcc,
-#     yandex_resourcemanager_folder_iam_policy.k8s-policy
 #   ]
 #   name       = "astralinux-alse"
 #   chart      = "templates/helm/yandex-machine-controller-instances"

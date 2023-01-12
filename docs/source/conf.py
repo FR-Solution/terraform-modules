@@ -32,3 +32,4 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx_tabs.tabs"
 ]
+# html_theme = 'sphinx_rtd_theme'

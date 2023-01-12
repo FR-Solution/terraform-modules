@@ -1,5 +1,8 @@
 #### MASTERS ######
 ##-->
+data "yandex_iam_service_account" "yandex-k8s-controllers" {
+  name = "yandex-k8s-controllers"
+}
 
 resource "yandex_compute_instance" "master" {
   depends_on = [
@@ -15,7 +18,7 @@ resource "yandex_compute_instance" "master" {
 
   zone                = try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)
   
-  service_account_id  = yandex_iam_service_account.master-sa[each.key].id
+  service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
 
   # placement_policy {
   #   placement_group_id = 

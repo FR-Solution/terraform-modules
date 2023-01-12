@@ -6,15 +6,9 @@ Kubernetes node autoscaler
   прогрессивно растет. Для этого реализован контроллер, который может подключаться к инфраструктуре и 
   заказывать нужную вам конфигурацю.
 
-.. seealso::
-
-    * :doc:`cluster-cloud-controller`
-    * :doc:`cluster-machine-controller`
-    * :doc:`machine-group`
-      Добавление новой группы машин производится с помощью чарта ниже, а для дополнительной кастомизации machine-group,
-      воспользуйтесь базовым `Values.yaml <https://github.com/fraima/fraima-charts/blob/main/helm-chart-sources/machine-group/values.yaml>`_
 
 
+.. _node_management:
 Preparing the environment
 -------------------------
 .. tabs::
@@ -79,6 +73,9 @@ Install cluster-machine-controller
 
 Machine-group
 -------------
+.. seealso::
+      Добавление новой группы машин производится с помощью чарта ниже, а для дополнительной кастомизации machine-group,
+      воспользуйтесь базовым `Values.yaml <https://github.com/fraima/fraima-charts/blob/main/helm-chart-sources/machine-group/values.yaml>`_
 
 .. warning::
   При создании провайдера, указывается секрет для доступа к облаку, если ссылка на него будет некорректная,

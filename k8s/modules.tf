@@ -16,7 +16,7 @@ module "k8s-yandex-cluster" {
         name    = "master" # Разрешенный префикс для сертификатов.
         count   = 1
 
-        vpc_id            = yandex_vpc_network.cluster-vpc.id
+        vpc_id            = data.yandex_vpc_network.cluster-vpc.id
         subnets           = yandex_vpc_subnet.master-subnets
         default_zone      = "ru-central1-a"
 
@@ -31,12 +31,6 @@ module "k8s-yandex-cluster" {
             #       # fd8uji8asiui2oetvqps | custom
             #     }
             #   }
-            # }
-            # master-2 = {
-            #   zone    = "ru-central1-b"
-            # }
-            # master-3 = {
-            #   zone    = "ru-central1-c"
             # }
         }
 
@@ -67,7 +61,7 @@ module "k8s-yandex-cluster" {
 
         }
         metadata = {
-          user_data_template = "all" # all | packer | fraima
+          user_data_template = "fraima" # all | packer | fraima
         }
         ssh_username  = "dkot"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
