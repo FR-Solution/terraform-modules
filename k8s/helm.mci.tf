@@ -4,7 +4,7 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
     helm_release.mcc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
-  name       = "machine-group.mci-ubuntu-22-ru-central1-b"
+  name       = "mg-ubuntu-22-ru-central1-b"
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
@@ -33,7 +33,7 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
     helm_release.mcc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
-  name       = "machine-group.mci-ubuntu-22-ru-central1-c"
+  name       = "mg-ubuntu-22-ru-central1-c"
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
