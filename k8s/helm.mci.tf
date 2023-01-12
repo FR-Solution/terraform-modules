@@ -4,11 +4,11 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
     helm_release.mcc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
-  name       = "mci-ubuntu-22-ru-central1-b"
+  name       = "machine-group.mci-ubuntu-22-ru-central1-b"
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
-  version    = "0.1.2"
+  version    = "0.1.4"
 
   namespace  = "fraima-ccm"
   create_namespace  = true
@@ -33,11 +33,11 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
     helm_release.mcc,
     yandex_resourcemanager_folder_iam_policy.k8s-policy
   ]
-  name       = "mci-ubuntu-22-ru-central1-c"
+  name       = "machine-group.mci-ubuntu-22-ru-central1-c"
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
-  version    = "0.1.2"
+  version    = "0.1.4"
 
   namespace  = "fraima-ccm"
   create_namespace  = true

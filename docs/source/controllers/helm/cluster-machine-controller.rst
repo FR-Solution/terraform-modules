@@ -31,6 +31,7 @@ machine-group
 .. warning::
   При создании провайдера, указывается секрет для доступа к облаку, если ссылка на него будет некорректная,
   то cluster-machine-controller упадет с ошибкой PANIC.
+  Cама группа должна размещаться в том же Namespece? что и <cluster-machine-controller>. 
 
 .. tabs::
   .. group-tab:: YC
