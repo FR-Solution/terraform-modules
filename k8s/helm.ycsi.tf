@@ -5,7 +5,7 @@ resource "helm_release" "ycsi" {
   ]
   name       = "ycsi"
   chart      = "templates/helm/yandex-csi-driver"
-  namespace  = "fraima-csi"
+  namespace  = "kube-fraima-csi"
   create_namespace  = true
   values = [
     templatefile("templates/helm/yandex-csi-driver/values.yaml", {

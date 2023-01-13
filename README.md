@@ -105,17 +105,34 @@ terraform apply \
 ```
 
 
+```bash
+export cluster_name=cluster-2
+export ru_central1_a=10.121.0.0/16
+export ru_central1_b=10.122.0.0/16
+export ru_central1_c=10.123.0.0/16
+export pod_cidr=10.12.0.0/16
+export service_cidr=29.64.0.0/16
+export node_mask=24
 
 time terraform -chdir=k8s apply \
--state states/cluster-2 \
+-state states/${cluster_name} \
 -auto-approve \
--var master_availability_zones="{\"ru-central1-a\": \"10.210.0.0/16\",\"ru-central1-b\": \"10.211.0.0/16\",\"ru-central1-c\": \"10.212.0.0/26\"}" \
--var cluster_name="cluster-2" \
--var cidr="{\"pod\": \"10.10.0.0/16\",\"node_cidr_mask\": \"24\",\"service\": \"29.64.0.0/16\"}"
+-var master_availability_zones="{\"ru-central1-a\": \"${ru_central1_a}\",\"ru-central1-b\": \"${ru_central1_b}\",\"ru-central1-c\": \"${ru_central1_c}\"}" \
+-var cluster_name="${cluster_name}" \
+-var cidr="{\"pod\": \"${pod_cidr}\",\"node_cidr_mask\": \"${node_mask}\",\"service\": \"${service_cidr}\"}"
+```
 
+```bash
+export cluster_name=cluster-3
+export ru_central1_a=10.131.0.0/16
+export ru_central1_b=10.132.0.0/16
+export ru_central1_c=10.133.0.0/16
+export pod_cidr=10.13.0.0/16
+export service_cidr=29.64.0.0/16
+export node_mask=24
 
 time terraform -chdir=k8s apply \
--state states/cluster-3 \
+-state states/${cluster_name} \
 -auto-approve \
 -var master_availability_zones="{\"ru-central1-a\": \"10.220.0.0/16\",\"ru-central1-b\": \"10.221.0.0/16\",\"ru-central1-c\": \"10.222.0.0/26\"}" \
 -var cluster_name="cluster-3" \
@@ -127,3 +144,17 @@ time terraform -chdir=k8s apply \
 -var master_availability_zones="{\"ru-central1-a\": \"10.230.0.0/16\",\"ru-central1-b\": \"10.231.0.0/16\",\"ru-central1-c\": \"10.232.0.0/26\"}" \
 -var cluster_name="cluster-4" \
 -var cidr="{\"pod\": \"10.12.0.0/16\",\"node_cidr_mask\": \"24\",\"service\": \"29.64.0.0/16\"}"
+-var master_availability_zones="{\"ru-central1-a\": \"${ru_central1_a}\",\"ru-central1-b\": \"${ru_central1_b}\",\"ru-central1-c\": \"${ru_central1_c}\"}" \
+-var cluster_name="${cluster_name}" \
+-var cidr="{\"pod\": \"${pod_cidr}\",\"node_cidr_mask\": \"${node_mask}\",\"service\": \"${service_cidr}\"}"
+```
+
+
+yandex-cluster-machine-controller:
+  controller: 64231
+  kube-rbac-proxy: 64232
+
+yandex-cluster-cloud-controller:
+  controller: 63231
+  kube-rbac-proxy: 63232
+  proxy-endpoints-port: 63233

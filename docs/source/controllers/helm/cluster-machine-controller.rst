@@ -23,7 +23,7 @@ Preparing the environment
         MACHINE_GROUP_CLOUD_SUBNET_ID=""
         MACHINE_GROUP_CLOUD_ZONE_NAME=ru-central1-a
 
-        MACHINE_CONTROLLER_CMC_NAMEPACE=fraima-ccm
+        MACHINE_CONTROLLER_CMC_NAMEPACE=kube-fraima-ccm
 
         MACHINE_PROVIDER_NAME="yandex-cloud"
         MACHINE_PROVIDER_TYPE=YandexCloud

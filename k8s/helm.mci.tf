@@ -7,9 +7,9 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
-  version    = "0.1.4"
+  version    = "0.1.5"
 
-  namespace  = "fraima-ccm"
+  namespace  = "kube-fraima-ccm"
   create_namespace  = true
   timeout = 6000
   atomic    = true
@@ -35,9 +35,9 @@ resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
 
   repository = "https://helm.fraima.io"
   chart      = "machine-group"
-  version    = "0.1.4"
+  version    = "0.1.5"
 
-  namespace  = "fraima-ccm"
+  namespace  = "kube-fraima-ccm"
   create_namespace  = true
   timeout = 6000
   atomic    = true

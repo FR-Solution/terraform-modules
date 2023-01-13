@@ -3,7 +3,7 @@ resource "helm_release" "ycc" {
 
   name       = "ycc"
   chart      = "templates/helm/yandex-cloud-controller"
-  namespace  = "fraima-ccm"
+  namespace  = "kube-fraima-ccm"
   create_namespace  = true
   values = [
     templatefile("templates/helm/yandex-cloud-controller/values.yaml", {

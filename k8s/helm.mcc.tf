@@ -5,8 +5,11 @@ resource "helm_release" "mcc" {
     helm_release.gatekeeper
   ]
   name       = "mcc"
-  chart      = "templates/helm/machine-controller-manager"
-  namespace  = "fraima-ccm"
+  namespace  = "kube-fraima-ccm"
+
+  repository = "https://helm.fraima.io"
+  chart      = "cluster-machine-controller"
+  version    = "0.0.3"
 
   create_namespace  = true
   timeout           = 6000

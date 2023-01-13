@@ -6,7 +6,7 @@ resource "helm_release" "certmanager" {
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   version    = "v1.9.1"
-  namespace  = "fraima-certmanager"
+  namespace  = "kube-fraima-certmanager"
   create_namespace  = true
 
   values = [

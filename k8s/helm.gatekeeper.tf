@@ -4,7 +4,7 @@ resource "helm_release" "gatekeeper" {
   ]
   name       = "gatekeeper"
   chart      = "templates/helm/gatekeeper"
-  namespace  = "fraima-gatekeeper"
+  namespace  = "kube-fraima-gatekeeper"
   create_namespace  = true
 
   values = [

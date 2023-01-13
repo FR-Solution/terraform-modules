@@ -7,7 +7,7 @@ resource "helm_release" "cilium" {
   repository = "https://helm.cilium.io"
   chart      = "cilium"
   version    = "1.12.0"
-  namespace  = "fraima-sdn"
+  namespace  = "kube-fraima-sdn"
   create_namespace  = true
 
   values = [

@@ -4,7 +4,7 @@ kind: Secret
 type: Opaque
 metadata:
   name: cert-manager-vault-approle
-  namespace: fraima-certmanager
+  namespace: kube-fraima-certmanager
 data:
   secretId: {{ .Values.vault.approle.secretId }}
 

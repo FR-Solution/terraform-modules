@@ -1,4 +1,6 @@
 
+machineContoller:
+  namespace: kube-fraima-ccm
 
 clusterUrl: ${k8s_api_server_fqdn}
 clusterPort: ${k8s_api_server_port}

@@ -6,7 +6,7 @@ resource "helm_release" "coredns" {
   repository = "https://coredns.github.io/helm"
   chart      = "coredns"
   version    = "1.19.4"
-  namespace  = "fraima-dns"
+  namespace  = "kube-fraima-dns"
   create_namespace  = true
 
   values = [
