@@ -23,7 +23,7 @@ ipam:
 
     # -- IPv4 CIDR list range to delegate to individual nodes for IPAM.
     clusterPoolIPv4PodCIDRList:
-      - ${service_cidr}
+      - ${pod_cidr}
 
 operator:
   # -- cilium-operator resource limits & requests

@@ -48,5 +48,5 @@ template:
 
     provider:
       type: YandexCloud
-      name: yandex-cloud
+      name: yandex-cluster-cloud-controller
 

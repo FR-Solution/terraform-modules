@@ -3,7 +3,7 @@ resource "helm_release" "ycsi" {
   depends_on = [
     helm_release.coredns,
   ]
-  name       = "ycsi"
+  name       = "yandex"
   chart      = "templates/helm/yandex-csi-driver"
   namespace  = "kube-fraima-csi"
   create_namespace  = true

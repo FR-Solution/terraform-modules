@@ -60,3 +60,8 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{- define "yandex-cloud-controller.secret-cloud.name" -}}
+yandex-cluster-cloud-controller
+{{- end }}

@@ -51,7 +51,7 @@ spec:
       - --v=2
       - --secure-port=10257
       - --allocate-node-cidrs=true
-      - --cluster-cidr=${service_cidr}
+      - --cluster-cidr=${pod_cidr}
       - --cluster-name=kubernetes
       - --concurrent-deployment-syncs=5
       - --concurrent-endpoint-syncs=5

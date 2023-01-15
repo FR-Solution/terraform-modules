@@ -8,3 +8,4 @@ base/states/*
 
 k8s/providers-dev.tf
 base/providers-dev.tf
+1.yaml

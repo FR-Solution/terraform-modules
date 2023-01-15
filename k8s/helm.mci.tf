@@ -1,58 +1,58 @@
 
-resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
-  depends_on = [
-    helm_release.mcc,
-  ]
-  name       = "mg-ubuntu-22-ru-central1-b"
+# resource "helm_release" "mci-ubuntu-22-ru-central1-b" {
+#   depends_on = [
+#     helm_release.mcc,
+#   ]
+#   name       = "mg-ubuntu-22-ru-central1-b"
 
-  repository = "https://helm.fraima.io"
-  chart      = "machine-group"
-  version    = "0.1.5"
+#   repository = "https://helm.fraima.io"
+#   chart      = "machine-group"
+#   version    = "0.1.5"
 
-  namespace  = "kube-fraima-ccm"
-  create_namespace  = true
-  timeout = 6000
-  atomic    = true
-  values = [
-    templatefile("${path.module}/templates/helm/yandex-machine-controller-instances/values.yaml", {
-        subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-b"].id
-        zone = "ru-central1-b" 
-        k8s_api_server_fqdn         = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
-        k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
-        image_id = "fd8ueg1g3ifoelgdaqhb"
-        resolved = true
-        replicas = 1
-    })
-  ]
-}
+#   namespace  = "kube-fraima-ccm"
+#   create_namespace  = true
+#   timeout = 6000
+#   atomic    = true
+#   values = [
+#     templatefile("${path.module}/templates/helm/yandex-machine-controller-instances/values.yaml", {
+#         subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-b"].id
+#         zone = "ru-central1-b" 
+#         k8s_api_server_fqdn         = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
+#         k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
+#         image_id = "fd8kdq6d0p8sij7h5qe3"
+#         resolved = true
+#         replicas = 1
+#     })
+#   ]
+# }
 
 
-resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
-  depends_on = [
-    helm_release.mcc,
-  ]
-  name       = "mg-ubuntu-22-ru-central1-c"
+# resource "helm_release" "mci-ubuntu-22-ru-central1-c" {
+#   depends_on = [
+#     helm_release.mcc,
+#   ]
+#   name       = "mg-ubuntu-22-ru-central1-c"
 
-  repository = "https://helm.fraima.io"
-  chart      = "machine-group"
-  version    = "0.1.5"
+#   repository = "https://helm.fraima.io"
+#   chart      = "machine-group"
+#   version    = "0.1.5"
 
-  namespace  = "kube-fraima-ccm"
-  create_namespace  = true
-  timeout = 6000
-  atomic    = true
-  values = [
-    templatefile("${path.module}/templates/helm/yandex-machine-controller-instances/values.yaml", {
-        image_id = "fd8ueg1g3ifoelgdaqhb"
-        subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-c"].id
-        zone = "ru-central1-c" 
-        k8s_api_server_fqdn         = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
-        k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
-        resolved = true
-        replicas = 1
-    })
-  ]
-}
+#   namespace  = "kube-fraima-ccm"
+#   create_namespace  = true
+#   timeout = 6000
+#   atomic    = true
+#   values = [
+#     templatefile("${path.module}/templates/helm/yandex-machine-controller-instances/values.yaml", {
+#         image_id = "fd8kdq6d0p8sij7h5qe3"
+#         subnet_id = yandex_vpc_subnet.master-subnets["ru-central1-c"].id
+#         zone = "ru-central1-c" 
+#         k8s_api_server_fqdn         = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
+#         k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
+#         resolved = true
+#         replicas = 1
+#     })
+#   ]
+# }
 
 # resource "helm_release" "mci-almalinux-9" {
 #   depends_on = [

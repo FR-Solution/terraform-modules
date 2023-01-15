@@ -41,7 +41,7 @@ module "k8s-yandex-cluster" {
 
           disk = {
             boot = {
-              image_id  = "fd8ingbofbh3j5h7i8ll"
+              image_id  = "fd8kdq6d0p8sij7h5qe3"
               size      = 30
               type      = "network-hdd"
             }
@@ -61,7 +61,7 @@ module "k8s-yandex-cluster" {
 
         }
         metadata = {
-          user_data_template = "fraima" # all | packer | fraima
+          user_data_template = "all" # all | packer | fraima
         }
         ssh_username  = "dkot"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
