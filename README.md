@@ -145,7 +145,13 @@ export ru_central1_c=10.143.0.0/16
 export pod_cidr=10.14.0.0/16
 export service_cidr=29.64.0.0/16
 export node_mask=24
-terraform -chdir=k8s apply -state states/${cluster_name} -auto-approve -var master_availability_zones="{\"ru-central1-a\": \"${ru_central1_a}\",\"ru-central1-b\": \"${ru_central1_b}\",\"ru-central1-c\": \"${ru_central1_c}\"}" -var cluster_name="${cluster_name}" -var cidr="{\"pod\": \"${pod_cidr}\",\"node_cidr_mask\": \"${node_mask}\",\"service\": \"${service_cidr}\"}"
+
+terraform -chdir=k8s apply \
+-state states/${cluster_name} \
+-auto-approve \
+-var master_availability_zones="{\"ru-central1-a\": \"${ru_central1_a}\",\"ru-central1-b\": \"${ru_central1_b}\",\"ru-central1-c\": \"${ru_central1_c}\"}" \
+-var cluster_name="${cluster_name}" \
+-var cidr="{\"pod\": \"${pod_cidr}\",\"node_cidr_mask\": \"${node_mask}\",\"service\": \"${service_cidr}\"}"
 ```
 
 yandex-cluster-machine-controller:
