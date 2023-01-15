@@ -137,7 +137,9 @@ time terraform -chdir=k8s apply \
 -var master_availability_zones="{\"ru-central1-a\": \"10.220.0.0/16\",\"ru-central1-b\": \"10.221.0.0/16\",\"ru-central1-c\": \"10.222.0.0/26\"}" \
 -var cluster_name="cluster-3" \
 -var cidr="{\"pod\": \"10.11.0.0/16\",\"node_cidr_mask\": \"24\",\"service\": \"29.64.0.0/16\"}"
+```
 
+```
 export cluster_name=cluster-4
 export ru_central1_a=10.141.0.0/16
 export ru_central1_b=10.142.0.0/16
