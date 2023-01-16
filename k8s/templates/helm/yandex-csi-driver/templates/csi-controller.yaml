@@ -6,7 +6,7 @@ metadata:
   name: {{ include "cluster-csi-controller.name" . }}
 spec:
   progressDeadlineSeconds: 600
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -18,6 +18,16 @@ spec:
       labels:
         app: {{ include "cluster-csi-controller.name" . }}
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: topology.kubernetes.io/zone
+                labelSelector:
+                  matchLabels:
+                    app: {{ include "cluster-csi-controller.name" . }}
+
       containers:
       {{- with .Values.csiProvisioner }}
       - name: csi-provisioner
@@ -260,16 +270,19 @@ spec:
         env:
           - name: ADDRESS
             value: "{{ $.Values.csiPath }}/{{ $.Values.csiSockName }}"
+
           - name: POD_IP
             valueFrom:
               fieldRef:
                 apiVersion: v1
                 fieldPath: status.podIP
+
           - name: YANDEX_AUTH_KEYS
             valueFrom:
               secretKeyRef:
                 name: {{ include "cluster-csi-controller.name" $ }}
                 key: serviceAccountJSON
+
           - name: YANDEX_FOLDER_ID
             valueFrom:
               secretKeyRef:

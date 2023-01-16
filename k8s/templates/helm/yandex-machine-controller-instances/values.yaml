@@ -24,6 +24,7 @@ template:
       instance-group: monitoring
     nodeLabels:
       node-role.kubernetes.io/monitoring: ""
+      provider: yandex
     cloudLabels:
       treska: critical
       
@@ -49,4 +50,3 @@ template:
     provider:
       type: YandexCloud
       name: yandex-cluster-cloud-controller
-

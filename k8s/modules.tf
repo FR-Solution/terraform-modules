@@ -21,17 +21,23 @@ module "k8s-yandex-cluster" {
         default_zone      = "ru-central1-a"
 
         resources_overwrite = {
-            # master-1 = {
-            #   zone    = "ru-central1-a"
-            #   disk = {
-            #     boot = {
-            #       image_id  = "fd8ingbofbh3j5h7i8ll"
-            #       # fd8kdq6d0p8sij7h5qe3 | ubuntu-20-04-lts-v20220822
-            #       # fd8ingbofbh3j5h7i8ll | ubuntu-22-04-lts-v20220810
-            #       # fd8uji8asiui2oetvqps | custom
-            #     }
-            #   }
-            # }
+            master-1 = {
+              zone    = "ru-central1-a"
+              # disk = {
+              #   boot = {
+              #     image_id  = "fd8ingbofbh3j5h7i8ll"
+              #     # fd8kdq6d0p8sij7h5qe3 | ubuntu-20-04-lts-v20220822
+              #     # fd8ingbofbh3j5h7i8ll | ubuntu-22-04-lts-v20220810
+              #     # fd8uji8asiui2oetvqps | custom
+              #   }
+              # }
+            }
+            master-2 = {
+              zone    = "ru-central1-b"
+            }
+            master-3 = {
+              zone    = "ru-central1-c"
+            }
         }
 
         resources = {

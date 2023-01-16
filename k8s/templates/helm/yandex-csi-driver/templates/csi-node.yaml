@@ -13,68 +13,161 @@ spec:
       labels:
         app: {{ include "cluster-csi-node.name" . }}
     spec:
+      
       serviceAccountName: {{ include "cluster-csi-node.name" . }}
       hostNetwork: true
       tolerations:
         - operator: Exists
+
+      nodeSelector:
+        provider: yandex
+
       containers:
         - name: {{ include "cluster-csi-node.name" . }}-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
+
           args:
-            - "--v=5"
-            - "--csi-address=/csi/csi.sock"
-            - "--kubelet-registration-path=/var/lib/kubelet/plugins/yandex.csi.flant.com/csi.sock"
+            - --csi-address=$(ADDRESS)
+            - --kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)
+            - --v=2
+
           env:
-            - name: KUBE_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: /var/lib/kubelet/plugins/yandex.csi.flant.com/csi.sock
+
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 40Mi
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+
           volumeMounts:
-            - name: plugin-dir
-              mountPath: /csi
-            - name: registration-dir
-              mountPath: /registration
-        - name: {{ include "cluster-csi-node.name" . }}
+            - mountPath: /csi
+              name: plugin-dir
+            - mountPath: /registration
+              name: registration-dir
+
+        - name: {{ include "cluster-csi-node.name" $ }}
+          args:
+            - --endpoint=$(CSI_ENDPOINT)
+
+          env:
+          - name: CSI_ENDPOINT
+            value: unix:/csi/csi.sock
+
+          - name: CSI_NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+
+          - name: YANDEX_AUTH_KEYS
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "cluster-csi-controller.name" $ }}
+                key: serviceAccountJSON
+
+          image: dobrykot/cluster-csi-controller:v0.9.12
+        
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+
+          ports:
+            - containerPort: 9808
+              name: healthz
+              protocol: TCP
+
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 40Mi
+
           securityContext:
             privileged: true
-          image: registry.deckhouse.io/yandex-csi-driver/yandex-csi-driver:v0.9.11
-          args:
-            - "--endpoint=unix:/csi/csi.sock"
+            readOnlyRootFilesystem: true
+
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+
           volumeMounts:
-            - name: kubelet-dir
-              mountPath: /var/lib/kubelet
-              mountPropagation: "Bidirectional"
-            - name: plugin-dir
-              mountPath: /csi
-            - name: device-dir
-              mountPath: /dev
-          env:
-            - name: YANDEX_AUTH_KEYS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "cluster-csi-controller.name" . }}
-                  key: serviceAccountJSON
+            - mountPath: /var/lib/kubelet
+              mountPropagation: Bidirectional
+              name: kubelet-dir
+            - mountPath: /csi
+              name: plugin-dir
+            - mountPath: /dev
+              name: device-dir
+
+
         - name: liveness-probe
           image: quay.io/k8scsi/livenessprobe:v2.0.0
           args:
             - --csi-address=/csi/csi.sock
+
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 40Mi
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+
           volumeMounts:
-            - name: plugin-dir
-              mountPath: /csi
+            - mountPath: /csi
+              name: plugin-dir
+
+      dnsPolicy: ClusterFirst
+
+      securityContext:
+        fsGroup: 0
+        runAsGroup: 0
+        runAsNonRoot: false
+        runAsUser: 0
+
       volumes:
-        - name: registration-dir
-          hostPath:
-            path: /var/lib/kubelet/plugins_registry/
-            type: Directory
-        - name: kubelet-dir
-          hostPath:
+        - hostPath:
             path: /var/lib/kubelet
             type: Directory
-        - name: plugin-dir
-          hostPath:
-            path: /var/lib/kubelet/plugins/yandex.csi.flant.com/
+          name: kubelet-dir
+        - hostPath:
+            path: /var/lib/kubelet/plugins/yandex.csi.flant.com
             type: DirectoryOrCreate
-        - name: device-dir
-          hostPath:
+          name: plugin-dir
+        - hostPath:
+            path: /var/lib/kubelet/plugins_registry/
+            type: Directory
+          name: registration-dir
+        - hostPath:
             path: /dev
             type: Directory
+          name: device-dir

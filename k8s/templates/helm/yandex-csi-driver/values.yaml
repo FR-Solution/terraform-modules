@@ -112,3 +112,8 @@ csiSockName: csi.sock
 provider:
   type: YandexCloud
   name: yandex
+
+csiNode:
+  kubeletPath: /var/lib/kubelet
+  extraArgs:
+    v: 5
