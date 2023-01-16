@@ -107,9 +107,9 @@ terraform apply \
 
 ```bash
 export cluster_name=cluster-2
-export ru_central1_a=10.121.0.0/16
-export ru_central1_b=10.122.0.0/16
-export ru_central1_c=10.123.0.0/16
+export ru_central1_a=10.161.0.0/16
+export ru_central1_b=10.162.0.0/16
+export ru_central1_c=10.163.0.0/16
 export pod_cidr=10.12.0.0/16
 export service_cidr=29.64.0.0/16
 export node_mask=24
