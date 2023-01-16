@@ -2,7 +2,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: network-hdd
+  name: yc-network-hdd
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: yandex.csi.flant.com
@@ -15,7 +15,7 @@ reclaimPolicy: Delete
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: network-ssd
+  name: yc-network-ssd
 provisioner: yandex.csi.flant.com
 parameters:
   typeID: network-ssd
@@ -26,7 +26,7 @@ reclaimPolicy: Delete
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: network-ssd-nonreplicated
+  name: yc-network-ssd-nonreplicated
 provisioner: yandex.csi.flant.com
 parameters:
   typeID: network-ssd-nonreplicated

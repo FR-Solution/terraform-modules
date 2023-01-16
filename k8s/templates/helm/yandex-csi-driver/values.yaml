@@ -10,5 +10,105 @@ ycsi:
       ${ indent(6 ,yandex_csi_driver_sa_sa.private_key) }
   folder_id: ${ yandex_csi_driver_sa_sa.folder_id }
 
-
 cluster_name: ${cluster_name}
+
+csiProvisioner:
+  image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+  extraArgs:
+    v: 5
+    capacity-ownerref-level: 2
+    worker-threads: 10
+    default-fstype: ext4
+    timeout: 600s
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+csiAttacher:
+  image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+  extraArgs:
+    v: 5
+    timeout: 600s
+    worker-threads: 10
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+
+csiResizer:
+  image: k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
+  extraArgs:
+    v: 5
+    timeout: 600s
+    workers: 10
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+csiSnapshotter:
+  image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+  extraArgs:
+    v: 5
+    timeout: 600s
+    worker-threads: 10
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+csiLivenessprobe:
+  image: k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
+  ports:
+    controller:
+      healthPort: 9809
+    nodeDriver:
+      healthPort: 9909
+  extraArgs: {}
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+csiController:
+  image: dobrykot/cluster-csi-controller:v0.9.12
+  ports:
+    addressPort: 12302
+  extraArgs: {}
+  resources:
+    requests:
+      ephemeral-storage: 50Mi
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+csiPath: /csi/
+csiSockName: csi.sock
+
+provider:
+  type: YandexCloud
+  name: yandex

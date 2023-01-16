@@ -1,27 +1,24 @@
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: csi-node
+  name: {{ include "cluster-csi-node.name" . }}
 spec:
   updateStrategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: csi-node
+      app: {{ include "cluster-csi-node.name" . }}
   template:
     metadata:
       labels:
-        app: csi-node
+        app: {{ include "cluster-csi-node.name" . }}
     spec:
-      serviceAccountName: csi-node
+      serviceAccountName: {{ include "cluster-csi-node.name" . }}
       hostNetwork: true
-      # nodeSelector:
-      #   beta.kubernetes.io/region: ru-central1
-      #   topology.kubernetes.io/region: ru-central1
       tolerations:
         - operator: Exists
       containers:
-        - name: csi-node-driver-registrar
+        - name: {{ include "cluster-csi-node.name" . }}-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
           args:
             - "--v=5"
@@ -37,7 +34,7 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
-        - name: csi-node
+        - name: {{ include "cluster-csi-node.name" . }}
           securityContext:
             privileged: true
           image: registry.deckhouse.io/yandex-csi-driver/yandex-csi-driver:v0.9.11
@@ -55,8 +52,8 @@ spec:
             - name: YANDEX_AUTH_KEYS
               valueFrom:
                 secretKeyRef:
-                  name: csi-credentials
-                  key: service-account-json
+                  name: {{ include "cluster-csi-controller.name" . }}
+                  key: serviceAccountJSON
         - name: liveness-probe
           image: quay.io/k8scsi/livenessprobe:v2.0.0
           args:
