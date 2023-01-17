@@ -25,6 +25,12 @@ variable "yandex_folder_name" {
   default     = "example"
 }
 
+variable "root_vault_path_pki" {
+    description = "pki-root"
+    type = string
+    default = "pki-root"
+}
+
 variable "master_availability_zones"{
   type = object({
     ru-central1-a = string

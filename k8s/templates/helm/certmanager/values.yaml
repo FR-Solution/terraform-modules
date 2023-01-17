@@ -6,6 +6,13 @@ tolerations:
   - key: node.cloudprovider.kubernetes.io/uninitialized
     value: "true"
     effect: NoSchedule
+resources:
+  limits:
+    cpu: 200m
+    memory: 100Mi          
+  requests:
+    cpu: 100m
+    memory: 50Mi
 
 webhook:
   tolerations:
@@ -16,6 +23,13 @@ webhook:
   - key: node.cloudprovider.kubernetes.io/uninitialized
     value: "true"
     effect: NoSchedule
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi          
+    requests:
+      cpu: 100m
+      memory: 50Mi
 
 cainjector:
   tolerations:
@@ -26,6 +40,13 @@ cainjector:
   - key: node.cloudprovider.kubernetes.io/uninitialized
     value: "true"
     effect: NoSchedule
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi          
+    requests:
+      cpu: 100m
+      memory: 50Mi
 
 
 startupapicheck:

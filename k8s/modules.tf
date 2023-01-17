@@ -12,6 +12,10 @@ module "k8s-yandex-cluster" {
       folder_id = data.yandex_resourcemanager_folder.current.id
     }
 
+    pki_metadata = {
+      root_vault_path_pki = var.root_vault_path_pki
+    }
+
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
         count   = 1
@@ -63,7 +67,7 @@ module "k8s-yandex-cluster" {
         metadata = {
           user_data_template = "fraima" # all | packer | fraima
         }
-        ssh_username  = "dkot"
+        ssh_username  = "xwrace"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
     }
 }

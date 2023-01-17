@@ -47,7 +47,12 @@ spec:
         imagePullPolicy: IfNotPresent
         name: csi-provisioner
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -76,7 +81,12 @@ spec:
         imagePullPolicy: IfNotPresent
         name: csi-attacher
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -105,7 +115,12 @@ spec:
         imagePullPolicy: IfNotPresent
         name: csi-resizer
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -134,7 +149,12 @@ spec:
         imagePullPolicy: IfNotPresent
         name: csi-snapshotter
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -154,7 +174,12 @@ spec:
         imagePullPolicy: IfNotPresent
         name: livenessprobe
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -197,7 +222,12 @@ spec:
           timeoutSeconds: 1
         name: csi-controller
         resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
           requests:
+            cpu: 100m
+            memory: 128Mi   
             ephemeral-storage: 60Mi
         securityContext:
           allowPrivilegeEscalation: false

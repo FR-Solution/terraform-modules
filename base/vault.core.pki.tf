@@ -1,5 +1,5 @@
 resource "vault_mount" "core_root_ca" {
-  path                      = "pki-root"
+  path                      = var.root_vault_path_pki
   type                      = "pki"
   description               = "root infrastruction"
   default_lease_ttl_seconds = 321408000

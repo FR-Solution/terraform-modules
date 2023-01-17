@@ -37,6 +37,11 @@ variable "cloud_metadata" {
     }
 }
 
+variable "pki_metadata" {
+  type = any 
+  default = {}
+}
+
 variable "master_group"{
   type = object({
     name = string

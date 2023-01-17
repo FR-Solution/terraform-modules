@@ -8,3 +8,5 @@ base/states/*
 
 k8s/providers-dev.tf
 base/providers-dev.tf
+k8s/provider-dev.tf
+base/provider-dev.tf

@@ -141,6 +141,13 @@ clustermesh:
 monitor:
   # -- Enable the cilium-monitor sidecar.
   enabled: true
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 hubble:
   # -- Enable Hubble (true by default).

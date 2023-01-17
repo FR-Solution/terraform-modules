@@ -9,6 +9,7 @@ module "k8s-global-vars" {
     ssh_rsa_path          = var.master_group.ssh_rsa_path
     pod_cidr              = var.pod_cidr
     node_cidr_mask        = var.node_cidr_mask
+    root_vault_path_pki   = var.pki_metadata.root_vault_path_pki
 }
 
 module "k8s-vault" {
