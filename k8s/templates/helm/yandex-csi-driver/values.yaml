@@ -25,8 +25,6 @@ sidecars:
       default-fstype: ext4
       timeout: 600s
       feature-gates: "Topology=true"
-      enable-capacity: true
-      strict-topology: true
 
     resources: {}
     securityContext: {}

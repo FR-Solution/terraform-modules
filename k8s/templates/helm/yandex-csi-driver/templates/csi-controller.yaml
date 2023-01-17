@@ -39,6 +39,8 @@ spec:
           - --csi-address=$(ADDRESS)
           - --leader-election-namespace=$(NAMESPACE)
           - --leader-election=true
+          - --enable-capacity
+          - --strict-topology
           {{- with .extraArgs }}
             {{- range $k, $v := . }}
           - --{{- $k }}={{ $v -}}
@@ -46,20 +48,20 @@ spec:
           {{- end }}
 
         env:
-        - name: ADDRESS
-          value: "{{ $.Values.defaults.csiPath }}/{{ $.Values.defaults.csiSockName }}"
+          - name: ADDRESS
+            value: "{{ $.Values.defaults.csiPath }}/{{ $.Values.defaults.csiSockName }}"
 
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.name
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
 
-        - name: NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
 
         image: {{ .image.repository }}:{{ .image.tag }}
         imagePullPolicy: {{ .image.pullPolicy }}
