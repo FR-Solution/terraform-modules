@@ -6,7 +6,7 @@ metadata:
   name: {{ include "yandex-csi-controller.name" . }}
 spec:
   progressDeadlineSeconds: 600
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:

@@ -127,8 +127,8 @@ defaults:
 
 controller:
   ports:
-    healthPort: 12001
-    addressPort: 12002
+    healthPort: 9809
+    addressPort: 12402
 
   extraArgs: {}
   resources: {}

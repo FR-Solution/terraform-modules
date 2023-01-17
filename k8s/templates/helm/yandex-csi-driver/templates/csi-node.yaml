@@ -159,17 +159,14 @@ spec:
             path: /var/lib/kubelet
             type: Directory
           name: kubelet-dir
-
         - hostPath:
             path: /var/lib/kubelet/plugins/yandex.csi.flant.com
             type: DirectoryOrCreate
           name: plugin-dir
-
         - hostPath:
             path: /var/lib/kubelet/plugins_registry/
             type: Directory
           name: registration-dir
-
         - hostPath:
             path: /dev
             type: Directory

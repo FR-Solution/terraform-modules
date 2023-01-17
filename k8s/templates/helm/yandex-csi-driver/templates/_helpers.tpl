@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "yandex-csi-controller.name" -}}
-{{- printf "%s" .Chart.Name }}
+{{- printf "yandex-csi-controller" }}
 {{- end }}
 
 {{- define "yandex-csi-node.name" -}}
