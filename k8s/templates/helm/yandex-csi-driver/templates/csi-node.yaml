@@ -1,20 +1,20 @@
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: {{ include "cluster-csi-node.name" . }}
+  name: {{ include "yandex-csi-node.name" . }}
 spec:
   updateStrategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ include "cluster-csi-node.name" . }}
+      app: {{ include "yandex-csi-node.name" . }}
   template:
     metadata:
       labels:
-        app: {{ include "cluster-csi-node.name" . }}
+        app: {{ include "yandex-csi-node.name" . }}
     spec:
       
-      serviceAccountName: {{ include "cluster-csi-node.name" . }}
+      serviceAccountName: {{ include "yandex-csi-node.name" . }}
       hostNetwork: true
       tolerations:
         - operator: Exists
@@ -23,7 +23,7 @@ spec:
         provider: yandex
 
       containers:
-        - name: {{ include "cluster-csi-node.name" . }}-driver-registrar
+        - name: {{ include "yandex-csi-node.name" . }}-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
 
           args:
@@ -58,7 +58,7 @@ spec:
             - mountPath: /registration
               name: registration-dir
 
-        - name: {{ include "cluster-csi-node.name" $ }}
+        - name: {{ include "yandex-csi-node.name" $ }}
           args:
             - --endpoint=$(CSI_ENDPOINT)
 
@@ -75,7 +75,7 @@ spec:
           - name: YANDEX_AUTH_KEYS
             valueFrom:
               secretKeyRef:
-                name: {{ include "cluster-csi-controller.name" $ }}
+                name: {{ include "yandex-csi-controller.name" $ }}
                 key: serviceAccountJSON
 
           image: dobrykot/cluster-csi-controller:v0.9.12
@@ -159,14 +159,17 @@ spec:
             path: /var/lib/kubelet
             type: Directory
           name: kubelet-dir
+
         - hostPath:
             path: /var/lib/kubelet/plugins/yandex.csi.flant.com
             type: DirectoryOrCreate
           name: plugin-dir
+
         - hostPath:
             path: /var/lib/kubelet/plugins_registry/
             type: Directory
           name: registration-dir
+
         - hostPath:
             path: /dev
             type: Directory

@@ -1,3 +1,4 @@
+
 ycsi:
   cloud_secret:
     id: ${ yandex_csi_driver_sa_sa.id }
@@ -10,110 +11,139 @@ ycsi:
       ${ indent(6 ,yandex_csi_driver_sa_sa.private_key) }
   folder_id: ${ yandex_csi_driver_sa_sa.folder_id }
 
-cluster_name: ${cluster_name}
+sidecars:
+  provisioner:
+    image:
+      pullPolicy: IfNotPresent
+      repository: k8s.gcr.io/sig-storage/csi-provisioner
+      tag: v3.1.0
 
-csiProvisioner:
-  image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
-  extraArgs:
-    v: 5
-    capacity-ownerref-level: 2
-    worker-threads: 10
-    default-fstype: ext4
-    timeout: 600s
+    extraArgs:
+      v: 5
+      capacity-ownerref-level: 2
+      worker-threads: 10
+      default-fstype: ext4
+      timeout: 600s
+      feature-gates: "Topology=true"
+      enable-capacity: true
+      strict-topology: true
+
+    resources: {}
+    securityContext: {}
+
+    # terminationMessagePath: /dev/termination-log
+    # terminationMessagePolicy: File
+
+
+  attacher:
+    image: 
+      pullPolicy: IfNotPresent
+      repository: k8s.gcr.io/sig-storage/csi-attacher
+      tag: v3.4.0
+
+    extraArgs:
+      v: 5
+      timeout: 600s
+      worker-threads: 10
+
+    resources: {}
+    securityContext: {}
+
+    # terminationMessagePath: /dev/termination-log
+    # terminationMessagePolicy: File
+
+  resizer:
+    image: 
+      pullPolicy: IfNotPresent
+      repository: k8s.gcr.io/sig-storage/csi-resizer
+      tag: v1.5.0
+
+    extraArgs:
+      v: 5
+      timeout: 600s
+      workers: 10
+
+    resources: {}
+    securityContext: {}
+
+    # terminationMessagePath: /dev/termination-log
+    # terminationMessagePolicy: File
+
+
+  snapshotter:
+    image: 
+      pullPolicy: IfNotPresent
+      repository: k8s.gcr.io/sig-storage/csi-snapshotter
+      tag: v5.0.1
+
+    extraArgs:
+      v: 5
+      timeout: 600s
+      worker-threads: 10
+
+    resources: {}
+    securityContext: {}
+
+    # terminationMessagePath: /dev/termination-log
+    # terminationMessagePolicy: File
+
+  livenessprobe:
+    image: 
+      pullPolicy: IfNotPresent
+      repository: k8s.gcr.io/sig-storage/livenessprobe
+      tag: v2.5.0
+
+    extraArgs: {}
+    resources: {}
+    securityContext: {}
+
+    # terminationMessagePath: /dev/termination-log
+    # terminationMessagePolicy: File
+
+image: 
+  pullPolicy: IfNotPresent
+  repository: dobrykot/cluster-csi-controller
+  # Overrides the image tag whose default is v{{ .Chart.AppVersion }}
+  tag: ""
+
+defaults:
   resources:
     requests:
       ephemeral-storage: 50Mi
       cpu: 100m
-      memory: 128Mi
+      memory: 256Mi
     limits:
-      cpu: 1000m
-      memory: 1Gi
+      cpu: 200m
+      memory: 512Mi
 
-csiAttacher:
-  image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
-  extraArgs:
-    v: 5
-    timeout: 600s
-    worker-threads: 10
-  resources:
-    requests:
-      ephemeral-storage: 50Mi
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
 
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
 
-csiResizer:
-  image: k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
-  extraArgs:
-    v: 5
-    timeout: 600s
-    workers: 10
-  resources:
-    requests:
-      ephemeral-storage: 50Mi
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
+  csiPath: /csi
+  csiSockName: csi.sock
+  kubeletPath: /var/lib/kubelet
 
-csiSnapshotter:
-  image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
-  extraArgs:
-    v: 5
-    timeout: 600s
-    worker-threads: 10
-  resources:
-    requests:
-      ephemeral-storage: 50Mi
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-
-csiLivenessprobe:
-  image: k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
+controller:
   ports:
-    controller:
-      healthPort: 9809
-    nodeDriver:
-      healthPort: 9909
-  extraArgs: {}
-  resources:
-    requests:
-      ephemeral-storage: 50Mi
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
+    healthPort: 12001
+    addressPort: 12002
 
-csiController:
-  image: dobrykot/cluster-csi-controller:v0.9.12
-  ports:
-    addressPort: 12302
   extraArgs: {}
-  resources:
-    requests:
-      ephemeral-storage: 50Mi
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
+  resources: {}
 
-csiPath: /csi/
-csiSockName: csi.sock
+node:
+  extraArgs:
+    v: 5
+
+  extraArgs: {}
+  resources: {}
+  securityContext: {}
 
 provider:
   type: YandexCloud
   name: yandex
 
-csiNode:
-  kubeletPath: /var/lib/kubelet
-  extraArgs:
-    v: 5
