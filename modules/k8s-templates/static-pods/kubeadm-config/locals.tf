@@ -15,6 +15,7 @@ locals {
         cluster_name                    = var.k8s_global_vars.cluster_name
         pod_cidr                        = var.k8s_global_vars.k8s-addresses.pod_cidr
         node_cidr_mask                  = var.k8s_global_vars.k8s-addresses.node_cidr_mask
+        # kubelet_config                  = module.kubelet.kubelet-config
     })}
     ])
 

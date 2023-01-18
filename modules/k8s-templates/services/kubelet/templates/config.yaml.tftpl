@@ -23,7 +23,6 @@ clusterDNS:
   - "${kubelet-config-args.dns_address}"
 clusterDomain: cluster.local
 cpuManagerReconcilePeriod: 0s
-evictionPressureTransitionPeriod: 0s
 fileCheckFrequency: 0s
 healthzBindAddress: 127.0.0.1
 healthzPort: 10248
@@ -39,9 +38,7 @@ memorySwap: {}
 nodeStatusReportFrequency: 1s
 nodeStatusUpdateFrequency: 1s
 resolvConf: /run/systemd/resolve/resolv.conf
-rotateCertificates: false
 runtimeRequestTimeout: 0s
-serverTLSBootstrap: true
 shutdownGracePeriod: 15s
 shutdownGracePeriodCriticalPods: 5s
 staticPodPath: "${base_static_pod_path}"
@@ -96,6 +93,5 @@ evictionHard:
   imagefs.available: 25%
   imagefs.inodesFree: 15%
 evictionPressureTransitionPeriod: 5s 
-imageMinimumGCAge: 12h 
 imageGCHighThresholdPercent: 55
 imageGCLowThresholdPercent: 50
