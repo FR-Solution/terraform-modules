@@ -67,7 +67,7 @@ module "k8s-yandex-cluster" {
         metadata = {
           user_data_template = "fraima" # all | packer | fraima
         }
-        ssh_username  = "xwrace"
+        ssh_username  = "dkot"
         ssh_rsa_path  = "~/.ssh/id_rsa.pub"
     }
 }
