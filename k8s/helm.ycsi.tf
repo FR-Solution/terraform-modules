@@ -4,7 +4,11 @@ resource "helm_release" "ycsi" {
     helm_release.coredns,
   ]
   name       = "yandex"
-  chart      = "templates/helm/yandex-csi-driver"
+
+  repository = "https://helm.fraima.io"
+  chart      = "yandex-csi-controller"
+  version    = "0.0.1"
+
   namespace  = "kube-fraima-csi"
   create_namespace  = true
   values = [
