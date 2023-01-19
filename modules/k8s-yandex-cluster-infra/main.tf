@@ -2,14 +2,6 @@
 module "k8s-global-vars" {
     source = "../k8s-config-vars"
     extra_args = var.global_vars
-    # cluster_name          = var.cluster_name
-    # base_domain           = var.base_domain
-    # vault_server          = var.vault_server
-    
-    # ssh_username          = var.master_group.ssh_username
-    # ssh_rsa_path          = var.master_group.ssh_rsa_path
-    # pod_cidr              = var.pod_cidr
-    # node_cidr_mask        = var.node_cidr_mask
 }
 
 module "k8s-vault" {

@@ -12,8 +12,8 @@ resource "yandex_compute_instance" "master" {
   for_each    = local.master_instance_list_map
   labels = {}
   name        = "${each.key}"
-  description = var.k8s_global_vars.cluster_name
-  hostname    = format("%s.%s.%s", each.key, var.k8s_global_vars.cluster_name, var.k8s_global_vars.base_domain)
+  description = var.k8s_global_vars.cluster_metadata.cluster_name
+  hostname    = format("%s.%s.%s", each.key, var.k8s_global_vars.cluster_metadata.cluster_name, var.k8s_global_vars.cluster_metadata.base_domain)
   platform_id = "standard-v1"
 
   zone                = try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)

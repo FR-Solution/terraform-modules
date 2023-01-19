@@ -1,7 +1,7 @@
 resource "yandex_compute_disk" "etcd" {
   for_each  = local.instances_disk_map
 
-  name  = "${split("_", each.key)[0]}-${split("_", each.key)[1]}-${var.k8s_global_vars.cluster_name}"
+  name  = "${split("_", each.key)[0]}-${split("_", each.key)[1]}-${var.k8s_global_vars.cluster_metadata.cluster_name}"
   labels = {}
   size = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].size
   type = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].type

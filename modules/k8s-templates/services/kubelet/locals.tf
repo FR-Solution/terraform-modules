@@ -9,10 +9,10 @@ locals {
     kubelet-service-args = flatten([
     for node_name, node_content in  var.instance_list_map:
       {"${node_name}" = templatefile("${path.module}/templates/service-args.conf.tftpl", {
-        full_instance_name      = "${node_name}.${var.k8s_global_vars.base_cluster_fqdn}"
+        full_instance_name      = "${node_name}.${var.k8s_global_vars.k8s-addresses.base_cluster_fqdn}"
         instance_type           = var.instance_type
         main_path               = var.k8s_global_vars.main_path
-        base_domain             = var.k8s_global_vars.base_domain
+        base_domain             = var.k8s_global_vars.cluster_metadata.base_domain
         })
       }]
     )

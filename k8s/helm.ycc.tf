@@ -10,7 +10,7 @@ resource "helm_release" "ycc" {
         yandex_cloud_controller_sa  = local.yandex-k8s-controllers-sa
         cluster_name                = var.cluster_name
         pod_cidr                    = var.cidr.pod
-        k8s_api_server              = module.k8s-yandex-cluster.k8s_global_vars.kube_apiserver_lb_fqdn
+        k8s_api_server              = module.k8s-yandex-cluster.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
         k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
     })
   ]

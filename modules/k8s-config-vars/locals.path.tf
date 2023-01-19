@@ -1,6 +1,6 @@
 locals {
     main_path = {
-        base_vault_path         = try(var.extra_args.base_vault_path, null)        == null ? "clusters/${local.base.cluster_name}"  : var.extra_args.base_vault_path
+        base_vault_path         = try(var.extra_args.base_vault_path, null)        == null ? "clusters/${local.cluster_metadata.cluster_name}"  : var.extra_args.base_vault_path
         base_kubernetes_path    = try(var.extra_args.base_kubernetes_path, null)   == null ? "/etc/kubernetes"                      : var.extra_args.base_kubernetes_path
     }
 

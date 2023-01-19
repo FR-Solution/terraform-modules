@@ -3,13 +3,13 @@ locals {
   cloud-init-master = flatten([
     for master_name, master_content in  var.master_instance_list_map:
       {"${master_name}" = templatefile("${path.module}/templates/cloud-init-kubeadm-master-${try(var.node_group_metadata.user_data_template, "all")}.tftpl", {
-        ssh_username                      = var.k8s_global_vars.ssh_username
-        ssh_key                           = file(var.k8s_global_vars.ssh_rsa_path)
+        ssh_username                      = var.k8s_global_vars.base.ssh_username
+        ssh_key                           = file(var.k8s_global_vars.base.ssh_rsa_path)
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                               = var.k8s_global_vars.ssl
         base_path                         = var.k8s_global_vars.global_path
         main_path                         = var.k8s_global_vars.main_path
-        # hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
+        # hostname                          = "${master_name}-${var.k8s_global_vars.cluster_metadata.cluster_name}"
         hostname                          = "${master_name}"
         node_name                         = "${master_name}"
         actual_release                    = var.actual-release

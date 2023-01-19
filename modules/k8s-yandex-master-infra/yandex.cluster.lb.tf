@@ -1,7 +1,7 @@
 #### LB ######
 ##-->
 resource "yandex_lb_target_group" "master-tg" {
-  name        = "${var.k8s_global_vars.cluster_name}${var.master_group.vpc_id}"
+  name        = "${var.k8s_global_vars.cluster_metadata.cluster_name}${var.master_group.vpc_id}"
   region_id   = "ru-central1"
 
   dynamic "target" {
@@ -14,11 +14,11 @@ resource "yandex_lb_target_group" "master-tg" {
 }
 
 resource "yandex_lb_network_load_balancer" "api-external" {
-  name = "lb-api-${var.k8s_global_vars.cluster_name}"
+  name = "lb-api-${var.k8s_global_vars.cluster_metadata.cluster_name}"
   type = "external"
   region_id  = "ru-central1"
   listener {
-    name = "api-listener-${var.k8s_global_vars.cluster_name}"
+    name = "api-listener-${var.k8s_global_vars.cluster_metadata.cluster_name}"
     port = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
     target_port = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
     

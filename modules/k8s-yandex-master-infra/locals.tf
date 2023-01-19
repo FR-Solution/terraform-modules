@@ -4,7 +4,7 @@ locals {
 
   master_instance_list        = flatten([
     for master-index in range(var.master_group.count): [
-     "${var.master_group.name}-${var.k8s_global_vars.extra_cluster_name}-${sum([master-index, 1])}"
+     "${var.master_group.name}-${var.k8s_global_vars.k8s-addresses.extra_cluster_name}-${sum([master-index, 1])}"
     ]
   ])
 
@@ -26,12 +26,12 @@ locals {
 
   etcd_member_servers_srv = flatten([
     for master_index, master_value in local.master_instance_list: [
-     "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-peer-port} ${master_value}.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
+     "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-peer-port} ${master_value}.${var.k8s_global_vars.cluster_metadata.cluster_name}.${var.k8s_global_vars.cluster_metadata.base_domain}."
     ]
   ])
   etcd_member_clients_srv = flatten([
     for master_index, master_value in local.master_instance_list: [
-     "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-server-port} ${master_value}.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
+     "0 0 ${var.k8s_global_vars.kubernetes-ports.etcd-server-port} ${master_value}.${var.k8s_global_vars.cluster_metadata.cluster_name}.${var.k8s_global_vars.cluster_metadata.base_domain}."
     ]
   ])
 

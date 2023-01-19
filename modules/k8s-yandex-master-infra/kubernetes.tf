@@ -8,9 +8,9 @@ resource "null_resource" "cluster" {
 
     connection {
         host        = element(yandex_compute_instance.master[*][each.key].network_interface.0.nat_ip_address, 0)
-        user        = var.k8s_global_vars.ssh_username
+        user        = var.k8s_global_vars.base.ssh_username
         type        = "ssh"
-        private_key = file(split(".pub", var.k8s_global_vars.ssh_rsa_path)[0])
+        private_key = file(split(".pub", var.k8s_global_vars.base.ssh_rsa_path)[0])
         agent = "false"
     }
     # TODO поправить команду так, что бы не падала сборка
@@ -30,7 +30,7 @@ resource "null_resource" "cluster" {
 #   provisioner "local-exec" {
 #     command = <<EOT
 #       timeout 10m \
-#       kubectl config set-cluster  ${var.k8s_global_vars.cluster_name} \
+#       kubectl config set-cluster  ${var.k8s_global_vars.cluster_metadata.cluster_name} \
 #       --server=https://${tolist(tolist(yandex_lb_network_load_balancer.api-external.listener)[0].external_address_spec)[0].address} \
 #       --insecure-skip-tls-verify && \
 #       kubectl \

@@ -1,73 +1,56 @@
 
 locals {
 
-  base_cluster_fqdn                      = format("%s.%s",             local.base.cluster_name, local.base.base_domain)
-  default_kube_apiserver_lb_fqdn         = format("%s.%s", "api",      local.base_cluster_fqdn)
-  default_kube_apiserver_lb_fqdn_local   = format("%s.%s", "api-int",  local.base_cluster_fqdn)
-  default_wildcard_base_cluster_fqdn     = format("%s.%s", "*",        local.base_cluster_fqdn)
-  k8s_service_kube_apiserver_address_int = format("%s.1", join(".", slice(split(".",local.base.service_cidr), 0, 3)))
-
-  kube_apiserver_lb_fqdn        = try(var.extra_args.kube_apiserver_lb_fqdn, null)       == null ? local.default_kube_apiserver_lb_fqdn       : var.extra_args.kube_apiserver_lb_fqdn
-  kube_apiserver_lb_fqdn_local  = try(var.extra_args.kube_apiserver_lb_fqdn_local, null) == null ? local.default_kube_apiserver_lb_fqdn_local : var.extra_args.kube_apiserver_lb_fqdn_local
-  wildcard_base_cluster_fqdn    = try(var.extra_args.wildcard_base_cluster_fqdn, null)   == null ? local.default_wildcard_base_cluster_fqdn   : var.extra_args.wildcard_base_cluster_fqdn
-
-  extra_cluster_name = substr(sha256(local.base.cluster_name), 0, 8)
-
-
-}
-
-locals {
-
   ssl = {
     global-args = {
       issuer-args = {
-        allow_any_name                      = false
-        allow_bare_domains                  = true
-        allow_glob_domains                  = true
-        allow_subdomains                    = false
-        allowed_domains_template            = true
-        basic_constraints_valid_for_non_ca  = false
-        code_signing_flag                   = false
-        email_protection_flag               = false
-        enforce_hostnames                   = false
-        generate_lease                      = false
-        allow_ip_sans                       = false
-        allow_localhost                     = false
-        client_flag                         = false
-        server_flag                         = false
-        key_bits                            = 4096
-        key_type                            = "rsa"
-        key_usage                           = []
-        organization                        = []
-        country                             = []
-        locality                            = []
-        ou                                  = []
-        postal_code                         = []
-        province                            = []
-        street_address                      = []
-        allowed_domains                     = []
-        allowed_other_sans                  = []
-        allowed_serial_numbers              = []
-        allowed_uri_sans                    = []
-        ext_key_usage                       = []
-        no_store                            = false
-        require_cn                          = false
-        ttl                                 = 31540000
-        use_csr_common_name                 = true
-        
+        allow_any_name                     = false
+        allow_bare_domains                 = true
+        allow_glob_domains                 = true
+        allow_subdomains                   = false
+        allowed_domains_template           = true
+        basic_constraints_valid_for_non_ca = false
+        code_signing_flag                  = false
+        email_protection_flag              = false
+        enforce_hostnames                  = false
+        generate_lease                     = false
+        allow_ip_sans                      = false
+        allow_localhost                    = false
+        client_flag                        = false
+        server_flag                        = false
+        key_bits                           = 4096
+        key_type                           = "rsa"
+        key_usage                          = []
+        organization                       = []
+        country                            = []
+        locality                           = []
+        ou                                 = []
+        postal_code                        = []
+        province                           = []
+        street_address                     = []
+        allowed_domains                    = []
+        allowed_other_sans                 = []
+        allowed_serial_numbers             = []
+        allowed_uri_sans                   = []
+        ext_key_usage                      = []
+        no_store                           = false
+        require_cn                         = false
+        ttl                                = 31540000
+        use_csr_common_name                = true
+
       }
       key-keeper-args = {
         spec = {
           subject = {
-            commonName          = ""
-            country             = ""
-            localite            = ""
-            organization        = ""
-            organizationalUnit  = ""
-            province            = ""
-            postalCode          = ""
-            streetAddress       = ""
-            serialNumber        = ""
+            commonName         = ""
+            country            = ""
+            localite           = ""
+            organization       = ""
+            organizationalUnit = ""
+            province           = ""
+            postalCode         = ""
+            streetAddress      = ""
+            serialNumber       = ""
           }
           privateKey = {
             algorithm = "RSA"
@@ -79,9 +62,9 @@ locals {
           hostnames   = []
           usages      = []
         }
-        renewBefore   = "7m"
-        trigger       = []
-        withUpdate    = true
+        renewBefore = "7m"
+        trigger     = []
+        withUpdate  = true
 
       }
     }
@@ -91,23 +74,23 @@ locals {
           instance-master = true
           instance-worker = true
           static-pod-kube-apiserver-args = {
-            client-ca-file   = "cert-public-arg"
+            client-ca-file = "cert-public-arg"
           }
           static-pod-kube-controller-manager-args = {
-            client-ca-file  = "cert-public-arg"
-            root-ca-file    = "cert-public-arg"
+            client-ca-file            = "cert-public-arg"
+            root-ca-file              = "cert-public-arg"
             cluster-signing-cert-file = "cert-public-arg"
           }
         }
-        common_name   = "Kubernetes Intermediate CA",
-        description   = "Kubernetes Intermediate CA"
-        path          = "${local.global_path.base_vault_path_pki}/kubernetes"
-        root_path     = "${local.global_path.root_vault_path_pki}"
-        host_path     = "${local.global_path.base_local_path_certs}/ca"
-        type          = "internal"
-        organization  = "Kubernetes"
-        exportedKey  = false
-        generate     = false
+        common_name               = "Kubernetes Intermediate CA",
+        description               = "Kubernetes Intermediate CA"
+        path                      = "${local.global_path.base_vault_path_pki}/kubernetes"
+        root_path                 = "${local.global_path.root_vault_path_pki}"
+        host_path                 = "${local.global_path.base_local_path_certs}/ca"
+        type                      = "internal"
+        organization              = "Kubernetes"
+        exportedKey               = false
+        generate                  = false
         default_lease_ttl_seconds = 321408000
         max_lease_ttl_seconds     = 321408000
         issuers = {
@@ -117,11 +100,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "custom:bootstrappers:*"
               ]
@@ -158,11 +141,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:kube-controller-manager"
               ]
@@ -182,7 +165,7 @@ locals {
                       "client auth"
                     ]
                   }
-                  host_path     = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kube-controller-manager"
                 }
               }
 
@@ -194,11 +177,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth"
-                ]
+              ]
               allowed_domains = [
                 "localhost",
                 "kube-controller-manager.default",
@@ -216,8 +199,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-controller-manager-args = {
-                    tls-cert-file         = "cert-public-arg"
-                    tls-private-key-file  = "cert-private-arg"
+                    tls-cert-file        = "cert-public-arg"
+                    tls-private-key-file = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -254,23 +237,23 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
               ]
-              client_flag  = true
+              client_flag = true
             }
             certificates = {
               kube-apiserver-kubelet-client = {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
-                    kubelet-client-certificate   = "cert-public-arg"
-                    kubelet-client-key           = "cert-private-arg"
+                    kubelet-client-certificate = "cert-public-arg"
+                    kubelet-client-key         = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -293,11 +276,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "custom:kubeadm-client",
               ]
@@ -319,7 +302,7 @@ locals {
                       commonName = "custom:kubeadm-client",
                       organizationalUnit = [
                         "system:masters"
-                        ]
+                      ]
                     }
                     usages = [
                       "client auth"
@@ -336,11 +319,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "custom:terraform-kubeconfig",
               ]
@@ -379,11 +362,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth"
-                ]
+              ]
               allowed_domains = [
                 "localhost",
                 "kubernetes",
@@ -392,8 +375,8 @@ locals {
                 "kubernetes.default.svc.cluster",
                 "kubernetes.default.svc.cluster.local",
                 "custom:kube-apiserver",
-                local.kube_apiserver_lb_fqdn,
-                local.kube_apiserver_lb_fqdn_local
+                local.k8s-addresses.kube_apiserver_lb_fqdn,
+                local.k8s-addresses.kube_apiserver_lb_fqdn_local
               ]
               server_flag     = true
               allow_ip_sans   = true
@@ -404,8 +387,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
-                    tls-cert-file         = "cert-public-arg"
-                    tls-private-key-file  = "cert-private-arg"
+                    tls-cert-file        = "cert-public-arg"
+                    tls-private-key-file = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -423,19 +406,19 @@ locals {
                       "kubernetes.default.svc",
                       "kubernetes.default.svc.cluster",
                       "kubernetes.default.svc.cluster.local",
-                      local.kube_apiserver_lb_fqdn,
-                      local.kube_apiserver_lb_fqdn_local
+                      local.k8s-addresses.kube_apiserver_lb_fqdn,
+                      local.k8s-addresses.kube_apiserver_lb_fqdn_local
                     ]
                     ipAddresses = {
                       static = [
-                        local.k8s_service_kube_apiserver_address_int
+                        local.k8s-addresses.local_api_address
                       ]
                       interfaces = [
                         "lo",
                         "eth*"
                       ]
                       dnsLookup = [
-                        "${local.kube_apiserver_lb_fqdn}"
+                        "${local.k8s-addresses.kube_apiserver_lb_fqdn}"
                       ]
                     }
                   }
@@ -450,11 +433,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth"
-                ]
+              ]
               allowed_domains = [
                 "localhost",
                 "kube-scheduler.default",
@@ -472,8 +455,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-scheduler-args = {
-                    tls-cert-file         = "cert-public-arg"
-                    tls-private-key-file  = "cert-private-arg"
+                    tls-cert-file        = "cert-public-arg"
+                    tls-private-key-file = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -512,11 +495,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:kube-scheduler"
               ]
@@ -544,22 +527,22 @@ locals {
           kubelet-peer-k8s-certmanager = {
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth",
                 "ClientAuth"
-                ]
-              key_bits  = 0
-              key_type  = "any"
+              ]
+              key_bits = 0
+              key_type = "any"
               allowed_domains = [
                 "localhost",
-                "*.${local.base.cluster_name}.${local.base.base_domain}",
+                "*.${local.cluster_metadata.cluster_name}.${local.cluster_metadata.base_domain}",
                 "system:node:*",
                 "worker-*",
-                "master-${local.extra_cluster_name}-1",
-                "master-${local.extra_cluster_name}-2",
-                "master-${local.extra_cluster_name}-3"
+                "master-${local.k8s-addresses.extra_cluster_name}-1",
+                "master-${local.k8s-addresses.extra_cluster_name}-2",
+                "master-${local.k8s-addresses.extra_cluster_name}-3"
               ]
               organization = [
                 "system:nodes",
@@ -577,19 +560,19 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth"
-                ]
+              ]
               allowed_domains = [
                 "localhost",
-                local.wildcard_base_cluster_fqdn,
+                local.k8s-addresses.wildcard_base_cluster_fqdn,
                 "system:node:*",
-                "master-${local.extra_cluster_name}-1",
-                "master-${local.extra_cluster_name}-2",
-                "master-${local.extra_cluster_name}-3",
-                "worker-*"   # КОСТЫЛЬ
+                "master-${local.k8s-addresses.extra_cluster_name}-1",
+                "master-${local.k8s-addresses.extra_cluster_name}-2",
+                "master-${local.k8s-addresses.extra_cluster_name}-3",
+                "worker-*" # КОСТЫЛЬ
               ]
               organization = [
                 "system:nodes",
@@ -628,7 +611,7 @@ locals {
                     }
                     # ttl = "200h"
                   }
-                  host_path     = "${local.global_path.base_local_path_certs}/certs/kubelet"
+                  host_path = "${local.global_path.base_local_path_certs}/certs/kubelet"
                   # renewBefore   = "100h"
                 }
               }
@@ -640,11 +623,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:node:*",
               ]
@@ -682,36 +665,36 @@ locals {
           instance-master = true
           static-pod-etcd-args = {
             peer-trusted-ca-file = "cert-public-arg"
-            trusted-ca-file = "cert-public-arg"
+            trusted-ca-file      = "cert-public-arg"
           }
           static-pod-kube-apiserver-args = {
-            etcd-cafile   = "cert-public-arg"
+            etcd-cafile = "cert-public-arg"
           }
         }
-        common_name  = "ETCD Intermediate CA",
-        description  = "ETCD Intermediate CA"
-        path         = "${local.global_path.base_vault_path_pki}/etcd"
-        root_path    = "${local.global_path.root_vault_path_pki}"
-        host_path    = "${local.global_path.base_local_path_certs}/ca"
-        type         = "internal"
-        organization = "Kubernetes"
-        exportedKey  = false
-        generate     = false
+        common_name               = "ETCD Intermediate CA",
+        description               = "ETCD Intermediate CA"
+        path                      = "${local.global_path.base_vault_path_pki}/etcd"
+        root_path                 = "${local.global_path.root_vault_path_pki}"
+        host_path                 = "${local.global_path.base_local_path_certs}/ca"
+        type                      = "internal"
+        organization              = "Kubernetes"
+        exportedKey               = false
+        generate                  = false
         default_lease_ttl_seconds = 321408000
         max_lease_ttl_seconds     = 321408000
         issuers = {
           etcd-server = {
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:etcd-server",
                 "localhost",
-                "*.${local.base.cluster_name}.${local.base.base_domain}",
+                "*.${local.cluster_metadata.cluster_name}.${local.cluster_metadata.base_domain}",
                 "custom:etcd-server"
               ]
               server_flag     = true
@@ -727,22 +710,22 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ServerAuth",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:etcd-peer",
                 "system:etcd-server",
                 "localhost",
                 "custom:etcd-peer",
                 "custom:etcd-server",
-                local.wildcard_base_cluster_fqdn,
-                "master-${local.extra_cluster_name}-1",
-                "master-${local.extra_cluster_name}-2",
-                "master-${local.extra_cluster_name}-3"
+                local.k8s-addresses.wildcard_base_cluster_fqdn,
+                "master-${local.k8s-addresses.extra_cluster_name}-1",
+                "master-${local.k8s-addresses.extra_cluster_name}-2",
+                "master-${local.k8s-addresses.extra_cluster_name}-3"
               ]
               client_flag     = true
               server_flag     = true
@@ -756,7 +739,7 @@ locals {
                   static-pod-etcd-args = {
                     cert-file = "cert-public-arg"
                     key-file  = "cert-private-arg"
-                    }
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -789,9 +772,9 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-etcd-args = {
-                    peer-cert-file  = "cert-public-arg"
-                    peer-key-file   = "cert-private-arg"
-                    }
+                    peer-cert-file = "cert-public-arg"
+                    peer-key-file  = "cert-private-arg"
+                  }
                 }
                 key-keeper-args = {
                   spec = {
@@ -825,11 +808,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:kube-apiserver-etcd-client",
                 "system:etcd-healthcheck-client",
@@ -842,8 +825,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
-                    etcd-certfile   = "cert-public-arg"
-                    etcd-keyfile    = "cert-private-arg"
+                    etcd-certfile = "cert-public-arg"
+                    etcd-keyfile  = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -866,21 +849,21 @@ locals {
         labels = {
           instance-master = true
           static-pod-kube-apiserver-args = {
-            requestheader-client-ca-file   = "cert-public-arg"
+            requestheader-client-ca-file = "cert-public-arg"
           }
           static-pod-kube-controller-manager-args = {
-            requestheader-client-ca-file  = "cert-public-arg"
+            requestheader-client-ca-file = "cert-public-arg"
           }
         }
-        common_name  = "Front-proxy Intermediate CA",
-        description  = "Front-proxy Intermediate CA"
-        path         = "${local.global_path.base_vault_path_pki}/front-proxy"
-        root_path    = "${local.global_path.root_vault_path_pki}"
-        host_path    = "${local.global_path.base_local_path_certs}/ca"
-        type         = "internal"
-        organization = "Kubernetes"
-        exportedKey  = false
-        generate     = false
+        common_name               = "Front-proxy Intermediate CA",
+        description               = "Front-proxy Intermediate CA"
+        path                      = "${local.global_path.base_vault_path_pki}/front-proxy"
+        root_path                 = "${local.global_path.root_vault_path_pki}"
+        host_path                 = "${local.global_path.base_local_path_certs}/ca"
+        type                      = "internal"
+        organization              = "Kubernetes"
+        exportedKey               = false
+        generate                  = false
         default_lease_ttl_seconds = 321408000
         max_lease_ttl_seconds     = 321408000
         issuers = {
@@ -890,11 +873,11 @@ locals {
             }
             issuer-args = {
               key_usage = [
-                "DigitalSignature", 
-                "KeyAgreement", 
-                "KeyEncipherment", 
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
                 "ClientAuth"
-                ]
+              ]
               allowed_domains = [
                 "system:kube-apiserver-front-proxy-client",
                 "custom:kube-apiserver-front-proxy-client"
@@ -906,8 +889,8 @@ locals {
                 labels = {
                   instance-master = true
                   static-pod-kube-apiserver-args = {
-                    proxy-client-cert-file   = "cert-public-arg"
-                    proxy-client-key-file    = "cert-private-arg"
+                    proxy-client-cert-file = "cert-public-arg"
+                    proxy-client-key-file  = "cert-private-arg"
                   }
                 }
                 key-keeper-args = {
@@ -944,21 +927,21 @@ locals {
         labels = {
           instance-master = true
         }
-        description   = "OIDC CA"
-        path          = "pki-root"
-        exportedKey   = false
-        generate      = false
-        host_path     = "${local.global_path.base_local_path_certs}/ca"
+        description = "OIDC CA"
+        path        = "pki-root"
+        exportedKey = false
+        generate    = false
+        host_path   = "${local.global_path.base_local_path_certs}/ca"
       }
     }
   }
-  
+
   secrets = {
     kube-apiserver-sa = {
       labels = {
         instance-master = true
         static-pod-kube-controller-manager-args = {
-          service-account-private-key-file  = "cert-private-arg"
+          service-account-private-key-file = "cert-private-arg"
         }
       }
       path = local.global_path.base_vault_path_kv

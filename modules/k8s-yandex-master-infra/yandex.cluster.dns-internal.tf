@@ -1,9 +1,9 @@
 #### INTERNAL DNS ZONE ######
 ##-->
 resource "yandex_dns_zone" "cluster-external" {
-  name             = "dns-zone-${var.k8s_global_vars.cluster_name}"
+  name             = "dns-zone-${var.k8s_global_vars.cluster_metadata.cluster_name}"
   description      = "desc"
-  zone             = "${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
+  zone             = "${var.k8s_global_vars.cluster_metadata.cluster_name}.${var.k8s_global_vars.cluster_metadata.base_domain}."
   public           = false
   private_networks = [var.master_group.vpc_id]
 }
@@ -22,7 +22,7 @@ resource "yandex_dns_recordset" "api-external" {
 ##-->
 resource "yandex_dns_recordset" "etcd-srv-server" {
   zone_id   = yandex_dns_zone.cluster-external.id
-  name      = "_etcd-server-ssl._tcp.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
+  name      = "_etcd-server-ssl._tcp.${var.k8s_global_vars.cluster_metadata.cluster_name}.${var.k8s_global_vars.cluster_metadata.base_domain}."
   type      = "SRV"
   ttl       = 60
   data      = local.etcd_member_servers_srv
@@ -30,7 +30,7 @@ resource "yandex_dns_recordset" "etcd-srv-server" {
 
 resource "yandex_dns_recordset" "etcd-srv-client" {
   zone_id   = yandex_dns_zone.cluster-external.id
-  name      = "_etcd-client-ssl._tcp.${var.k8s_global_vars.cluster_name}.${var.k8s_global_vars.base_domain}."
+  name      = "_etcd-client-ssl._tcp.${var.k8s_global_vars.cluster_metadata.cluster_name}.${var.k8s_global_vars.cluster_metadata.base_domain}."
   type      = "SRV"
   ttl       = 60
   data      = local.etcd_member_clients_srv
