@@ -12,6 +12,7 @@ locals {
         kube_apiserver_image            = var.kube_apiserver_image
         kube_apiserver_image_version    = var.kube_apiserver_image_version
         base_path                       = var.k8s_global_vars.global_path
+        main_path                       = var.k8s_global_vars.main_path
         kube_apiserver_port             = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
         
 

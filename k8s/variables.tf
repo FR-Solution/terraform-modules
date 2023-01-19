@@ -45,7 +45,7 @@ variable "cidr" {
     node_cidr_mask = string
   })
   default = {
-    service   = "29.64.0.0/16"
+    service   = "172.16.0.0/16"
     pod       = "10.100.0.0/16"
     node_cidr_mask = "24"
   }

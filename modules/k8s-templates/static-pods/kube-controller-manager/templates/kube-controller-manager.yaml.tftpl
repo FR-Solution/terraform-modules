@@ -44,9 +44,9 @@ spec:
       %{~ endfor ~}
     %{~ endfor ~}
       - --service-account-private-key-file=${secrets["kube-apiserver-sa"].keys["private"].host_path}
-      - --kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
-      - --authentication-kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
-      - --authorization-kubeconfig=${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
+      - --kubeconfig=${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+      - --authentication-kubeconfig=${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+      - --authorization-kubeconfig=${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
       - --bind-address=0.0.0.0
       - --v=2
       - --secure-port=10257
@@ -120,7 +120,7 @@ spec:
     - mountPath: /usr/share/ca-certificates
       name: usr-share-ca-certificates
       readOnly: true
-    - mountPath: ${base_path.base_kubernetes_path}/kube-controller-manager
+    - mountPath: ${main_path.base_kubernetes_path}/kube-controller-manager
       name: k8s-kube-controller-manager-configs
       readOnly: true
     - mountPath: ${base_path.base_local_path_certs}/certs
@@ -156,7 +156,7 @@ spec:
       type: DirectoryOrCreate
     name: k8s-ca
   - hostPath:
-      path: ${base_path.base_kubernetes_path}/kube-controller-manager
+      path: ${main_path.base_kubernetes_path}/kube-controller-manager
       type: DirectoryOrCreate
     name: k8s-kube-controller-manager-configs
   - hostPath:

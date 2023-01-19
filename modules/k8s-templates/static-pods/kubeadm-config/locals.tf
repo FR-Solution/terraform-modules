@@ -10,6 +10,7 @@ locals {
         ssl                             = var.k8s_global_vars.ssl
         kubernetes_version              = var.kubernetes_version
         base_path                       = var.k8s_global_vars.global_path
+        main_path                       = var.k8s_global_vars.main_path
         kube_apiserver_port             = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
         kube_api_fqdn                   = var.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
         cluster_name                    = var.k8s_global_vars.cluster_name

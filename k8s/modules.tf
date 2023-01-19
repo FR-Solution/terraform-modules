@@ -1,12 +1,18 @@
 module "k8s-yandex-cluster" {
     source = "../modules/k8s-yandex-cluster-infra"
-    cluster_name    = var.cluster_name
-    base_domain     = var.base_domain
-    vault_server    = var.vault_server
 
-    service_cidr    = var.cidr.service
-    pod_cidr        = var.cidr.pod
-    node_cidr_mask  = var.cidr.node_cidr_mask
+    global_vars = {
+      cluster_name    = var.cluster_name
+      base_domain     = var.base_domain
+      vault_server    = var.vault_server
+
+      service_cidr    = var.cidr.service
+      pod_cidr        = var.cidr.pod
+      node_cidr_mask  = var.cidr.node_cidr_mask
+      
+      ssh_username  = "dkot"
+      ssh_rsa_path  = "~/.ssh/id_rsa.pub"
+    }
 
     cloud_metadata = {
       folder_id = data.yandex_resourcemanager_folder.current.id
@@ -69,8 +75,7 @@ module "k8s-yandex-cluster" {
         metadata = {
           user_data_template = "fraima" # all | packer | fraima
         }
-        ssh_username  = "dkot"
-        ssh_rsa_path  = "~/.ssh/id_rsa.pub"
+
     }
 }
 

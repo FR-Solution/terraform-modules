@@ -37,6 +37,9 @@ variable "cloud_metadata" {
     }
 }
 
+variable "global_vars" {
+  type = any
+}
 variable "master_group"{
   type = object({
     name = string
@@ -47,8 +50,8 @@ variable "master_group"{
     resources_overwrite = any
     resources = any
     metadata = any
-    ssh_username = string
-    ssh_rsa_path = string
+    # ssh_username = string
+    # ssh_rsa_path = string
 
   })
   validation {
@@ -73,8 +76,8 @@ variable "master_group"{
       first_disk = 20
       etcd_disk = 60
     }
-    ssh_username = "dkot"
-    ssh_rsa_path = "~/.ssh/id_rsa"
+    # ssh_username = "dkot"
+    # ssh_rsa_path = "~/.ssh/id_rsa"
 
   }
 }

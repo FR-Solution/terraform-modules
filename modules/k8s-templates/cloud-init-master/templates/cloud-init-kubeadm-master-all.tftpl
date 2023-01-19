@@ -13,17 +13,18 @@ users:
       - ${ ssh_key }
 
 packages:
-  - wget
-  - jq
+  # - wget
+  # - jq
   - tree
-  - irqbalance
-  - net-tools
+  # - irqbalance
+  # - net-tools
+  # https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/
   - socat 
   - conntrack
-  - ipset
+  # - ipset
   - ethtool
-  - unzip
-  - xfsprogs
+  # - unzip
+  # - xfsprogs
 
 bootcmd:
   - sudo modprobe overlay
@@ -78,8 +79,8 @@ runcmd:
   - yc config set folder-id *
   - export IAM_TOKEN=`yc iam create-token`
   - touch /var/lib/key-keeper/bootstrap.token
-  - yc lockbox payload get --retry=30 --name=$(cat /proc/sys/kernel/hostname)-all-role-id               --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-role-id
-  - yc lockbox payload get --retry=30 --name=$(cat /proc/sys/kernel/hostname)-all-secret-id             --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-secret-id
+  - yc lockbox payload get --retry=30 --name=$(cat /proc/sys/kernel/hostname)-all-role-id   --key=$(cat /proc/sys/kernel/hostname) > /var/lib/key-keeper/vault/all-role-id
+  - yc lockbox payload get --retry=30 --name=$(cat /proc/sys/kernel/hostname)-all-secret-id --key=$(cat /proc/sys/kernel/hostname) > /var/lib/key-keeper/vault/all-secret-id
   - systemctl daemon-reload
   - systemctl enable  kubelet.service
   - systemctl enable  containerd.service
@@ -91,25 +92,37 @@ runcmd:
   - systemctl start   systemd-resolved.service
   - sysctl --system
   - until ls /etc/kubernetes/pki/ca/kubernetes-ca.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/ca/front-proxy-ca.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/ca/etcd-ca.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/ca/oidc-ca.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/etcd/etcd-peer-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/etcd/etcd-server-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/etcd/etcd-peer.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/etcd/etcd-server.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-scheduler/kube-scheduler-server.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-scheduler/kube-scheduler-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-scheduler/kube-scheduler-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-scheduler/kube-scheduler-server-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/front-proxy-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/front-proxy-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-sa.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-etcd-client.pem; do sleep 1; done
   - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client.pem; do sleep 1; done
   - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-kubelet-client-key.pem; do sleep 1; done
-  # TODO вынести в голден image | Проверка на ускорение сетапа
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/pause:3.6
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/etcd:3.5.3-0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-apiserver:v1.23.12
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-controller-manager:v1.23.12
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/kube-scheduler:v1.23.12
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-resizer:v1.5.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull k8s.gcr.io/sig-storage/livenessprobe:v2.5.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/livenessprobe:v2.0.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/coredns/coredns:1.9.3
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper-crds:v3.10.0-beta.2
-  - crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull docker.io/openpolicyagent/gatekeeper:v3.10.0-beta.2
-  - kubeadm init --skip-phases=preflight,certs,kubeconfig,kubelet-start,etcd,upload-certs,kubelet-finalize,addon,bootstrap-token --config=/etc/kubernetes/kubeadm/config.yaml
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kubeadm-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kubeadm-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-apiserver/kube-apiserver.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-controller-manager/kube-controller-manager-server.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-controller-manager/kube-controller-manager-server-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-controller-manager/kube-controller-manager-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kube-controller-manager/kube-controller-manager-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kubelet/kubelet-client-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kubelet/kubelet-client.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kubelet/kubelet-server-key.pem; do sleep 1; done
+  - until ls /etc/kubernetes/pki/certs/kubelet/kubelet-server.pem; do sleep 1; done
+  - kubeadm init --config=/etc/kubernetes/kubeadm/config.yaml
 
 write_files:
 
@@ -129,13 +142,13 @@ write_files:
       ${indent(6, key-keeper-config)}
 
 ####### KUBECONFIGS для подключения к кластеру
-  - path: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
       ${indent(6, kube-scheduler-kubeconfig)}
 
-  - path: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
@@ -147,7 +160,7 @@ write_files:
     content: |
       ${indent(6, kube-apiserver-admin-kubeconfig)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kubelet/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
@@ -167,13 +180,13 @@ write_files:
     content: |
       ${indent(6, kubelet-service-d-fraima)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/service/kubelet-args.env
+  - path: ${main_path.base_kubernetes_path}/kubelet/service/kubelet-args.env
     owner: root:root
     permissions: '0644'
     content: |
       ${indent(6, kubelet-service-args)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/config.yaml
+  - path: ${main_path.base_kubernetes_path}/kubelet/config.yaml
     owner: root:root
     permissions: '0644'
     content: |
@@ -255,7 +268,7 @@ write_files:
     content: |
       ${indent(6, bashrc-k8s )}
 
-  - path: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+  - path: ${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
     owner: root:root
     permissions: '0644'
     content: |

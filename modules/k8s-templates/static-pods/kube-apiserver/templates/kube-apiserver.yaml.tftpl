@@ -47,7 +47,7 @@ spec:
       - --secure-port=${kube_apiserver_port}
       # - --advertise-address=29.64.0.1
       - --bind-address=0.0.0.0 # Нужно научить выставлять на адреса интерфейсов
-      - --audit-policy-file=${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+      - --audit-policy-file=${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
       - --audit-log-path=/var/log/kubernetes/audit/audit.log
       - --event-ttl=1h0m0s
       - --kubernetes-service-node-port=0
@@ -122,7 +122,7 @@ spec:
       periodSeconds: 10
       timeoutSeconds: 15
     volumeMounts:
-    - mountPath: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+    - mountPath: ${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
       name: audit
       readOnly: true
     - mountPath: /var/log/kubernetes/audit/
@@ -140,7 +140,7 @@ spec:
     - mountPath: ${base_path.base_local_path_certs}/ca
       name: k8s-ca
       readOnly: true
-    - mountPath: ${base_path.base_kubernetes_path}/kube-apiserver
+    - mountPath: ${main_path.base_kubernetes_path}/kube-apiserver
       name: k8s-kube-apiserver-configs
       readOnly: true
     - mountPath: /usr/local/share/ca-certificates
@@ -172,7 +172,7 @@ spec:
       type: DirectoryOrCreate
     name: k8s-ca
   - hostPath:
-      path: ${base_path.base_kubernetes_path}/kube-apiserver
+      path: ${main_path.base_kubernetes_path}/kube-apiserver
       type: DirectoryOrCreate
     name: k8s-kube-apiserver-configs
   - hostPath:
@@ -185,7 +185,7 @@ spec:
     name: usr-share-ca-certificates
   - name: audit
     hostPath:
-      path: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+      path: ${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
       type: File
   - name: audit-log
     hostPath:

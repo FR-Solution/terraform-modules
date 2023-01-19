@@ -1,14 +1,16 @@
 locals {
-    global_path = {
-        base_kubernetes_path    = var.base_kubernetes_path    == null ? "/etc/kubernetes"                       : var.base_kubernetes_path
-        base_local_path_certs   = var.base_local_path_certs   == null ? "/etc/kubernetes/pki"                   : var.base_local_path_certs
-        base_static_pod_path    = var.base_static_pod_path    == null ? "/etc/kubernetes/manifests"             : var.base_static_pod_path
-        base_local_path_vault   = var.base_local_path_vault   == null ? "/var/lib/key-keeper/vault"             : var.base_local_path_vault
-        base_vault_path         = var.base_vault_path         == null ? "clusters/${var.cluster_name}"          : var.base_vault_path
-        base_vault_path_pki     = var.base_vault_path         == null ? "clusters/${var.cluster_name}/pki"      : var.base_vault_path
-        base_vault_path_kv      = var.base_vault_path_kv      == null ? "clusters/${var.cluster_name}/kv"       : var.base_vault_path_kv
-        base_vault_path_approle = var.base_vault_path_approle == null ? "clusters/${var.cluster_name}/approle"  : var.base_vault_path_approle
-        root_vault_path_pki     = var.root_vault_path_pki     == null ? "pki-root"                              : var.root_vault_path_pki
+    main_path = {
+        base_vault_path         = try(var.extra_args.base_vault_path, null)        == null ? "clusters/${local.base.cluster_name}"  : var.extra_args.base_vault_path
+        base_kubernetes_path    = try(var.extra_args.base_kubernetes_path, null)   == null ? "/etc/kubernetes"                      : var.extra_args.base_kubernetes_path
     }
 
+    global_path = {
+        base_local_path_certs   = try(var.extra_args.base_local_path_certs, null)   == null ? "${local.main_path.base_kubernetes_path}/pki"         : var.extra_args.base_local_path_certs
+        base_static_pod_path    = try(var.extra_args.base_static_pod_path, null)    == null ? "${local.main_path.base_kubernetes_path}/manifests"   : var.extra_args.base_static_pod_path
+        base_local_path_vault   = try(var.extra_args.base_local_path_vault, null)   == null ? "/var/lib/key-keeper/vault"                           : var.extra_args.base_local_path_vault
+        base_vault_path_pki     = try(var.extra_args.base_vault_path, null)         == null ? "${local.main_path.base_vault_path}/pki"              : var.extra_args.base_vault_path
+        base_vault_path_kv      = try(var.extra_args.base_vault_path_kv, null)      == null ? "${local.main_path.base_vault_path}/kv"               : var.extra_args.base_vault_path_kv
+        base_vault_path_approle = try(var.extra_args.base_vault_path_approle, null) == null ? "${local.main_path.base_vault_path}/approle"          : var.extra_args.base_vault_path_approle
+        root_vault_path_pki     = try(var.extra_args.root_vault_path_pki, null)     == null ? "pki-root"                                            : var.extra_args.root_vault_path_pki 
+    }
 }

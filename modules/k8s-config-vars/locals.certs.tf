@@ -1,17 +1,17 @@
 
 locals {
 
-  base_cluster_fqdn                      = format("%s.%s", var.cluster_name, var.base_domain)
+  base_cluster_fqdn                      = format("%s.%s",             local.base.cluster_name, local.base.base_domain)
   default_kube_apiserver_lb_fqdn         = format("%s.%s", "api",      local.base_cluster_fqdn)
   default_kube_apiserver_lb_fqdn_local   = format("%s.%s", "api-int",  local.base_cluster_fqdn)
   default_wildcard_base_cluster_fqdn     = format("%s.%s", "*",        local.base_cluster_fqdn)
-  k8s_service_kube_apiserver_address_int = format("%s.1", join(".", slice(split(".",var.service_cidr), 0, 3)))
+  k8s_service_kube_apiserver_address_int = format("%s.1", join(".", slice(split(".",local.base.service_cidr), 0, 3)))
 
-  kube_apiserver_lb_fqdn        = var.kube_apiserver_lb_fqdn       == null ? local.default_kube_apiserver_lb_fqdn       : var.kube_apiserver_lb_fqdn
-  kube_apiserver_lb_fqdn_local  = var.kube_apiserver_lb_fqdn_local == null ? local.default_kube_apiserver_lb_fqdn_local : var.kube_apiserver_lb_fqdn_local
-  wildcard_base_cluster_fqdn    = var.wildcard_base_cluster_fqdn   == null ? local.default_wildcard_base_cluster_fqdn   : var.wildcard_base_cluster_fqdn
+  kube_apiserver_lb_fqdn        = try(var.extra_args.kube_apiserver_lb_fqdn, null)       == null ? local.default_kube_apiserver_lb_fqdn       : var.extra_args.kube_apiserver_lb_fqdn
+  kube_apiserver_lb_fqdn_local  = try(var.extra_args.kube_apiserver_lb_fqdn_local, null) == null ? local.default_kube_apiserver_lb_fqdn_local : var.extra_args.kube_apiserver_lb_fqdn_local
+  wildcard_base_cluster_fqdn    = try(var.extra_args.wildcard_base_cluster_fqdn, null)   == null ? local.default_wildcard_base_cluster_fqdn   : var.extra_args.wildcard_base_cluster_fqdn
 
-  extra_cluster_name = substr(sha256(var.cluster_name), 0, 8)
+  extra_cluster_name = substr(sha256(local.base.cluster_name), 0, 8)
 
 
 }
@@ -554,7 +554,7 @@ locals {
               key_type  = "any"
               allowed_domains = [
                 "localhost",
-                "*.${var.cluster_name}.${var.base_domain}",
+                "*.${local.base.cluster_name}.${local.base.base_domain}",
                 "system:node:*",
                 "worker-*",
                 "master-${local.extra_cluster_name}-1",
@@ -711,7 +711,7 @@ locals {
               allowed_domains = [
                 "system:etcd-server",
                 "localhost",
-                "*.${var.cluster_name}.${var.base_domain}",
+                "*.${local.base.cluster_name}.${local.base.base_domain}",
                 "custom:etcd-server"
               ]
               server_flag     = true

@@ -1,6 +1,6 @@
 resource "vault_policy" "kubernetes-bootstrap-master" {
 
-  name      = "${var.k8s_global_vars.global_path.base_vault_path}/bootstrap-master"
+  name      = "${var.k8s_global_vars.main_path.base_vault_path}/bootstrap-master"
 
   policy = templatefile("${path.module}/templates/vault/vault-bootstarp-approle-all.tftpl", { 
     base_vault_path_approle = var.k8s_global_vars.global_path.base_vault_path_approle

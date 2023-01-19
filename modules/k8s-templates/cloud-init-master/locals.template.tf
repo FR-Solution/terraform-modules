@@ -8,6 +8,7 @@ locals {
         base_local_path_certs             = var.k8s_global_vars.global_path.base_local_path_certs
         ssl                               = var.k8s_global_vars.ssl
         base_path                         = var.k8s_global_vars.global_path
+        main_path                         = var.k8s_global_vars.main_path
         # hostname                          = "${master_name}-${var.k8s_global_vars.cluster_name}"
         hostname                          = "${master_name}"
         node_name                         = "${master_name}"

@@ -11,7 +11,7 @@ locals {
       {"${node_name}" = templatefile("${path.module}/templates/service-args.conf.tftpl", {
         full_instance_name      = "${node_name}.${var.k8s_global_vars.base_cluster_fqdn}"
         instance_type           = var.instance_type
-        base_kubernetes_path    = var.k8s_global_vars.global_path.base_kubernetes_path
+        main_path               = var.k8s_global_vars.main_path
         base_domain             = var.k8s_global_vars.base_domain
         })
       }]
@@ -23,7 +23,7 @@ locals {
     }
 
     kubelet-service-d-fraima        = templatefile("${path.module}/templates/service.d/10-fraima.conf.tftpl",{
-        base_kubernetes_path        = var.k8s_global_vars.global_path.base_kubernetes_path
+        main_path        = var.k8s_global_vars.main_path
     })
     kubelet-service                 = file("${path.module}/templates/service.tftpl")
 

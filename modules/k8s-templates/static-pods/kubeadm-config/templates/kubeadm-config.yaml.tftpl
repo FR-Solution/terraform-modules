@@ -1,3 +1,21 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+skipPhases:
+  #- preflight
+  - certs
+  - kubeconfig
+  - kubelet-start
+  - etcd
+  - upload-certs
+  - kubelet-finalize
+  - addon
+  - bootstrap-token
+
+nodeRegistration:
+  ignorePreflightErrors:
+    - ExternalEtcdVersion
+    - Port-10250
+    - FileAvailable--etc-kubernetes-manifests-etcd.yaml
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
@@ -64,7 +82,7 @@ apiServer:
     audit-log-maxbackup: "10"
     audit-log-maxsize: "1000"
     audit-log-mode: batch
-    audit-policy-file: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+    audit-policy-file: ${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
     audit-log-path: /var/log/kubernetes/audit/audit.log
     enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction,PodSecurity
     enable-bootstrap-token-auth: "true"
@@ -103,8 +121,8 @@ apiServer:
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-apiserver-configs"
-    hostPath: "${base_path.base_kubernetes_path}/kube-apiserver"
-    mountPath: "${base_path.base_kubernetes_path}/kube-apiserver"
+    hostPath: "${main_path.base_kubernetes_path}/kube-apiserver"
+    mountPath: "${main_path.base_kubernetes_path}/kube-apiserver"
     readOnly: true
     pathType: DirectoryOrCreate
 
@@ -145,9 +163,9 @@ controllerManager:
     service-account-private-key-file: ${secrets["kube-apiserver-sa"].keys["private"].host_path}
     # service-account-private-key-file: ""
     cluster-signing-key-file: ""
-    kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
-    authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
-    authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
+    kubeconfig: ${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+    authentication-kubeconfig: ${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig 
+    authorization-kubeconfig: ${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
     # bind-address: "0.0.0.0"
     v: "2"
     secure-port: "10257"
@@ -196,8 +214,8 @@ controllerManager:
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-controller-manager-configs"
-    hostPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
-    mountPath: "${base_path.base_kubernetes_path}/kube-controller-manager"
+    hostPath: "${main_path.base_kubernetes_path}/kube-controller-manager"
+    mountPath: "${main_path.base_kubernetes_path}/kube-controller-manager"
     readOnly: true
     pathType: DirectoryOrCreate
 
@@ -229,9 +247,9 @@ scheduler:
       %{~ endfor ~}
     %{~ endfor ~}
   %{~ endfor ~}
-    authentication-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
-    authorization-kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
-    kubeconfig: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    authentication-kubeconfig: ${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    authorization-kubeconfig: ${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+    kubeconfig: ${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
     # bind-address: "0.0.0.0"
     leader-elect: "true"
     secure-port: "10259"
@@ -250,7 +268,7 @@ scheduler:
     pathType: DirectoryOrCreate
 
   - name: "k8s-kube-scheduler-configs"
-    hostPath: "${base_path.base_kubernetes_path}/kube-scheduler"
-    mountPath: "${base_path.base_kubernetes_path}/kube-scheduler"
+    hostPath: "${main_path.base_kubernetes_path}/kube-scheduler"
+    mountPath: "${main_path.base_kubernetes_path}/kube-scheduler"
     readOnly: true
     pathType: DirectoryOrCreate

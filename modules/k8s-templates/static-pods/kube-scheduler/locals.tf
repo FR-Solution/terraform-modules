@@ -6,6 +6,7 @@ locals {
           kube_scheduler_image    = var.kube_scheduler_image
           kube_scheduler_version  = var.kube_scheduler_version
           base_path               = var.k8s_global_vars.global_path
+          main_path               = var.k8s_global_vars.main_path
     })}
     ])
 

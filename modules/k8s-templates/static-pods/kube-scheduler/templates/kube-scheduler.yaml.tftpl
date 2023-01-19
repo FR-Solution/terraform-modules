@@ -40,9 +40,9 @@ spec:
         %{~ endfor ~}
       %{~ endfor ~}
     %{~ endfor ~}
-      - --authentication-kubeconfig=${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
-      - --authorization-kubeconfig=${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
-      - --kubeconfig=${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+      - --authentication-kubeconfig=${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+      - --authorization-kubeconfig=${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
+      - --kubeconfig=${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig 
       - --bind-address=0.0.0.0
       - --leader-elect=true
       - --secure-port=10259
@@ -72,7 +72,7 @@ spec:
       periodSeconds: 10
       timeoutSeconds: 15
     volumeMounts:
-    - mountPath: ${base_path.base_kubernetes_path}/kube-scheduler
+    - mountPath: ${main_path.base_kubernetes_path}/kube-scheduler
       name: k8s-kube-scheduler-configs
       readOnly: true
     - mountPath: ${base_path.base_local_path_certs}/certs
@@ -88,7 +88,7 @@ spec:
         type: RuntimeDefault 
   volumes:
   - hostPath:
-      path: ${base_path.base_kubernetes_path}/kube-scheduler
+      path: ${main_path.base_kubernetes_path}/kube-scheduler
       type: DirectoryOrCreate
     name: k8s-kube-scheduler-configs
   - hostPath:

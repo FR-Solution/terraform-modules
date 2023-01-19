@@ -90,13 +90,13 @@ write_files:
       ${indent(6, key-keeper-config)}
 
 ####### KUBECONFIGS для подключения к кластеру
-  - path: ${base_path.base_kubernetes_path}/kube-scheduler/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kube-scheduler/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
       ${indent(6, kube-scheduler-kubeconfig)}
 
-  - path: ${base_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kube-controller-manager/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
@@ -108,7 +108,7 @@ write_files:
     content: |
       ${indent(6, kube-apiserver-admin-kubeconfig)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/kubeconfig
+  - path: ${main_path.base_kubernetes_path}/kubelet/kubeconfig
     owner: root:root
     permissions: '0644'
     content: |
@@ -128,13 +128,13 @@ write_files:
     content: |
       ${indent(6, kubelet-service-d-fraima)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/service/kubelet-args.env
+  - path: ${main_path.base_kubernetes_path}/kubelet/service/kubelet-args.env
     owner: root:root
     permissions: '0644'
     content: |
       ${indent(6, kubelet-service-args)}
 
-  - path: ${base_path.base_kubernetes_path}/kubelet/config.yaml
+  - path: ${main_path.base_kubernetes_path}/kubelet/config.yaml
     owner: root:root
     permissions: '0644'
     content: |
@@ -216,7 +216,7 @@ write_files:
     content: |
       ${indent(6, bashrc-k8s )}
 
-  - path: ${base_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
+  - path: ${main_path.base_kubernetes_path}/kube-apiserver/audit-policy.yaml
     owner: root:root
     permissions: '0644'
     content: |
