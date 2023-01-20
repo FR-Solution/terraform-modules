@@ -1,0 +1,24 @@
+
+path "pki-root/sign/keycloak-server" {
+    capabilities = ["update"]
+}
+
+path "pki-root/keycloak-server/certs" {
+    capabilities = ["list"]
+}
+
+path "auth/pki-root/approle/login" {
+  capabilities = [ "update" ]
+}
+
+path "auth/token/renew" {
+    capabilities = ["update"]
+}
+
+path "auth/token/renew-self" {
+    capabilities = ["update"]
+}
+
+path "pki-root/cert/ca" {
+    capabilities = ["read"]
+}
