@@ -1,5 +1,5 @@
 resource "vault_policy" "auth" {
   name      = "pki-int/keycloak"
 
-  policy = file("templates/keycloak-policy.tftpl")
+  policy = file("${path.module}/templates/keycloak-policy.tftpl")
 }
