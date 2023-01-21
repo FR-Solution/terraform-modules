@@ -1,6 +1,6 @@
 resource "vault_auth_backend" "auth" {
   type = "approle"
-  path = "pki-root/approle"
+  path = "${var.root_ca_path}/keycloak/approle"
 }
 
 resource "vault_approle_auth_backend_role" "auth" {
