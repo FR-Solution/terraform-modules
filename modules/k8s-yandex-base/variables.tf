@@ -10,3 +10,16 @@ variable "k8s-service-account" {
     }
   }
 }
+
+variable "cloud" {
+  type = map(object({
+    name        = optional(string, "")
+    folder_name = optional(string, "")
+  }))
+  default = {
+    "extra-args" = {
+      folder_name = "example"
+      name        = "cloud-uid-vf465ie7"
+    }
+  }
+}
