@@ -1,19 +1,19 @@
 variable "cloud" {
   type = map(object({
-    name = string
-    folder_name = string
+    name        = optional(string, "")
+    folder_name = optional(string, "")
   }))
   default = {
     "key" = {
       folder_name = "example"
-      name = "cloud-uid-vf465ie7"
+      name        = "cloud-uid-vf465ie7"
     }
   }
 }
 
 variable "vpc" {
   type = map(object({
-    name = string
+    name = optional(string, "")
   }))
   default = {
     "key" = {
@@ -24,7 +24,7 @@ variable "vpc" {
 
 variable "gateway" {
   type = map(object({
-    name = string
+    name = optional(string, "")
   }))
   default = {
     "key" = {
@@ -35,7 +35,7 @@ variable "gateway" {
 
 variable "route-table" {
   type = map(object({
-    name = string
+    name = optional(string, "")
   }))
   default = {
     "key" = {
