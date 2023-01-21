@@ -39,7 +39,7 @@ variable "route-table" {
   }))
   default = {
     "key" = {
-      name = "vpc-example-route-table-example"
+      name = "route-table-example"
     }
   }
 }
