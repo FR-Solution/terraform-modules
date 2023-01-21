@@ -4,7 +4,7 @@ variable "k8s-service-account" {
     description = string
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       name = "yandex-k8s-controllers"
       description = "service account to manage all in k8s clusters"
     }

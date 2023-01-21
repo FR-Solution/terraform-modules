@@ -4,7 +4,7 @@ variable "cloud" {
     folder_name = optional(string, "")
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       folder_name = "example"
       name        = "cloud-uid-vf465ie7"
     }
@@ -16,7 +16,7 @@ variable "vpc" {
     name = optional(string, "")
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       name = "vpc-example"
     }
   }
@@ -27,7 +27,7 @@ variable "gateway" {
     name = optional(string, "")
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       name = "gw-example"
     }
   }
@@ -38,7 +38,7 @@ variable "route-table" {
     name = optional(string, "")
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       name = "route-table-example"
     }
   }

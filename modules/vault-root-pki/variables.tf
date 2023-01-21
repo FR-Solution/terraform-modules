@@ -18,7 +18,7 @@ variable "root-pki" {
 
   }))
   default = {
-    "key" = {
+    "extra-args" = {
       description               = "Root CA"
       path                      = "pki-root"
       type                      = "internal"
