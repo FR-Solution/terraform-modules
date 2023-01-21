@@ -1,8 +1,5 @@
 #### MASTERS ######
 ##-->
-data "yandex_iam_service_account" "yandex-k8s-controllers" {
-  name = "yandex-k8s-controllers"
-}
 
 resource "yandex_compute_instance" "master" {
   depends_on = [
@@ -16,7 +13,7 @@ resource "yandex_compute_instance" "master" {
   hostname    = format("%s.%s.%s", each.key, var.k8s_global_vars.cluster_metadata.cluster_name, var.k8s_global_vars.cluster_metadata.base_domain)
   platform_id = "standard-v1"
 
-  zone                = try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)
+  zone = var.master_group.resources_overwrite["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].network_interface.zone
   
   service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
 
@@ -48,9 +45,12 @@ resource "yandex_compute_instance" "master" {
     }
   }
 
-  network_interface {
-    subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite.group["${split("-", each.key)[0]}-${split("-", each.key)[2]}"].zone, var.master_group.default_zone)]).id
-    nat = var.master_group.resources.network_interface.nat
+  dynamic "network_interface" {
+    for_each = { for k, v in local.current_overide_map   : k => v if "${split("-", k)[0]}-${var.k8s_global_vars.k8s-addresses.extra_cluster_name}-${split("-", k)[1]}" ==  each.key}
+    content {
+      subnet_id = yandex_vpc_subnet.master-subnets[network_interface.value.subnet].id
+      nat = var.master_group.resources.network_interface.nat
+    }
   }
 
   lifecycle {

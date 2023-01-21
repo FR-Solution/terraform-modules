@@ -30,10 +30,12 @@ variable "node_cidr_mask" {
 
 variable "cloud_metadata" {
   type = object({
-    folder_id = string
+    cloud_name = string
+    folder_name = string
   })
   default = {
-    folder_id = null
+    cloud_name = null
+    folder_name = null
     }
 }
 
@@ -44,9 +46,11 @@ variable "master_group"{
   type = object({
     name = string
     count = number
-    vpc_id = string
-    subnets = any
-    default_zone = string
+    vpc_name = string
+    route_table_name = string
+    # subnets = any
+    default_subnet  = optional(string, "")
+    default_zone    = optional(string, "")
     resources_overwrite = any
     resources = any
     metadata = any
@@ -63,8 +67,10 @@ variable "master_group"{
   default = {
     name = "master"
     count = 0
-    vpc_id = null
-    subnets = null
+    vpc_name = null
+    # subnets = null
+    route_table_name = ""
+    default_subnet = "10.1.0.0/16"
     default_zone = "ru-central1-a"
     resources_overwrite = {}
     metadata = {}

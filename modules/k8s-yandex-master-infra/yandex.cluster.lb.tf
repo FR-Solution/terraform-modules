@@ -1,14 +1,16 @@
 #### LB ######
 ##-->
 resource "yandex_lb_target_group" "master-tg" {
-  name        = "${var.k8s_global_vars.cluster_metadata.cluster_name}${var.master_group.vpc_id}"
+  name        = "${var.k8s_global_vars.cluster_metadata.cluster_name}${data.yandex_vpc_network.cluster-vpc.id}"
   region_id   = "ru-central1"
 
+
   dynamic "target" {
-    for_each = "${local.master_instance_list_map}"
+
+    for_each = local.current_overide_map
     content {
-      subnet_id = (var.master_group.subnets[try(var.master_group.resources_overwrite.group["${split("-", target.key)[0]}-${split("-", target.key)[2]}"].zone, var.master_group.default_zone)]).id
-      address   = "${yandex_compute_instance.master[target.key].network_interface.0.ip_address}"
+      subnet_id = yandex_vpc_subnet.master-subnets[target.value.subnet].id
+      address   = "${yandex_compute_instance.master["${split("-", target.key)[0]}-${var.k8s_global_vars.k8s-addresses.extra_cluster_name}-${split("-", target.key)[1]}"].network_interface.0.ip_address}"
     }
   }
 }
