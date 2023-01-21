@@ -21,26 +21,36 @@ module "k8s-yandex-cluster" {
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 1
+        count   = 3
 
         vpc_name          = "vpc.clusters"
         route_table_name  = "vpc-clusters-route-table"
-        # subnets           = yandex_vpc_subnet.master-subnets
-        default_subnet    = "10.1.0.0/16"
-        default_zone      = "ru-central1-a"
 
+        # default_subnet    = "10.1.0.0/16"
+        # default_zone      = "ru-central1-a"
+
+        # При указании напрямую подсетей, нужно указывать и зону и подсеть, а 
+        # default_zone и default_subnet отключать. И обратная ситуация, не используйте кастом сети
+        # одновременно с дефолтными значениями.
         resources_overwrite = {
             master-1 = {
-              zone    = "ru-central1-a"
-              subnet  = "10.1.0.0/16"
+              network_interface = {
+                zone    = "ru-central1-a"
+                subnet  = "10.1.0.0/24"
+              }
+
             }
             master-2 = {
-              zone    = "ru-central1-b"
-              subnet  = "10.2.0.0/16"
+              network_interface = {
+                zone    = "ru-central1-b"
+                subnet  = "10.2.0.0/24"
+              }
             }
             master-3 = {
-              # zone    = "ru-central1-c"
-              # subnet  = "10.4.0.0/16"
+              network_interface = {
+                zone    = "ru-central1-c"
+                subnet  = "10.3.0.0/24"
+              }
             }
         }
 
@@ -86,15 +96,10 @@ resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
     common_name   = "custom:terraform-kubeconfig"
 }
 
-# locals {
-#     lb-kube-apiserver-ip = module.k8s-yandex-cluster.kube-apiserver-lb
-# }
-
-output "DEBUGER" {
-  value = module.k8s-yandex-cluster.DEBUGER
+locals {
+    lb-kube-apiserver-ip = module.k8s-yandex-cluster.kube-apiserver-lb
 }
 
-
-# output "LB-IP" {
-#     value = "kubectl config set-cluster  ${var.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
-# }
+output "LB-IP" {
+    value = "kubectl config set-cluster  ${var.cluster_name} --server=https://${local.lb-kube-apiserver-ip} --insecure-skip-tls-verify"
+}

@@ -60,25 +60,6 @@ locals {
       item => {}
   }
 
-  default_subnet = [{"${try(var.master_group.default_subnet, "")}": "${var.master_group.default_zone}"}]
-  custom_subnet = flatten([
-  for instance_name, instance_value in var.master_group.resources_overwrite : 
-      {"${try(instance_value.subnet, "")}": "${try(instance_value.zone, var.master_group.default_zone)}"}
-    ]
-  )
-  default_subnet_map = { for item in local.default_subnet :  
-    keys(item)[0] => values(item)[0] 
-    if keys(item)[0] != ""
-  }
-
-  custom_subnet_map = { for item in local.custom_subnet :  
-    keys(item)[0] => values(item)[0] 
-
-    if keys(item)[0] != ""
-    # !!! Attention, you cannot specify the same subnets for different zones.
-    # !!! Do not specify a custom subnet if it matches the default one.
-
-  }
 
   default_overide = flatten([
   for index in range(var.master_group.count) : 
@@ -93,8 +74,8 @@ locals {
   custom_overide = flatten([
   for instance_name, instance_value in var.master_group.resources_overwrite : 
       {"${instance_name}": {
-        "zone": "${try(instance_value.zone, var.master_group.default_zone)}"
-        "subnet": "${try(instance_value.subnet, var.master_group.default_subnet)}"
+        "zone": "${try(instance_value.network_interface.zone, var.master_group.default_zone)}"
+        "subnet": "${try(instance_value.network_interface.subnet, var.master_group.default_subnet)}"
         }
       }
     ]
@@ -102,7 +83,7 @@ locals {
 
   default_overide_map = { for item in local.default_overide :  
     keys(item)[0] => values(item)[0] 
-    if keys(item)[0] != ""
+    if keys(item)[0] != "" 
     # !!! Attention, you cannot specify the same subnets for different zones.
     # !!! Do not specify a custom subnet if it matches the default one.
 
@@ -110,16 +91,25 @@ locals {
 
   custom_overide_map = { for item in local.custom_overide :  
     keys(item)[0] => values(item)[0] 
-    if keys(item)[0] != ""
     # !!! Attention, you cannot specify the same subnets for different zones.
     # !!! Do not specify a custom subnet if it matches the default one.
 
   }
 
-  current_subnet = merge(local.default_subnet_map, local.custom_subnet_map ) 
-  treska = merge(local.default_overide_map, local.custom_overide_map ) 
+  current_overide_map = merge(local.default_overide_map, local.custom_overide_map ) 
 
-}
-output "DEBUGER" {
-  value = local.treska
+  current_overide_list = flatten([
+      for index, value in local.current_overide_map: [
+      {"${value.subnet}": "${value.zone}"}
+      ]
+  ])
+  current_overide_set = toset(local.current_overide_list)
+
+  current_overide_set_map = { for item in local.current_overide_set :  
+    keys(item)[0] => values(item)[0] 
+    # !!! Attention, you cannot specify the same subnets for different zones.
+    # !!! Do not specify a custom subnet if it matches the default one.
+
+  }
+
 }

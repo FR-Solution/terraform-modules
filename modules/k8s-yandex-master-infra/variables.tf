@@ -24,8 +24,8 @@ variable "master_group"{
     vpc_name = string
     route_table_name = string
     # subnets = any
-    default_subnet = optional(string, "")
-    default_zone = string
+    default_subnet  = optional(string, "")
+    default_zone    = optional(string, "")
     resources_overwrite = any
     resources = any
     metadata = any
