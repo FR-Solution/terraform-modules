@@ -1,15 +1,15 @@
 
 resource "yandex_vpc_network" "cluster-vpc" {
-  name = var.vpc.key.name
+  name = var.vpc.extra-args.name
 }
 
 resource "yandex_vpc_gateway" "cluster-vpc-gateway" {
-  name = var.gateway.key.name
+  name = var.gateway.extra-args.name
   shared_egress_gateway {}
 }
 
 resource "yandex_vpc_route_table" "cluster-vpc-route-table" {
-  name = "${var.vpc.key.name}-${var.route-table.key.name}"
+  name = "${var.vpc.extra-args.name}-${var.route-table.extra-args.name}"
   network_id = yandex_vpc_network.cluster-vpc.id
   static_route {
     destination_prefix = "0.0.0.0/0"
