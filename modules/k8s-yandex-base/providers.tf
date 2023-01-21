@@ -1,9 +1,5 @@
 terraform {
 
-  backend "local" {
-    workspace_dir = "states"
-  }
-
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
