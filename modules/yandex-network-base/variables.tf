@@ -6,7 +6,7 @@ variable "cloud" {
   default = {
     "extra-args" = {
       folder_name = "example"
-      name        = "cloud-uid-vf465ie7"
+      name        = "example"
     }
   }
 }
