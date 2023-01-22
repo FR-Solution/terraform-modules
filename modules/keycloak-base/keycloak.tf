@@ -16,9 +16,6 @@ resource "keycloak_openid_group_membership_protocol_mapper" "groups" {
 }
 
 resource "keycloak_openid_client" "kube" {
-  depends_on = [
-    module.k8s-yandex-cluster
-  ]
   realm_id                     = local.idp_provider_realm
   client_id                    = "kubernete-clusters"
   name                         = "kubernete-clusters"
