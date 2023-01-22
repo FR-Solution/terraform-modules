@@ -17,8 +17,8 @@ resource "keycloak_openid_group_membership_protocol_mapper" "groups" {
 
 resource "keycloak_openid_client" "kube" {
   realm_id                     = local.idp_provider_realm
-  client_id                    = "kubernete-clusters"
-  name                         = "kubernete-clusters"
+  client_id                    = "kubernetes-clusters"
+  name                         = "kubernetes-clusters"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
   client_secret                = "kube-client-secret"
