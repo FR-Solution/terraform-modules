@@ -3,7 +3,7 @@ module "static-pod-etcd" {
     k8s_global_vars = var.k8s_global_vars
     etcd_image    = local.release-vars[var.actual-release].etcd.registry
     etcd_version  = local.release-vars[var.actual-release].etcd.version
-    instance_list_map = var.master_instance_list_map
+    instance_list_map = var.master_instance_extra_list_map
 }
 
 module "static-pod-kube-apiserver" {
@@ -13,7 +13,7 @@ module "static-pod-kube-apiserver" {
     kube_apiserver_image_version  = local.release-vars[var.actual-release].kube-apiserver.version
     oidc_issuer_url = "https://auth.dobry-kot.ru/auth"
     oidc_client_id  = "kubernetes-master"
-    instance_list_map = var.master_instance_list_map
+    instance_list_map = var.master_instance_extra_list_map
     etcd_advertise_client_urls = local.etcd_advertise_client_urls
 }
 
@@ -23,7 +23,7 @@ module "static-pod-kube-apiserver" {
 #     k8s_global_vars = var.k8s_global_vars
 #     kube_controller_manager_image    = local.release-vars[var.actual-release].kube-controller-manager.registry
 #     kube_controller_manager_version  = local.release-vars[var.actual-release].kube-controller-manager.version
-#     instance_list_map = var.master_instance_list_map
+#     instance_list_map = var.master_instance_extra_list_map
 # }
 
 # module "static-pod-kube-scheduler" {
@@ -32,7 +32,7 @@ module "static-pod-kube-apiserver" {
 #     k8s_global_vars = var.k8s_global_vars
 #     kube_scheduler_image    = local.release-vars[var.actual-release].kube-scheduler.registry
 #     kube_scheduler_version  = local.release-vars[var.actual-release].kube-scheduler.version
-#     instance_list_map = var.master_instance_list_map
+#     instance_list_map = var.master_instance_extra_list_map
 
 # }
 
@@ -40,7 +40,7 @@ module "static-pod-kubeadm-config" {
     source = "../static-pods/kubeadm-config"
     k8s_global_vars = var.k8s_global_vars
     kubernetes_version    = local.release-vars[var.actual-release].kubernetes.version
-    instance_list_map = var.master_instance_list_map
+    instance_list_map = var.master_instance_extra_list_map
     etcd_advertise_client_urls = local.etcd_advertise_client_urls
     etcd_list_servers = local.etcd_list_servers
 }

@@ -1,10 +1,13 @@
 resource "yandex_compute_disk" "etcd" {
   for_each  = local.instances_disk_map
 
-  name  = "${split("_", each.key)[0]}-${split("_", each.key)[1]}-${var.k8s_global_vars.cluster_metadata.cluster_name}"
+  name  = "${replace(each.key, "_", "-")}-${local.cluster_name}"
+
+  size = local.master_secondary_disk["${split("_", each.key)[0]}"].size
+  type = local.master_secondary_disk["${split("_", each.key)[0]}"].type
+
+  zone = try(var.master_group.resources_overwrite[split("_", each.key)[1]].network_interface.zone, var.master_group.default_zone)
+
   labels = {}
-  size = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].size
-  type = var.master_group.resources.disk.secondary_disk["${split("_", each.key)[0]}"].type
-  zone = var.master_group.resources_overwrite["${split("-", split("_", each.key)[1])[0]}-${split("-", split("_", each.key)[1])[2]}"].network_interface.zone
 
 }
