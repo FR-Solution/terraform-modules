@@ -21,7 +21,7 @@ module "k8s-yandex-cluster" {
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
-        count   = 3
+        count   = 1
 
         vpc_name          = "vpc.clusters"
         route_table_name  = "vpc-clusters-route-table"

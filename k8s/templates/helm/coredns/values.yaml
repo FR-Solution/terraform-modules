@@ -18,3 +18,6 @@ readinessProbe:
   initialDelaySeconds: 0
   failureThreshold: 15
   periodSeconds: 5
+
+# daemonset:
+#   enabled: true
