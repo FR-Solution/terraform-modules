@@ -8,7 +8,7 @@ resource "helm_release" "ycsi" {
 
   repository = "https://helm.fraima.io"
   chart      = "yandex-csi-controller"
-  version    = "0.0.3"
+  version    = "0.0.4"
 
   namespace  = "kube-fraima-csi"
   create_namespace  = true

@@ -1,7 +1,7 @@
 resource "helm_release" "cilium" {
   depends_on = [
     module.k8s-yandex-cluster,
-    helm_release.ycc
+    module.k8s-yandex-cloud-controller
   ]
   name       = "cilium"
   repository = "https://helm.cilium.io"

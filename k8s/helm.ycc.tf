@@ -1,25 +1,16 @@
-resource "helm_release" "ycc" {
-  depends_on = [
-    module.k8s-yandex-cluster,
-  ]
-  name       = "ycc"
+module "k8s-yandex-cloud-controller" {
+  source = "../modules/k8s-yandex-cloud-controller"
 
-  repository = "https://helm.fraima.io"
-  chart      = "yandex-cloud-controller"
-  version    = "0.0.3"
+  yandex_default_vpc_name         = var.yandex_default_vpc_name
+  yandex_default_route_table_name = var.yandex_default_route_table_name
 
-  namespace  = "kube-fraima-ccm"
-  create_namespace  = true
-  values = [
-    templatefile("templates/helm/yandex-cloud-controller/values.yaml", {
-        yandex_cloud_controller_sa  = local.yandex-k8s-controllers-sa
-        cluster_name                = var.cluster_name
-        pod_cidr                    = var.cidr.pod
-        k8s_api_server              = module.k8s-yandex-cluster.k8s_global_vars.k8s-addresses.kube_apiserver_lb_fqdn
-        k8s_api_server_port         = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
-    })
-  ]
-  timeout   = 6000
-  wait      = true
-  atomic    = true
+  k8s_api_server      = module.k8s-yandex-cluster.kube-apiserver-lb
+  k8s_api_server_port = module.k8s-yandex-cluster.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
+
+  pod_cidr      = var.cidr.pod
+
+  cluster_name  = var.cluster_name
+
+  chart_version = "0.0.3"
+
 }
