@@ -14,7 +14,6 @@ variable "yandex_cloud_name" {
 
 variable "yandex_folder_name" {
   type = string
-
 }
 
 variable "cidr" {
