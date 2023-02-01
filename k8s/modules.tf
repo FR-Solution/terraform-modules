@@ -15,19 +15,19 @@ module "k8s-yandex-cluster" {
     }
 
     cloud_metadata = {
-      cloud_name  = "cloud-uid-vf465ie7"
-      folder_name = "example"
+      cloud_name  = var.yandex_cloud_name
+      folder_name = var.yandex_folder_name
     }
 
     master_group = {
         name    = "master" # Разрешенный префикс для сертификатов.
         count   = 1
 
-        vpc_name          = "vpc.clusters"
-        route_table_name  = "vpc-clusters-route-table"
+        vpc_name          = var.yandex_default_vpc_name
+        route_table_name  = var.yandex_default_route_table_name
 
-        default_subnet    = "10.1.0.0/24"
-        default_zone      = "ru-central1-a"
+        default_subnet    = var.default_subnet
+        default_zone      = var.default_zone
 
         resources_overwrite = {
             # master-1 = {
@@ -82,18 +82,4 @@ module "k8s-yandex-cluster" {
         }
 
     }
-}
-
-resource "vault_pki_secret_backend_cert" "terraform-kubeconfig" {
-  depends_on = [
-    module.k8s-yandex-cluster
-  ]
-    backend       = module.k8s-yandex-cluster.k8s_global_vars.ssl.intermediate.kubernetes-ca.path
-    name          = "kube-apiserver-cluster-admin-client"
-    common_name   = "custom:terraform-kubeconfig"
-}
-
-
-output "LB-IP" {
-    value = "kubectl config set-cluster  cluster --server=https://${module.k8s-yandex-cluster.kube-apiserver-lb} --insecure-skip-tls-verify"
 }
