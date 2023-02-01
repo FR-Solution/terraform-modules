@@ -201,7 +201,7 @@ certificates:
       %{~ if try(certificate["key-keeper-args"].spec.hostnames, base_certificate_atrs.spec.hostnames) != [] ~}
       hostnames:
       %{~ for hostname in try(certificate["key-keeper-args"].spec.hostnames, base_certificate_atrs.spec.hostnames) ~}
-        - ${hostname}
+        - "${hostname}"
       %{~ endfor ~}
           %{~ if contains(["kubelet-server", "etcd-server", "etcd-peer"], issuer_name) == true ~}
         - "$HOSTNAME.${ base_cluster_fqdn }"

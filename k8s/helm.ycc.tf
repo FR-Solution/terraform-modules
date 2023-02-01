@@ -1,8 +1,13 @@
-
 resource "helm_release" "ycc" {
-
+  depends_on = [
+    module.k8s-yandex-cluster,
+  ]
   name       = "ycc"
-  chart      = "templates/helm/yandex-cloud-controller"
+
+  repository = "https://helm.fraima.io"
+  chart      = "yandex-cloud-controller"
+  version    = "0.0.3"
+
   namespace  = "kube-fraima-ccm"
   create_namespace  = true
   values = [

@@ -94,6 +94,146 @@ locals {
         default_lease_ttl_seconds = 321408000
         max_lease_ttl_seconds     = 321408000
         issuers = {
+          cilium = {
+            labels = {
+              instance-master = true
+              instance-worker = true
+            }
+            issuer-args = {
+              key_usage = [
+                "DigitalSignature",
+                "KeyAgreement",
+                "KeyEncipherment",
+                "ClientAuth",
+                "ServerAuth"
+              ]
+              allowed_domains = [
+                "*.cluster-2.hubble-grpc.cilium.io",
+                "*.hubble-relay.cilium.io",
+                "clustermesh-apiserver.cilium.io",
+                "*.mesh.cilium.io",
+                "remote",
+                "root"
+              ]
+              client_flag     = true
+              server_flag     = true
+              allow_ip_sans   = true
+              allow_localhost = true
+            }
+            certificates = {
+              hubble-server-certs = {
+                labels = {
+                  instance-master = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "*.cluster-2.hubble-grpc.cilium.io"
+                    }
+                    hostnames = [
+                      "*.cluster-2.hubble-grpc.cilium.io",
+                    ]
+                    ipAddresses = {
+                      interfaces = [
+                        "lo",
+                        "eth*"
+                      ]
+                    }
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/cilium"
+                }
+              },
+              hubble-relay-client-certs = {
+                labels = {
+                  instance-master = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "*.hubble-relay.cilium.io"
+                    }
+                    hostnames = [
+                      "*.hubble-relay.cilium.io",
+                    ]
+                    ipAddresses = {
+                      interfaces = [
+                        "lo",
+                        "eth*"
+                      ]
+                    }
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/cilium"
+                }
+              },
+              clustermesh-apiserver-server-cert = {
+                labels = {
+                  instance-master = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "clustermesh-apiserver.cilium.io"
+                    }
+                    hostnames = [
+                      "clustermesh-apiserver.cilium.io",
+                      "*.mesh.cilium.io",
+                    ]
+                    ipAddresses = {
+                      interfaces = [
+                        "lo",
+                        "eth*"
+                      ]
+                    }
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/cilium"
+                }
+              }
+              clustermesh-apiserver-remote-cert = {
+                labels = {
+                  instance-master = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "remote"
+                    }
+                    hostnames = [
+                      "remote",
+                    ]
+                    ipAddresses = {
+                      interfaces = [
+                        "lo",
+                        "eth*"
+                      ]
+                    }
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/cilium"
+                }
+              }
+              clustermesh-apiserver-admin-cert = {
+                labels = {
+                  instance-master = true
+                }
+                key-keeper-args = {
+                  spec = {
+                    subject = {
+                      commonName = "root"
+                    }
+                    hostnames = [
+                      "root",
+                    ]
+                    ipAddresses = {
+                      interfaces = [
+                        "lo",
+                        "eth*"
+                      ]
+                    }
+                  }
+                  host_path = "${local.global_path.base_local_path_certs}/certs/cilium"
+                }
+              }
+            }
+          },
           bootstrappers-client = {
             labels = {
               instance-worker = true
@@ -542,7 +682,8 @@ locals {
                 "worker-*",
                 "master-${local.k8s-addresses.extra_cluster_name}-1",
                 "master-${local.k8s-addresses.extra_cluster_name}-2",
-                "master-${local.k8s-addresses.extra_cluster_name}-3"
+                "master-${local.k8s-addresses.extra_cluster_name}-3",
+                "*"
               ]
               organization = [
                 "system:nodes",

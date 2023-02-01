@@ -26,8 +26,6 @@ resource "yandex_iam_service_account_key" "yandex-k8s-controllers-key" {
 
 }
 
-
-
 locals {
   yandex-k8s-controllers-sa = {
     service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
@@ -35,10 +33,14 @@ locals {
     folder_id           = data.yandex_iam_service_account.yandex-k8s-controllers.folder_id
     vpc_id              = data.yandex_vpc_network.cluster-vpc.id
     route_table_id      = data.yandex_vpc_route_table.cluster-vpc-route-table.id
-    id                  = yandex_iam_service_account_key.yandex-k8s-controllers-key.id
-    key_algorithm       = yandex_iam_service_account_key.yandex-k8s-controllers-key.key_algorithm
-    public_key          = yandex_iam_service_account_key.yandex-k8s-controllers-key.public_key
-    private_key         = yandex_iam_service_account_key.yandex-k8s-controllers-key.private_key
+    service_account_json = {
+      id                  = yandex_iam_service_account_key.yandex-k8s-controllers-key.id
+      service_account_id  = yandex_iam_service_account_key.yandex-k8s-controllers-key.service_account_id
+      created_at          = yandex_iam_service_account_key.yandex-k8s-controllers-key.created_at
+      key_algorithm       = yandex_iam_service_account_key.yandex-k8s-controllers-key.key_algorithm
+      public_key          = yandex_iam_service_account_key.yandex-k8s-controllers-key.public_key
+      private_key         = yandex_iam_service_account_key.yandex-k8s-controllers-key.private_key
+    }
 
   }
 }

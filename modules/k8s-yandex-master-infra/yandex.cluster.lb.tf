@@ -8,7 +8,15 @@ resource "yandex_lb_target_group" "master-tg" {
     for_each = local.master_instance_list_map
 
     content {
-      subnet_id = yandex_vpc_subnet.master-subnets[target.key].id
+      subnet_id = yandex_vpc_subnet.master-subnets[
+      "${try(
+        var.master_group.resources_overwrite[target.key].network_interface.subnet, 
+        var.master_group.default_subnet 
+      )}:${try(
+        var.master_group.resources_overwrite[target.key].network_interface.zone, 
+        var.master_group.default_zone 
+      )}"
+      ].id
       address   = yandex_compute_instance.master[target.key].network_interface.0.ip_address
     }
   }

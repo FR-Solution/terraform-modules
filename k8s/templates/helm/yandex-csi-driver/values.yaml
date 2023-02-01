@@ -1,12 +1,2 @@
-
-ycsi:
-  cloud_secret:
-    id: ${ yandex_csi_driver_sa_sa.id }
-    service_account_id: ${ yandex_csi_driver_sa_sa.service_account_id }
-    created_at: ${ yandex_csi_driver_sa_sa.created_at }
-    key_algorithm: ${ yandex_csi_driver_sa_sa.key_algorithm }
-    public_key: |-
-      ${ indent(6 ,yandex_csi_driver_sa_sa.public_key) }
-    private_key: |-
-      ${ indent(6 ,yandex_csi_driver_sa_sa.private_key) }
-  folder_id: ${ yandex_csi_driver_sa_sa.folder_id }
+serviceAccountJSON: ${ base64encode(jsonencode(yandex_cloud_controller_sa.service_account_json)) }
+folderID: ${ base64encode(yandex_cloud_controller_sa.folder_id) }

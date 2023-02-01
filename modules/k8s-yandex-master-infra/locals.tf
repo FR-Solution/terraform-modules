@@ -1,11 +1,16 @@
 
 locals {
   base_cluster_fqdn                 = var.k8s_global_vars.k8s-addresses.base_cluster_fqdn
+  base_cluster_dns_zone             = "${local.base_cluster_fqdn}."
+  
   extra_cluster_name                = var.k8s_global_vars.k8s-addresses.extra_cluster_name
   cluster_name                      = var.k8s_global_vars.cluster_metadata.cluster_name
+
   etcd_peer_port                    = var.k8s_global_vars.kubernetes-ports.etcd-peer-port
   etcd_server_port                  = var.k8s_global_vars.kubernetes-ports.etcd-server-port
-  
+  etcd_srv_server_record            = "_etcd-server-ssl._tcp.${local.base_cluster_fqdn}."
+  etcd_srv_client_record            = "_etcd-client-ssl._tcp.${local.base_cluster_fqdn}."
+
   master_secondary_disk             = var.master_group.resources.disk.secondary_disk
   master_subnet_prefix_name         = "${local.cluster_name}-${var.master_group.name}"
   
@@ -20,6 +25,8 @@ locals {
 
   secret_id_all                     = module.k8s-vault-master.secret_id_all
   role_id_all                       = module.k8s-vault-master.role_id_all 
+
+  user_data                         = module.k8s-cloud-init-master.cloud-init-render
 }
 
 
@@ -88,6 +95,23 @@ locals {
 
   set_secret_id_alls = toset(local.flatten_secret_id_alls)
   map_secret_id_alls = { for item in local.set_secret_id_alls :
+      item => {}
+  }
+
+  subnets = flatten([
+  for instance_name in keys(local.master_instance_list_map) : 
+        "${try(
+        var.master_group.resources_overwrite[instance_name].network_interface.subnet,
+        var.master_group.default_subnet
+        )}:${try(
+        var.master_group.resources_overwrite[instance_name].network_interface.zone,
+        var.master_group.default_zone 
+        )}"
+      ]
+  )
+  subnets_set = toset(local.subnets)
+
+  subnets_set_map = { for item in local.subnets_set :
       item => {}
   }
 

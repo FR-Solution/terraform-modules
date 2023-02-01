@@ -49,16 +49,22 @@ resource "yandex_compute_instance" "master" {
       disk_id     = yandex_compute_disk.etcd[secondary_disk.key].id
       auto_delete = local.master_secondary_disk[split("_", secondary_disk.key)[0]].auto_delete
       mode        = local.master_secondary_disk[split("_", secondary_disk.key)[0]].mode
-      device_name = "${split("_", secondary_disk.key)[0]}-data"
+      device_name = join("-", [split("_", secondary_disk.key)[0], "data"])
     }
   }
 
-
   network_interface {
-    subnet_id = yandex_vpc_subnet.master-subnets[each.key].id
+    subnet_id = yandex_vpc_subnet.master-subnets[
+      "${try(
+        var.master_group.resources_overwrite[each.key].network_interface.subnet, 
+        var.master_group.default_subnet 
+      )}:${try(
+        var.master_group.resources_overwrite[each.key].network_interface.zone, 
+        var.master_group.default_zone 
+      )}"
+    ].id
     nat = var.master_group.resources.network_interface.nat
   }
-  
 
   lifecycle {
     ignore_changes = [
@@ -67,7 +73,6 @@ resource "yandex_compute_instance" "master" {
   }
 
  metadata = {
-   user-data = module.k8s-cloud-init-master.cloud-init-render[replace(each.key, "-", "-${local.extra_cluster_name}-")]
+   user-data = local.user_data[replace(each.key, "-", "-${local.extra_cluster_name}-")]
  }
-
 }
