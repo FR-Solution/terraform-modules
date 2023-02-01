@@ -8,7 +8,7 @@ resource "helm_release" "ycc" {
   namespace  = var.namespace
   create_namespace  = true
   values = [
-    templatefile("${path.module}/templates/helm/yandex-cloud-controller/values.yaml", {
+    templatefile("${path.module}/helm/values.yaml", {
         yandex_cloud_controller_sa  = local.yandex-k8s-controllers-sa
         cluster_name                = var.cluster_name
         pod_cidr                    = var.pod_cidr
