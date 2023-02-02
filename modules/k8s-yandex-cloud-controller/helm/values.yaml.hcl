@@ -12,3 +12,5 @@ k8sApiServerPort: ${k8s_api_server_port}
 %{ for key, value in extra_values }
 ${yamlencode({key: value})}
 %{ endfor ~}
+
+{}
