@@ -9,8 +9,8 @@ podCIDR: ${pod_cidr}
 k8sApiServer: ${k8s_api_server}
 k8sApiServerPort: ${k8s_api_server_port}
 
-%{ for key, value in extra_values }
-${yamlencode({key: value})}
+%{ for key_name, value in extra_values }
+${yamlencode({key_name: value})}
 %{ endfor ~}
 
 {}
