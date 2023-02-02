@@ -42,5 +42,5 @@ variable "k8s_api_server" {
 }
 
 variable "global_vars" {
-  type = string
+  type = any
 }
