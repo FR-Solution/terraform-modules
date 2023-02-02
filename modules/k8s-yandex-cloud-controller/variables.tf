@@ -37,10 +37,6 @@ variable "namespace" {
   default = "kube-fraima-ccm"
 }
 
-variable "k8s_api_server" {
-  type = string
-}
-
 variable "global_vars" {
   type = any
 }

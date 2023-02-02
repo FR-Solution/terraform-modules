@@ -6,7 +6,7 @@ resource "yandex_iam_service_account_key" "yandex-k8s-controllers-key" {
 }
 
 locals {
-  yandex-k8s-controllers-sa = {
+  yandex_k8s_controllers_sa_payload = {
     service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
     created_at          = data.yandex_iam_service_account.yandex-k8s-controllers.created_at
     folder_id           = data.yandex_iam_service_account.yandex-k8s-controllers.folder_id
