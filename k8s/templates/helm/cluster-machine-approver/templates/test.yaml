@@ -81,12 +81,12 @@ spec:
             - name: YANDEX_AIM_JSON
               valueFrom:
                 secretKeyRef:
-                  name: yandex-cluster-cloud-controller
+                  name: yandex-cloud-controller
                   key: serviceAccountJSON
             - name: YANDEX_FOLDER_ID
               valueFrom:
                 secretKeyRef:
-                  name: yandex-cluster-cloud-controller
+                  name: yandex-cloud-controller
                   key: folderID
             - name: INSTANCE_NAME_LAYOUT
               value: '^\w*:\w*:(.*)'

@@ -49,4 +49,4 @@ template:
 
     provider:
       type: YandexCloud
-      name: yandex-cluster-cloud-controller
+      name: yandex-cloud-controller

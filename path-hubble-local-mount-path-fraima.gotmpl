@@ -1,0 +1,235 @@
+---
+apiVersion: builtin
+kind: PatchStrategicMergeTransformer
+metadata:
+  name: cilium-hubble-server-tls-mount
+patches: |
+  kind: DaemonSet
+  apiVersion: apps/v1
+  metadata:
+    name: cilium
+    namespace: {{ .Release.Namespace }}
+  spec:
+    template:
+      spec:
+        containers:
+          - name: cilium-agent
+            volumeMounts:
+              - name: hubble-server-certificate
+                mountPath: /var/lib/cilium/tls/hubble/server.crt
+                readOnly: true
+
+              - name: hubble-server-private-key
+                mountPath: /var/lib/cilium/tls/hubble/server.key
+                readOnly: true
+
+              - name: hubble-server-issuing-ca
+                mountPath: /var/lib/cilium/tls/hubble/client-ca.crt
+                readOnly: true
+
+              - name: hubble-tls
+                mountPath: /var/lib/cilium/tls/hubble
+                readOnly: true
+                $patch: delete
+
+              - name: cilium-mesh-client-tls-certificate
+                mountPath: /var/lib/cilium/clustermesh-tls/tls.crt
+                readOnly: true
+
+              - name: cilium-mesh-client-tls-key
+                mountPath: /var/lib/cilium/clustermesh-tls/tls.key
+                readOnly: true
+
+              - name: cilium-mesh-client-tls-ca
+                mountPath: /var/lib/cilium/clustermesh-tls/ca.crt
+                readOnly: true
+
+              - name: cilium-mesh-client-tls
+                mountPath: /var/lib/cilium/clustermesh-tls/
+                readOnly: true
+                $patch: delete
+
+        volumes:
+          - name: hubble-tls
+            projected: null
+            $patch: delete
+
+          - name: hubble-server-certificate
+            hostPath:
+              path: /etc/kubernetes/pki/certs/cilium/hubble-server-certs.pem
+              type: File
+
+          - name: hubble-server-private-key
+            hostPath:
+              path: /etc/kubernetes/pki/certs/cilium/hubble-server-certs-key.pem
+              type: File
+
+          - name: hubble-server-issuing-ca
+            hostPath:
+              path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+              type: File
+
+          - name: cilium-mesh-client-tls
+            secret: null
+            $patch: delete
+
+          - name: cilium-mesh-client-tls-certificate
+            hostPath:
+              path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-server-cert.pem
+              type: File
+
+          - name: cilium-mesh-client-tls-key
+            hostPath:
+              path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-server-cert-key.pem
+              type: File
+
+          - name: cilium-mesh-client-tls-ca
+            hostPath:
+              path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+              type: File
+
+---
+apiVersion: builtin
+kind: PatchStrategicMergeTransformer
+metadata:
+  name: cilium-hubble-client-tls-mount
+patches: |
+  kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: hubble-relay
+    namespace: {{ .Release.Namespace }}
+  spec:
+    template:
+      spec:
+        containers:
+        - name: hubble-relay
+          volumeMounts:
+          - name: tls
+            mountPath: /var/lib/hubble-relay/tls
+            readOnly: true
+            $patch: delete
+
+          - name: hubble-client-certificate
+            mountPath: /var/lib/hubble-relay/tls/client.crt
+            readOnly: true
+
+          - name: hubble-client-private-key
+            mountPath: /var/lib/hubble-relay/tls/client.key
+            readOnly: true
+
+          - name: hubble-client-issuing-ca
+            mountPath: /var/lib/hubble-relay/tls/hubble-server-ca.crt
+            readOnly: true
+            
+        volumes:
+        - name: tls
+          projected: null
+          $patch: delete
+
+        - name: hubble-client-certificate
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/hubble-relay-client-certs.pem
+            type: File
+
+        - name: hubble-client-private-key
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/hubble-relay-client-certs-key.pem
+            type: File
+
+        - name: hubble-client-issuing-ca
+          hostPath:
+            path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+            type: File
+
+---
+apiVersion: builtin
+kind: PatchStrategicMergeTransformer
+metadata:
+  name: cilium-mesh-tls-mount
+patches: |
+  kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: clustermesh-apiserver
+    namespace: {{ .Release.Namespace }}
+  spec:
+    template:
+      spec:
+        containers:
+        - name: etcd
+          volumeMounts:
+          - name: mesh-server-certificate
+            mountPath: /var/lib/etcd-secrets/tls.crt
+            readOnly: true
+
+          - name: mesh-server-private-key
+            mountPath: /var/lib/etcd-secrets/tls.key
+            readOnly: true
+
+          - name: mesh-server-issuing-ca
+            mountPath: /var/lib/etcd-secrets/ca.crt
+            readOnly: true
+
+          - name: etcd-server-secrets
+            mountPath: /var/lib/etcd-secrets
+            readOnly: true
+            $patch: delete
+
+        - name: apiserver
+          volumeMounts:
+          - name: mesh-client-certificate
+            mountPath: /var/lib/cilium/etcd-secrets/tls.crt
+            readOnly: true
+
+          - name: mesh-client-private-key
+            mountPath: /var/lib/cilium/etcd-secrets/tls.key
+            readOnly: true
+
+          - name: mesh-client-issuing-ca
+            mountPath: /var/lib/cilium/etcd-secrets/ca.crt
+            readOnly: true
+
+          - name: etcd-admin-client
+            mountPath: /var/lib/cilium/etcd-secrets
+            readOnly: true
+            $patch: delete
+   
+        volumes:
+        - name: etcd-admin-client
+          secret: null
+          $patch: delete
+
+        - name: etcd-server-secrets
+          secret: null
+          $patch: delete
+
+        - name: mesh-server-certificate
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-server-cert.pem
+            type: File
+
+        - name: mesh-server-private-key
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-server-cert-key.pem
+            type: File
+
+        - name: mesh-server-issuing-ca
+          hostPath:
+            path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+            type: File
+
+        - name: mesh-client-certificate
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-admin-cert.pem
+            type: File
+
+        - name: mesh-client-private-key
+          hostPath:
+            path: /etc/kubernetes/pki/certs/cilium/clustermesh-apiserver-admin-cert-key.pem
+            type: File
+
+        - name: mesh-client-issuing-ca
+          hostPath:
+            path: /etc/kubernetes/pki/ca/kubernetes-ca.pem
+            type: File
