@@ -32,7 +32,6 @@ variable "yandex_default_route_table_name" {
   type = string
 }
 
-
 variable "namespace" {
   type = string
   default = "kube-fraima-ccm"
@@ -42,15 +41,6 @@ variable "k8s_api_server" {
   type = string
 }
 
-variable "k8s_api_server_port" {
+variable "global_vars" {
   type = string
 }
-
-variable "pod_cidr" {
-  type = string
-}
-
-variable "cluster_name" {
-  type = string
-}
-
