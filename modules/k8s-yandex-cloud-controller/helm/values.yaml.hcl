@@ -9,4 +9,4 @@ podCIDR: ${pod_cidr}
 k8sApiServer: ${k8s_api_server}
 k8sApiServerPort: ${k8s_api_server_port}
 
-${indent(0, extra_values)}
+${yamlencode(extra_values)}
