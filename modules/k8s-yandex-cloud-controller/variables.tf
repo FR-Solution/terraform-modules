@@ -43,5 +43,5 @@ variable "global_vars" {
 
 variable "extra_values" {
   type = any
-  default = ""
+  default = {}
 }

@@ -17,13 +17,15 @@ ipam:
   # -- Configure IP Address Management mode.
   # ref: https://docs.cilium.io/en/stable/concepts/networking/ipam/
   mode: kubernetes
-  operator:
-    # -- IPv4 CIDR mask size to delegate to individual nodes for IPAM.
-    clusterPoolIPv4MaskSize: ${node_cidr_mask}
 
-    # -- IPv4 CIDR list range to delegate to individual nodes for IPAM.
-    clusterPoolIPv4PodCIDRList:
-      - ${pod_cidr}
+  # Не используется, если установлен mode: kubernetes
+  # operator:
+  #   # -- IPv4 CIDR mask size to delegate to individual nodes for IPAM.
+  #   clusterPoolIPv4MaskSize: {node_cidr_mask}
+  # 
+  #   # -- IPv4 CIDR list range to delegate to individual nodes for IPAM.
+  #   clusterPoolIPv4PodCIDRList:
+  #     - {pod_cidr}
 
 operator:
   # -- cilium-operator resource limits & requests
@@ -185,3 +187,7 @@ endpointRoutes:
 # routing and full KPR mode. Moreover, this option cannot be enabled when Cilium
 # is running in a managed Kubernetes environment or in a chained CNI setup.
 installNoConntrackIptablesRules: true
+
+%{ if extra_values != {} }
+${yamlencode(extra_values)}
+%{ endif ~}

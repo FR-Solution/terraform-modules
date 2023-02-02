@@ -1,6 +1,6 @@
 resource "helm_release" "coredns" {
   depends_on = [
-    helm_release.cilium
+    module.cilium
   ]
   name       = "coredns"
   repository = "https://coredns.github.io/helm"

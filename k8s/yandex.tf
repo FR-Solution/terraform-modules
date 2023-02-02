@@ -1,18 +1,18 @@
 data "yandex_resourcemanager_cloud" "current" {
-  name = var.yandex_cloud_name
+  name = var.cloud_metadata.cloud_name
 }
 
 data "yandex_resourcemanager_folder" "current" {
-  name     = var.yandex_folder_name
+  name     = var.cloud_metadata.folder_name
   cloud_id = data.yandex_resourcemanager_cloud.current.id
 }
 
 data "yandex_vpc_network" "cluster-vpc" {
-  name = var.yandex_default_vpc_name
+  name = local.master_group_merge.vpc_name
 }
 
 data "yandex_vpc_route_table" "cluster-vpc-route-table" {
-  name = var.yandex_default_route_table_name
+  name = local.master_group_merge.route_table_name
 }
 
 data "yandex_iam_service_account" "yandex-k8s-controllers" {

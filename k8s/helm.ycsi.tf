@@ -1,7 +1,7 @@
 
 resource "helm_release" "ycsi" {
   depends_on = [
-    helm_release.cilium
+    module.cilium
   ]
 
   name       = "yandex"
