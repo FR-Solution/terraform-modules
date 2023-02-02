@@ -2,7 +2,7 @@ module "cilium" {
   depends_on = [
     module.k8s-yandex-cloud-controller
   ]
-  source = "../modules/k8s-yandex-cilium"
+  source = "../modules/helm-yandex-cilium"
 
   chart_version = "1.12.0"
 

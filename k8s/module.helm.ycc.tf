@@ -1,5 +1,5 @@
 module "k8s-yandex-cloud-controller" {
-  source = "../modules/k8s-yandex-cloud-controller"
+  source = "../modules/helm-yandex-cloud-controller"
 
   chart_version = "0.0.3"
 
