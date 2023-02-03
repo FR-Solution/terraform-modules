@@ -9,7 +9,7 @@ resource "helm_release" "ycc" {
   create_namespace  = true
 
   values = [
-    templatefile("${path.module}/helm/values.yaml", {
+    templatefile("${path.module}/helm/values.yaml.tftpl", {
         yandex_cloud_controller_sa  = local.yandex_k8s_csi_controller_sa_payload
         kubeApiServerIP             = "https://${local.k8s_api_server}:${local.k8s_api_server_port}"
         extra_values                = var.extra_values
