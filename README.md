@@ -106,9 +106,11 @@ terraform apply \
 
 ### Установка и настройка кластера
 ```bash
+
 cd k8s
 
 terraform workspace new cluster-2
+
 terraform workspace select cluster-2
 
 terraform apply -var-file vars/cluster-2.tfvars
