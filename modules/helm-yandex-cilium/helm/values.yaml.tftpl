@@ -191,7 +191,7 @@ endpointRoutes:
 # traffic. This option is only effective when Cilium is running in direct
 # routing and full KPR mode. Moreover, this option cannot be enabled when Cilium
 # is running in a managed Kubernetes environment or in a chained CNI setup.
-installNoConntrackIptablesRules: true
+installNoConntrackIptablesRules: false
 
 %{ if extra_values != {} }
 ${yamlencode(extra_values)}
