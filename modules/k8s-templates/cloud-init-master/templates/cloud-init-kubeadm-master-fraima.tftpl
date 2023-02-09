@@ -60,7 +60,7 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraima-main-v1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230109%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230109T154222Z&X-Amz-Expires=2592000&X-Amz-Signature=16F593DF2BEC0189DB6F64FE9FC650D2B7F5425C689DE9DD9F4000BA72218F5C&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraima-main-v1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230209T125142Z&X-Amz-Expires=2592000&X-Amz-Signature=8BB7CCBC09C0D66FCDA9F3DF025177960F3C87D1E6020771621A4DAA47B6F486&X-Amz-SignedHeaders=host"
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
   - yc config profile create my-robot-profile
