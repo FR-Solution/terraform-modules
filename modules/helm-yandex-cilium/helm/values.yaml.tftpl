@@ -88,10 +88,7 @@ enableK8sEventHandover: true
 #   - geneve
 tunnel: "disabled"
 
-endpointRoutes:
-  # -- Enable use of per endpoint routes instead of routing via
-  # the cilium_host interface.
-  enabled: true 
+
 
 # -- Enables masquerading of IPv4 traffic leaving the node from endpoints.
 enableIPv4Masquerade: false
@@ -148,6 +145,11 @@ monitor:
 hubble:
   # -- Enable Hubble (true by default).
   enabled: true
+  tls:
+    enabled: true
+    auto:
+      enabled: true
+      method: "helm"
 
   # -- Hubble metrics configuration.
   # See https://docs.cilium.io/en/stable/operations/metrics/#hubble-metrics
@@ -164,10 +166,13 @@ hubble:
   relay:
     # -- Enable Hubble Relay (requires hubble.enabled=true)
     enabled: true
+    tls:
+      server:
+        enabled: true
 
   ui:
     # -- Whether to enable the Hubble UI.
-    enabled: false
+    enabled: true
 
 # -- Enable Local Redirect Policy.
 localRedirectPolicy: true
