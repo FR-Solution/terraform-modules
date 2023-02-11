@@ -88,8 +88,6 @@ enableK8sEventHandover: true
 #   - geneve
 tunnel: "disabled"
 
-
-
 # -- Enables masquerading of IPv4 traffic leaving the node from endpoints.
 enableIPv4Masquerade: true
 
@@ -166,14 +164,20 @@ hubble:
   relay:
     # -- Enable Hubble Relay (requires hubble.enabled=true)
     enabled: true
-    tls:
-      server:
-        enabled: true
-
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
   ui:
     # -- Whether to enable the Hubble UI.
     enabled: true
-
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+  
 # -- Enable Local Redirect Policy.
 localRedirectPolicy: true
 
