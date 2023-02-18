@@ -18,7 +18,7 @@ cloud_metadata = {
 
 master_group = {
     name                = "master"
-    count               = 1
+    count               = 3
 
     vpc_name            = "vpc.clusters"
     route_table_name    = "vpc-clusters-route-table"
