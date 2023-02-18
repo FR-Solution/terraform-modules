@@ -36,7 +36,7 @@ locals {
       core_fraction = 100
       disk = {
         boot = {
-                image_id  = "fd8kdq6d0p8sij7h5qe3"
+                image_id  = "fd8ingbofbh3j5h7i8ll"
                 size      = 30
                 type      = "network-hdd"
               }
