@@ -29,9 +29,9 @@ locals {
         kube-scheduler-kubeconfig           = module.kube-scheduler-kubeconfig.kubeconfig
         kube-controller-manager-kubeconfig  = module.kube-controller-manager-kubeconfig.kubeconfig
 
-        kubelet-service                     = module.kubelet-service-master.kubelet-service
-        kubelet-service-d-fraima            = module.kubelet-service-master.kubelet-service-d-fraima
-        kubelet-service-args                = module.kubelet-service-master.kubelet-service-args[master_name]
+        # kubelet-service                     = module.kubelet-service-master.kubelet-service
+        # kubelet-service-d-fraima            = module.kubelet-service-master.kubelet-service-d-fraima
+        # kubelet-service-args                = module.kubelet-service-master.kubelet-service-args[master_name]
         kubelet-config                      = module.kubelet-service-master.kubelet-config
 
         key-keeper-config                   = module.key-keeper-service-master.key-keeper-config[master_name]
@@ -42,13 +42,13 @@ locals {
         # static-pod-kube-apiserver           = module.static-pod-kube-apiserver.manifest[master_name]
         # static-pod-kube-controller-manager  = module.static-pod-kube-controller-manager.manifest[master_name]
         # static-pod-kube-scheduler           = module.static-pod-kube-scheduler.manifest[master_name]
-        kube-apiserver-audit                = module.static-pod-kube-apiserver.kube-apiserver-audit
+        # kube-apiserver-audit                = module.static-pod-kube-apiserver.kube-apiserver-audit
 
-        containerd-service                  = module.containerd-service.service
-        containerd-service-config           = module.containerd-service.service-config
-        sysctl-network                      = module.sysctl.network
-        modprobe-k8s                        = module.modprobe.k8s
-        cni-base                            = module.cni.base
+        # containerd-service                  = module.containerd-service.service
+        # containerd-service-config           = module.containerd-service.service-config
+        # sysctl-network                      = module.sysctl.network
+        # modprobe-k8s                        = module.modprobe.k8s
+        # cni-base                            = module.cni.base
         bashrc-k8s                          = module.bashrc.k8s
       })}
     ])

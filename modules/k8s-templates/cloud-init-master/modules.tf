@@ -11,3 +11,9 @@ module "key-keeper-service-master" {
     k8s_global_vars = var.k8s_global_vars
     instance_list_map = var.master_instance_extra_list_map
 }
+
+module "bashrc" {
+    source = "../bashrc"
+    k8s_global_vars = var.k8s_global_vars
+
+}
