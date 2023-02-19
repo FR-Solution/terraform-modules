@@ -1,8 +1,6 @@
 #cloud-config
 version: v1
 
-# hostname: ${hostname}
-
 users:
   - name: ${ ssh_username }
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -13,32 +11,10 @@ users:
       - ${ ssh_key }
 
 packages:
-  # - wget 
-  # - jq
   - tree
-  # - irqbalance
-  # - net-tools
-  # https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/
   - socat 
   - conntrack
-  # - ipset
   - ethtool
-  # - unzip
-  # - xfsprogs
-
-# TODO
-# {{ if .Values.resolved | default false }}
-#       - systemd-resolved
-# {{ end }}
-
-# https://kubernetes.io/docs/setup/production-environment/container-runtimes/
-bootcmd:
-  - sudo modprobe overlay
-  - sudo modprobe br_netfilter
-  - sudo sysctl --system
-
-# Проверялось только для Yandex Cloud
-# device_aliases: {'etcd-data': '/dev/disk/by-id/virtio-etcd-data'}
 
 disk_setup:
   /dev/disk/by-id/virtio-etcd-data:
@@ -326,6 +302,8 @@ write_files:
           configuration:
             extraArgs:
               net.ipv4.ip_forward: 1
+          starting:
+            - sudo sysctl --system
 
       - apiVersion: fraima.io/v1alpha
         kind: Modprob
@@ -334,6 +312,10 @@ write_files:
             extraArgs:
             - br_netfilter
             - overlay
+          starting:
+            - sudo modprobe overlay
+            - sudo modprobe br_netfilter
+            - sudo sysctl --system
 
       - apiVersion: fraima.io/v1alpha
         kind: Kubeadm
