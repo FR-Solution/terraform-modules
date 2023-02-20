@@ -36,7 +36,7 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraimactl-FD-34?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230219%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230219T001237Z&X-Amz-Expires=2592000&X-Amz-Signature=B96EA19666E861993B888EC41738864A70BF279796E1F9AE2C5DF85B72777DB8&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraimactl-FD-55-tests?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230220%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230220T150633Z&X-Amz-Expires=2592000&X-Amz-Signature=E19887984B738C60536B37207CE0EB14524F4650646E87AE3430390B796E1845&X-Amz-SignedHeaders=host"
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
   # - yc config profile create my-robot-profile
@@ -380,7 +380,7 @@ write_files:
         spec:
           downloading:
             - name: key-keeper
-              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230108%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230108T191931Z&X-Amz-Expires=2592000&X-Amz-Signature=61470EBC0AA7532EA215267A1CDF9E518D37149FAC1FE8417D18840AE2B7F8D9&X-Amz-SignedHeaders=host"
+              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230209T131341Z&X-Amz-Expires=2592000&X-Amz-Signature=C907A69DBA4B6CB46D643270A997FBB5AB56847BC32790060C35F8FF99ABFBDD&X-Amz-SignedHeaders=host"
               path: /usr/bin/
               owner: root:root
               permission: 0645
