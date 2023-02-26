@@ -1,8 +1,6 @@
 #cloud-config
 version: v1
 
-# hostname: ${hostname}
-
 users:
   - name: ${ ssh_username }
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -13,32 +11,10 @@ users:
       - ${ ssh_key }
 
 packages:
-  # - wget 
-  # - jq
   - tree
-  # - irqbalance
-  # - net-tools
-  # https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/
   - socat 
   - conntrack
-  # - ipset
   - ethtool
-  # - unzip
-  # - xfsprogs
-
-# TODO
-# {{ if .Values.resolved | default false }}
-#       - systemd-resolved
-# {{ end }}
-
-# https://kubernetes.io/docs/setup/production-environment/container-runtimes/
-bootcmd:
-  - sudo modprobe overlay
-  - sudo modprobe br_netfilter
-  - sudo sysctl --system
-
-# Проверялось только для Yandex Cloud
-# device_aliases: {'etcd-data': '/dev/disk/by-id/virtio-etcd-data'}
 
 disk_setup:
   /dev/disk/by-id/virtio-etcd-data:
@@ -60,25 +36,19 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraima-main-v1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230209T125142Z&X-Amz-Expires=2592000&X-Amz-Signature=8BB7CCBC09C0D66FCDA9F3DF025177960F3C87D1E6020771621A4DAA47B6F486&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraimactl-FD-55-tests-v3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230220%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230220T152131Z&X-Amz-Expires=2592000&X-Amz-Signature=0B13652960C6FC06EC9450B304555FBCE61297A5B8767D067BBDF8EEEC39EED1&X-Amz-SignedHeaders=host"
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
-  - yc config profile create my-robot-profile
-  - yc config set cloud-id *
-  - yc config set folder-id *
+  # - yc config profile create my-robot-profile
+  # - yc config set cloud-id *
+  # - yc config set folder-id *
   - export IAM_TOKEN=`yc iam create-token`
   - yc lockbox payload get --retry=60 --name=$(cat /proc/sys/kernel/hostname)-all-role-id   --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-role-id
   - yc lockbox payload get --retry=60 --name=$(cat /proc/sys/kernel/hostname)-all-secret-id --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-secret-id
-  - systemctl daemon-reload
-  - systemctl enable  kubelet.service
-  - systemctl enable  containerd.service
-  - systemctl start   kubelet.service
-  - systemctl start   containerd.service
   - systemctl enable  key-keeper.service
   - systemctl start   key-keeper.service
   - systemctl enable  systemd-resolved.service
   - systemctl start   systemd-resolved.service
-  - sysctl --system
   - until ls /etc/kubernetes/pki/ca/kubernetes-ca.pem; do sleep 1; done
   - until ls /etc/kubernetes/pki/ca/front-proxy-ca.pem; do sleep 1; done
   - until ls /etc/kubernetes/pki/ca/etcd-ca.pem; do sleep 1; done
@@ -183,14 +153,17 @@ write_files:
 ###--->
 ####### *** ############################################    
 
-# TODO отключить
 ####### Настройка cni ##############################
 ###--->
   - path: /etc/cni/net.d/99-loopback.conf
     owner: root:root
     permissions: '0644'
     content: |
-      ${indent(6, cni-base )}
+      {
+          "cniVersion": "0.4.0",
+          "name": "lo",
+          "type": "loopback"
+      }
 ###--->
 ####### *** ############################################
 
@@ -204,155 +177,220 @@ write_files:
     owner: root:root
     permissions: '0644'
     content: |
-      ${indent(6, kube-apiserver-audit )}
+      ---
+      apiVersion: audit.k8s.io/v1
+      kind: Policy
+      rules:
+      - level: Metadata
+      - level: RequestResponse
 
   - path: ${main_path.base_kubernetes_path}/fraimactl/config.yaml
     owner: root:root
     permissions: '0644'
     content: |
-      ---
       - apiVersion: fraima.io/v1alpha
-        kind: DownloadConfiguration
+        kind: Containerd
         spec:
-          - name: cotainerd
-            src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-            unzip:
-              status: true
-              files: 
-                - bin/containerd
-                - bin/containerd-shim
-                - bin/containerd-shim-runc-v1
-                - bin/containerd-shim-runc-v2
-                - bin/containerd-stress
-                - bin/ctr
+          service:
+            extraArgs:
+              # This document provides the description of the CRI plugin configuration. 
+              # The CRI plugin config is part of the containerd config
+              # Default: /etc/containerd/config.toml
+              config: /etc/kubernetes/containerd/config.toml
+          configuration:
+            extraArgs:
+              version: 2
+              plugins:
+                io.containerd.grpc.v1.cri:
+                  containerd:
+                    runtimes:
+                      runc:
+                        # Runtime v2 introduces a first class shim API for runtime authors to integrate with containerd. 
+                        # The shim API is minimal and scoped to the execution lifecycle of a container.
+                        runtime_type: "io.containerd.runc.v2"
+                        options:
+                          # While containerd and Kubernetes use the legacy cgroupfs driver for managing cgroups by default, 
+                          # it is recommended to use the systemd driver on systemd-based hosts for compliance of the "single-writer" rule of cgroups. 
+                          # To configure containerd to use the systemd driver, set the following option:
+                          SystemdCgroup: true
+          downloading:
+            - name: cotainerd
+              src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
+              checkSum:
+                src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz.sha256sum
+                type: "sha256"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
+              unzip:
+                status: true
+                files: 
+                  - bin/containerd
+                  - bin/containerd-shim
+                  - bin/containerd-shim-runc-v1
+                  - bin/containerd-shim-runc-v2
+                  - bin/containerd-stress
+                  - bin/ctr
 
-          - name: crictl
-            src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-            unzip:
-              status: true
-              files: 
-                - "crictl"
+            - name: runc
+              src: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
+          starting:
+            - systemctl enable containerd
+            - systemctl start containerd
 
-          - name: etcdctl
-            src: https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-            unzip:
-              status: true
-              files: 
-                - "etcd-v3.5.5-linux-amd64/etcdctl"
-
-          - name: key-keeper
-            src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230209T131341Z&X-Amz-Expires=2592000&X-Amz-Signature=C907A69DBA4B6CB46D643270A997FBB5AB56847BC32790060C35F8FF99ABFBDD&X-Amz-SignedHeaders=host"
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-
-          - name: kubectl
-            src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-
-          - name: kubelet
-            src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubelet
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-
-          - name: runc
-            src: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-
-          - name: yc
-            src: https://storage.yandexcloud.net/yandexcloud-yc/release/0.96.0/linux/amd64/yc
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
-
-          - name: kubeadm
-            src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubeadm
-            path: /usr/bin/
-            owner: root:root
-            permission: 0645
 
       - apiVersion: fraima.io/v1alpha
-        kind: ContainerdConfiguration
+        kind: Kubelet
         spec:
-          version: 2
-          plugins:
-            io.containerd.grpc.v1.cri:
-              containerd:
-                runtimes:
-                  runc:
-                    runtime_type: "io.containerd.runc.v2"
-                    options:
-                      SystemdCgroup: true
+          service:
+            extraArgs:
+              # Number for the log level verbosity
+              v: 2
+              # The directory where the TLS certs are located. 
+              # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
+              # Default: /var/lib/kubelet/pki
+              cert-dir: /etc/kubernetes/pki/certs/kubelet
+              # The Kubelet will load its initial configuration from this file. 
+              # The path may be absolute or relative; relative paths start at the Kubelet's current working directory. 
+              # Omit this flag to use the built-in default configuration values. 
+              # Command-line flags override configuration from this file.
+              config: /etc/kubernetes/kubelet/config.yaml
+              # Path to a kubeconfig file, specifying how to connect to the API server. 
+              # Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
+              kubeconfig: /etc/kubernetes/kubelet/kubeconfig
+              # Path to a kubeconfig file that will be used to get client certificate for kubelet. 
+              # If the file specified by --kubeconfig does not exist, 
+              # the bootstrap kubeconfig is used to request a client certificate from the API server. 
+              # On success, a kubeconfig file referencing the generated client certificate and key is written to the path specified by --kubeconfig. 
+              # The client certificate and key file will be stored in the directory pointed by --cert-dir.
+              bootstrap-kubeconfig: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+              # The endpoint of remote runtime service. Unix Domain Sockets are supported on Linux, 
+              # while npipe and tcp endpoints are supported on windows. 
+              # Examples: unix:///path/to/runtime.sock, npipe:////./pipe/runtime.
+              container-runtime-endpoint: /run/containerd/containerd.sock
+              container-runtime: remote
+              # Specified image will not be pruned by the image garbage collector. 
+              # When container-runtime is set to docker, all containers in each pod will use the network/IPC namespaces from this image. 
+              # Other CRI implementations have their own configuration to set this image.
+              # Default: registry.k8s.io/pause:3.6
+              pod-infra-container-image: k8s.gcr.io/pause:3.6
+              # The provider for cloud services. Set to empty string for running with no cloud provider.
+              # If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine 
+              # if and how the hostname is used). 
+              # (DEPRECATED: will be removed in 1.24 or later, in favor of removing cloud provider code from Kubelet.)
+              cloud-provider: external
+          # configuration: {}
+          downloading:
+            - name: kubelet
+              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubelet
+              checkSum:
+                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubelet.sha256"
+                type: "sha256"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
+          starting:
+            - systemctl enable kubelet
+            - systemctl start kubelet
 
       - apiVersion: fraima.io/v1alpha
-        kind: SysctlConfiguration
+        kind: Sysctl
         spec:
-          net.ipv4.ip_forward: 1
+          configuration:
+            extraArgs:
+              net.ipv4.ip_forward: 1
+          starting:
+            - sudo sysctl --system
 
       - apiVersion: fraima.io/v1alpha
-        kind: ModProbConfiguration
+        kind: Modprob
         spec:
-          - br_netfilter
-          - overlay
+          configuration:
+            extraArgs:
+            - br_netfilter
+            - overlay
+          starting:
+            - sudo modprobe overlay
+            - sudo modprobe br_netfilter
+            - sudo sysctl --system
 
       - apiVersion: fraima.io/v1alpha
-        kind: KubeletService
+        kind: Kubeadm
         spec:
-          # Number for the log level verbosity
-          v: 2
-          # The directory where the TLS certs are located. 
-          # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
-          # Default: /var/lib/kubelet/pki
-          cert-dir: /etc/kubernetes/pki/certs/kubelet
-          # The Kubelet will load its initial configuration from this file. 
-          # The path may be absolute or relative; relative paths start at the Kubelet's current working directory. 
-          # Omit this flag to use the built-in default configuration values. 
-          # Command-line flags override configuration from this file.
-          config: /etc/kubernetes/kubelet/config.yaml
-          # Path to a kubeconfig file, specifying how to connect to the API server. 
-          # Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
-          kubeconfig: /etc/kubernetes/kubelet/kubeconfig
-          # Path to a kubeconfig file that will be used to get client certificate for kubelet. 
-          # If the file specified by --kubeconfig does not exist, 
-          # the bootstrap kubeconfig is used to request a client certificate from the API server. 
-          # On success, a kubeconfig file referencing the generated client certificate and key is written to the path specified by --kubeconfig. 
-          # The client certificate and key file will be stored in the directory pointed by --cert-dir.
-          bootstrap-kubeconfig: /etc/kubernetes/kubelet/bootstrap-kubeconfig
-          # The endpoint of remote runtime service. Unix Domain Sockets are supported on Linux, 
-          # while npipe and tcp endpoints are supported on windows. 
-          # Examples: unix:///path/to/runtime.sock, npipe:////./pipe/runtime.
-          container-runtime-endpoint: /run/containerd/containerd.sock
-          container-runtime: remote
-          # Specified image will not be pruned by the image garbage collector. 
-          # When container-runtime is set to docker, all containers in each pod will use the network/IPC namespaces from this image. 
-          # Other CRI implementations have their own configuration to set this image.
-          # Default: registry.k8s.io/pause:3.6
-          pod-infra-container-image: k8s.gcr.io/pause:3.6
-          # The provider for cloud services. Set to empty string for running with no cloud provider.
-          # If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine 
-          # if and how the hostname is used). 
-          # (DEPRECATED: will be removed in 1.24 or later, in favor of removing cloud provider code from Kubelet.)
-          cloud-provider: external
+          downloading:
+            - name: kubeadm
+              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubeadm
+              checkSum:
+                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubeadm.sha256"
+                type: "sha256"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
 
       - apiVersion: fraima.io/v1alpha
-        kind: ContainerdService
+        kind: Kubectl
         spec:
-          # This document provides the description of the CRI plugin configuration. 
-          # The CRI plugin config is part of the containerd config
-          # Default: /etc/containerd/config.toml
-          config: /etc/kubernetes/containerd/config.toml
+          downloading:
+            - name: kubectl
+              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubectl
+              checkSum:
+                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubectl.sha256"
+                type: "sha256"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
 
+
+      - apiVersion: fraima.io/v1alpha
+        kind: Crictl
+        spec:
+          downloading:
+            - name: crictl
+              src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.26.0/crictl-v1.26.0-linux-amd64.tar.gz
+              path: /usr/bin/
+              checkSum:
+                src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.26.0/crictl-v1.26.0-linux-amd64.tar.gz.sha256
+                type: "sha256"
+              owner: root:root
+              permission: 0645
+              unzip:
+                status: true
+                files: 
+                  - "crictl"
+
+      - apiVersion: fraima.io/v1alpha
+        kind: Etcdctl
+        spec:
+          downloading:
+            - name: etcdctl
+              src: https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
+              unzip:
+                status: true
+                files: 
+                  - "etcd-v3.5.5-linux-amd64/etcdctl"
+
+      - apiVersion: fraima.io/v1alpha
+        kind: KeyKeeper
+        spec:
+          downloading:
+            - name: key-keeper
+              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230209%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230209T131341Z&X-Amz-Expires=2592000&X-Amz-Signature=C907A69DBA4B6CB46D643270A997FBB5AB56847BC32790060C35F8FF99ABFBDD&X-Amz-SignedHeaders=host"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
+
+      - apiVersion: fraima.io/v1alpha
+        kind: YandexCloud
+        spec:
+          downloading:
+            - name: yc
+              src: "https://storage.yandexcloud.net/yandexcloud-yc/release/0.102.0/linux/amd64/yc"
+              path: /usr/bin/
+              owner: root:root
+              permission: 0645
