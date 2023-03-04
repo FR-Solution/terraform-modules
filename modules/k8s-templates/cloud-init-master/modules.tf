@@ -1,7 +1,6 @@
 module "kubelet-service-master" {
     source = "../services/kubelet"
     k8s_global_vars = var.k8s_global_vars
- 
 }
 
 module "key-keeper-service-master" {
