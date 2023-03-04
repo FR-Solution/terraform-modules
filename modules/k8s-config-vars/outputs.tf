@@ -41,3 +41,7 @@ output "k8s_network" {
 output "cluster_metadata" {
   value = local.cluster_metadata
 }
+
+output "kube_flags" {
+  value = local.kube_flags
+}
