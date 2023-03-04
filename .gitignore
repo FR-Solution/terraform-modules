@@ -17,3 +17,6 @@ k8s/terraform.tfstate.d/cluster-3/terraform.tfstate
 k8s/terraform.tfstate.d/cluster-3/terraform.tfstate.backup
 k8s/terraform.tfstate.d/cluster-2/.terraform.tfstate.lock.info
 k8s/terraform.tfstate.d/cluster-3/.terraform.tfstate.lock.info
+
+
+k8s-yandex-cluster-naked/*
