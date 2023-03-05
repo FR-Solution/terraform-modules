@@ -45,3 +45,7 @@ output "cluster_metadata" {
 output "kube_flags" {
   value = local.kube_flags
 }
+
+output "k8s_provider" {
+  value = local.k8s_provider
+}

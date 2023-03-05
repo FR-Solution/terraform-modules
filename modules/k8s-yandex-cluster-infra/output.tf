@@ -5,3 +5,7 @@ output "k8s_global_vars" {
 output "kube-apiserver-lb" {
   value = module.k8s-yandex-master-infra.kube-apiserver-lb
 }
+
+output "k8s-vault" {
+  value = module.k8s-vault
+}

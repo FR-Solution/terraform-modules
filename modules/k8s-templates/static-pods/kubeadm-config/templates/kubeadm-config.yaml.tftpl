@@ -131,6 +131,9 @@ controllerManager:
     ${indent(4,kube_flags.kube_controller_manager_flags)}
 
   extraVolumes:
+  # TODO донт ворк
+  #- name: kubeconfig
+
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"
@@ -184,6 +187,9 @@ scheduler:
     ${indent(4,kube_flags.kube_scheduler_flags)}
 
   extraVolumes:
+  # TODO донт ворк
+  #- name: kubeconfig
+
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"

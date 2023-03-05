@@ -28,8 +28,6 @@ locals {
 
     kube_apiserver_lb_fqdn_local  = try(var.extra_args.kube_apiserver_lb_fqdn_local, null) == null ? local.k8s-addresses-main.base_kube_apiserver_lb_fqdn_local : var.extra_args.kube_apiserver_lb_fqdn_local
     kube_apiserver_lb_fqdn        = try(var.extra_args.kube_apiserver_lb_fqdn, null)       == null ? local.k8s-addresses-main.base_kube_apiserver_lb_fqdn       : var.extra_args.kube_apiserver_lb_fqdn
-
-
-
   }
+
 }

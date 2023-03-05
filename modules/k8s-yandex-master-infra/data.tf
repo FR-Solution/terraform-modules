@@ -1,5 +1,5 @@
 data "yandex_iam_service_account" "yandex-k8s-controllers" {
-  name = "yandex-k8s-controllers"
+  name = var.k8s_global_vars.k8s_provider.service_account_name
 }
 
 data "yandex_resourcemanager_cloud" "current" {
