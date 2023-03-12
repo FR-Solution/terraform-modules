@@ -7,6 +7,8 @@ locals {
                 "10.11.10.0/24",
             ]
             rules = [
+                # Несколько массивов в одну сторону не поддерживается, получите ошибку
+                # Error: Duplicate object key
                 {
                     description = "Access from backend to frontend by 80/TCP"
                     proto       = "tcp"
