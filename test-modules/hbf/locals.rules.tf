@@ -11,13 +11,7 @@ locals {
                     description = "Access from backend to frontend by 80/TCP"
                     proto       = "tcp"
                     sg_to       = "teamB_frontend"
-                    ports_to    = "80"
-                },
-                {
-                    description = "Access from backend to frontend by 443/TCP"
-                    proto       = "tcp"
-                    sg_to       = "teamB_frontend"
-                    ports_to    = "443"
+                    ports_to    = "80 443"
                 },
             ]
         },
