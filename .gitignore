@@ -20,3 +20,7 @@ k8s/terraform.tfstate.d/cluster-3/.terraform.tfstate.lock.info
 
 
 k8s-yandex-cluster-naked/*
+test-modules/hbf/terraform.tfstate
+test-modules/hbf/terraform.tfstate.backup
+test-modules/hbf/.terraform/providers/registry.terraform.io/h-bf/sgroups/1.0.0/linux_amd64
+test-modules/hbf/.terraform.lock.hcl
