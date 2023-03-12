@@ -1,0 +1,3 @@
+mkdir -p ~/.terraform.d/plugins/registry.example.com//hbf/sgroups/1.0.0/linux_amd64
+
+cp terraform-provider-sgroups ~/.terraform.d/plugins/registry.example.com//hbf/sgroups/1.0.0/linux_amd64/
