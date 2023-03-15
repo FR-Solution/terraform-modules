@@ -28,11 +28,11 @@ resource "sgroups_rules" "rules" {
   for_each = local.all_rules_access_map
 
   items {
-    proto       = each.value.access.protocol
+    proto       = each.value.access.proto
     sg_from     = each.value.sg_from
     sg_to       = each.value.sg_to
-    ports_from  = try(join(" ", each.value.access.ports_from), null)
-    ports_to    = try(join(" ", each.value.access.ports_to),   null)
+    ports_from  = each.value.access.ports_from
+    ports_to    = each.value.access.ports_to
   }
 
 }

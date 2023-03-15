@@ -115,7 +115,7 @@ locals {
     #         "sg_to" = "teamB_frontend"
     #     },
     # ]
-    all_rules_flatten = flatten([
+    rules_flatten = flatten([
         for security_group in local.security_group_rules_flatten: [
             for key, value in security_group: [
                 value
@@ -124,7 +124,7 @@ locals {
     ])
 
     # Конвертация flatten в map с уникальным именем по входной паре FROM_SG:TO_SG
-    all_rules_map = { for item in local.all_rules_flatten :
+    rules_map = { for item in local.rules_flatten :
         "${item.sg_from}:${item.sg_to}" => item
     }
 
@@ -135,10 +135,8 @@ locals {
     #         "944f91156c" = {
     #           "access" = {
     #               "description" = ""
-    #               "ports_to" = [
-    #                 80,
-    #                 443,
-    #               ]
+    #               "ports_to" = "80 443"
+    #               "ports_from" = "5000"
     #               "protocol" = "tcp"
     #           }
     #           "sg_from" = "teamA_backend"
@@ -146,20 +144,24 @@ locals {
     #         }
     #     },
     # ]
-    all_rules_access = flatten([
-        for key, value in local.all_rules_map: [
+    rules_access = flatten([
+        for key, value in local.rules_map: [
             for access in value.access: {
                 substr(sha256("${value.sg_from}:${value.sg_to}:${join(",", try(access.from_ports, []))}:${join(",",try(access.to_ports, []))}:${access.protocol}"), 0, 10) : {
                     "sg_from"   : value.sg_from
                     "sg_to"     : value.sg_to
-                    "access"    : access
+                    "access"    : {
+                        "ports_from": try(join(" ", access.ports_from), null)
+                        "ports_to"  : try(join(" ", access.ports_to),   null)
+                        "proto"     : access.protocol
+                    }
                 } 
             }
 
         ]
     ])
     # Конвертация flatten в map с уникальным именем
-    all_rules_access_map = { for item in local.all_rules_access :
+    rules_access_map = { for item in local.rules_access :
         keys(item)[0] => values(item)[0]
     }
 }
