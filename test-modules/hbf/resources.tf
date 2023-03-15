@@ -25,14 +25,14 @@ resource "sgroups_rules" "rules" {
     sgroups_groups.groups
   ]
 
-  for_each = local.all_rules_map
+  for_each = local.all_rules_access_map
 
   items {
-    proto       = each.value.proto
+    proto       = each.value.access.protocol
     sg_from     = each.value.sg_from
     sg_to       = each.value.sg_to
-    ports_from  = try(each.value.ports_from, null)
-    ports_to    = try(each.value.ports_to,   null)
+    ports_from  = try(join(" ", each.value.access.ports_from), null)
+    ports_to    = try(join(" ", each.value.access.ports_to),   null)
   }
 
 }

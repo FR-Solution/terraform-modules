@@ -128,4 +128,38 @@ locals {
         "${item.sg_from}:${item.sg_to}" => item
     }
 
+    #### Формирует список массивов для формирования уникального хеша для каждого правила в цепочке 5 Tuple
+    ##-> $src_SG:$dst_SG:$src_ports:$dst_ports:$protocol
+    # [
+    #     {
+    #         "944f91156c" = {
+    #           "access" = {
+    #               "description" = ""
+    #               "ports_to" = [
+    #                 80,
+    #                 443,
+    #               ]
+    #               "protocol" = "tcp"
+    #           }
+    #           "sg_from" = "teamA_backend"
+    #           "sg_to" = "teamA_frontend"
+    #         }
+    #     },
+    # ]
+    all_rules_access = flatten([
+        for key, value in local.all_rules_map: [
+            for access in value.access: {
+                substr(sha256("${value.sg_from}:${value.sg_to}:${join(",", try(access.from_ports, []))}:${join(",",try(access.to_ports, []))}:${access.protocol}"), 0, 10) : {
+                    "sg_from"   : value.sg_from
+                    "sg_to"     : value.sg_to
+                    "access"    : access
+                } 
+            }
+
+        ]
+    ])
+    # Конвертация flatten в map с уникальным именем
+    all_rules_access_map = { for item in local.all_rules_access :
+        keys(item)[0] => values(item)[0]
+    }
 }
