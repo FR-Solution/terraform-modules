@@ -72,7 +72,7 @@ locals {
                     sg_to  = "teamA_backend"
                     access = [
                         {
-                            description = "access from teamA_backend to hbf-server"
+                            description = "access from world to teamA_backend by ssh"
                             protocol    = "tcp"
                             ports_to    = [
                                 22
@@ -84,7 +84,7 @@ locals {
                     sg_to  = "teamA_frontend"
                     access = [
                         {
-                            description = "access from teamA_backend to hbf-server"
+                            description = "access from world to teamA_frontend by ssh"
                             protocol    = "tcp"
                             ports_to    = [
                                 22
