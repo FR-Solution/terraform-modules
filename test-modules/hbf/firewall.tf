@@ -69,7 +69,7 @@ locals {
             ]
             rules = [
                 {
-                    sg_to       = "teamA_backend"  # Должна существовать на момент формирования правила.
+                    sg_to  = "teamA_backend"
                     access = [
                         {
                             description = "access from teamA_backend to hbf-server"
@@ -81,7 +81,7 @@ locals {
                     ]
                 },
                 {
-                    sg_to       = "teamA_frontend"  # Должна существовать на момент формирования правила.
+                    sg_to  = "teamA_frontend"
                     access = [
                         {
                             description = "access from teamA_backend to hbf-server"

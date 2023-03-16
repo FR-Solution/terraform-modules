@@ -92,7 +92,7 @@ resource "yandex_compute_instance" "team-a-frontend" {
  }
 }
 
-module "charlotte" {
+module "firewall" {
   depends_on = [
     yandex_compute_instance.team-a-backend,
     yandex_compute_instance.team-a-frontend
