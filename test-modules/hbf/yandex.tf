@@ -93,7 +93,12 @@ resource "yandex_compute_instance" "team-a-frontend" {
 }
 
 module "charlotte" {
+  depends_on = [
+    yandex_compute_instance.team-a-backend,
+    yandex_compute_instance.team-a-frontend
+  ]
     source = "../../modules/charlotte"
 
-    security_groups     = local.custom_security_group
+    security_groups = local.security_groups
+
 }

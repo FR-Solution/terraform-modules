@@ -1,4 +1,8 @@
 terraform {
+  backend "local" {
+    workspace_dir = "states"
+  }
+  
   required_providers {
     sgroups = {
        version = "~> 1.0.0"

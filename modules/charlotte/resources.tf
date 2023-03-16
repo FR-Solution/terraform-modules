@@ -1,15 +1,13 @@
 resource "sgroups_networks" "networks" {
-    depends_on = [
 
-    ]
-    for_each = local.networks_map
-
-    items{
-        name    = each.key
-        cidr    = each.value
+    dynamic "items" {
+      for_each = local.networks_map
+      content {
+        name    = items.key
+        cidr    = items.value
+      }
     }
 }
-
 resource "sgroups_groups" "groups" {
     depends_on = [
       sgroups_networks.networks

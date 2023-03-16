@@ -28,3 +28,7 @@ test-modules/hbf/.terraform/modules/modules.json
 test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.81.0/linux_amd64
 test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.87.0/linux_amd64
 test-modules/hbf/export.sh
+test-modules/hbf/.terraform/environment
+test-modules/hbf/.terraform/terraform.tfstate
+test-modules/hbf/states/example/terraform.tfstate
+test-modules/hbf/states/example/terraform.tfstate.backup
