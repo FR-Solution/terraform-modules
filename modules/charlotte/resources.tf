@@ -1,4 +1,7 @@
 resource "sgroups_networks" "networks" {
+    depends_on = [
+
+    ]
     for_each = local.networks_map
 
     items{
@@ -9,7 +12,7 @@ resource "sgroups_networks" "networks" {
 
 resource "sgroups_groups" "groups" {
     depends_on = [
-        sgroups_networks.networks
+      sgroups_networks.networks
     ]
 
     for_each    = local.security_groups_network__name__map
@@ -22,10 +25,10 @@ resource "sgroups_groups" "groups" {
 
 resource "sgroups_rules" "rules" {
   depends_on = [
-    sgroups_groups.groups
+    sgroups_groups.groups,
   ]
 
-  for_each = local.all_rules_access_map
+  for_each = local.rules_access_map
 
   items {
     proto       = each.value.access.proto

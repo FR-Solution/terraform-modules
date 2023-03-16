@@ -24,3 +24,7 @@ test-modules/hbf/terraform.tfstate
 test-modules/hbf/terraform.tfstate.backup
 test-modules/hbf/.terraform/providers/registry.terraform.io/h-bf/sgroups/1.0.0/linux_amd64
 test-modules/hbf/.terraform.lock.hcl
+test-modules/hbf/.terraform/modules/modules.json
+test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.81.0/linux_amd64
+test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.87.0/linux_amd64
+test-modules/hbf/export.sh

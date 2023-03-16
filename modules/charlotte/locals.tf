@@ -20,7 +20,7 @@ locals {
     #     },
     # ]
     security_groups_network__name_cidr__flatten = flatten([
-        for security_group in local.security_groups : {
+        for security_group in var.security_groups : {
             "${security_group.name}": flatten([
                 for cidr in try(security_group.cidrs, []):
                     "${substr(sha256(cidr), 0, 10)}:${cidr}"
@@ -63,7 +63,7 @@ locals {
     #     teamA_backend = "f18c2155,5cd9162c,b6a851a4"
     # },
     security_groups_network__name__flatten = flatten([
-        for security_group in local.security_groups : {
+        for security_group in var.security_groups : {
             "${security_group.name}": join(",",flatten([
                 for cidr in try(security_group.cidrs, []):
                     "${substr(sha256(cidr), 0, 10)}"
@@ -96,7 +96,7 @@ locals {
     #     },
     # ]
     security_group_rules_flatten = flatten([
-        for security_group in local.security_groups : {
+        for security_group in var.security_groups : {
             "${security_group.name}": flatten([
                 for rule in try(security_group.rules, []):
                     merge(rule, {"sg_from": security_group.name})
@@ -147,7 +147,7 @@ locals {
     rules_access = flatten([
         for key, value in local.rules_map: [
             for access in value.access: {
-                substr(sha256("${value.sg_from}:${value.sg_to}:${join(",", try(access.from_ports, []))}:${join(",",try(access.to_ports, []))}:${access.protocol}"), 0, 10) : {
+                substr(sha256("${value.sg_from}:${value.sg_to}:${join(",", try(access.ports_from, []))}:${join(",",try(access.ports_to, []))}:${access.protocol}"), 0, 10) : {
                     "sg_from"   : value.sg_from
                     "sg_to"     : value.sg_to
                     "access"    : {
