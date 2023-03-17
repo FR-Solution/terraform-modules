@@ -84,10 +84,10 @@ locals {
     #         "teamA_backend" = [
     #         {
     #             "description" = "Access from backend to frontend"
-    #             "ports_to" = "80"
-    #             "proto" = "tcp"
-    #             "sg_from" = "teamA_backend"
-    #             "sg_to" = "teamB_frontend"
+    #             "ports_to"    = "80"
+    #             "proto"       = "tcp"
+    #             "sg_from"     = "teamA_backend"
+    #             "sg_to"       = "teamB_frontend"
     #         },
     #         ]
     #     },
@@ -109,10 +109,10 @@ locals {
     # [
     #     {
     #         "description" = "Access from backend to frontend"
-    #         "ports_to" = "80"
-    #         "proto" = "tcp"
-    #         "sg_from" = "teamA_backend"
-    #         "sg_to" = "teamB_frontend"
+    #         "ports_to"    = "80"
+    #         "proto"       = "tcp"
+    #         "sg_from"     = "teamA_backend"
+    #         "sg_to"       = "teamB_frontend"
     #     },
     # ]
     rules_flatten = flatten([
@@ -134,31 +134,25 @@ locals {
     #     {
     #         "944f91156c" = {
     #           "access" = {
-    #               "description" = ""
-    #               "ports_to" = "80 443"
-    #               "ports_from" = "5000"
-    #               "protocol" = "tcp"
+    #               "description"   = ""
+    #               "ports_to"      = "80 443"
+    #               "ports_from"    = "5000"
+    #               "proto"         = "tcp"
     #           }
     #           "sg_from" = "teamA_backend"
-    #           "sg_to" = "teamA_frontend"
+    #           "sg_to"   = "teamA_frontend"
     #         }
     #     },
     # ]
     rules_access = flatten([
-        for key, value in local.rules_map: [
-            for access in value.access: {
-                substr(sha256("${value.sg_from}:${value.sg_to}:${join(",", try(access.ports_from, []))}:${join(",",try(access.ports_to, []))}:${access.protocol}"), 0, 10) : {
+        for key, value in local.rules_map: {
+            "${value.sg_from}-${value.sg_to}": {
                     "sg_from"   : value.sg_from
                     "sg_to"     : value.sg_to
-                    "access"    : {
-                        "ports_from": try(join(" ", access.ports_from), null)
-                        "ports_to"  : try(join(" ", access.ports_to),   null)
-                        "proto"     : access.protocol
-                    }
+                    "access"    : value.access
                 } 
-            }
-
-        ]
+        
+        }
     ])
     # Конвертация flatten в map с уникальным именем
     rules_access_map = { for item in local.rules_access :

@@ -32,3 +32,4 @@ test-modules/hbf/.terraform/environment
 test-modules/hbf/.terraform/terraform.tfstate
 test-modules/hbf/states/example/terraform.tfstate
 test-modules/hbf/states/example/terraform.tfstate.backup
+charlotte-example/*
