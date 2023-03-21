@@ -28,26 +28,12 @@ resource "sgroups_rules" "rules" {
 
   for_each = local.rules_access_map
 
-  dynamic "items" {
-    for_each = { 
-      for access in each.value.access: 
-
-        substr(sha256("${join(",", try(access.ports_from, []))}:${join(",",try(access.ports_to, []))}:${access.protocol}"), 0, 10) => {
-          "sg_from"   : each.value.sg_from
-          "sg_to"     : each.value.sg_to
-          "access"    : {
-              "ports_from": try(join(" ", access.ports_from), null)
-              "ports_to"  : try(join(" ", access.ports_to),   null)
-              "proto"     : access.protocol
-        }
-      } 
-    }
-    content {
-      proto       = items.value.access.proto
+  items {
+      proto       = each.value.access.proto
       sg_from     = each.value.sg_from
       sg_to       = each.value.sg_to
-      ports_from  = items.value.access.ports_from
-      ports_to    = items.value.access.ports_to
+      ports_from  = each.value.access.ports_from
+      ports_to    = each.value.access.ports_to
     }
   }
-}
+

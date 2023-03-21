@@ -2,7 +2,7 @@ terraform {
   required_providers {
     sgroups = {
        version = "~> 1.0.0"
-       source = "h-bf/sgroups"
+       source = "fraima/charlotte"
     }
   }
 }

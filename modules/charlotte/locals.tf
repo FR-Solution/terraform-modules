@@ -4,21 +4,28 @@ locals {
     #### Формируем список данных, где будет фигурировать:
     #### Имена SG, новые имена Networks и CIDR от Networks
     ##->
-    # [
-    #   {
-    #       teamA_backend = [
-    #           "71d28fae:10.10.10.0/24",
-    #           "59d20aa4:10.11.10.0/24",
-    #         ]
+    #   [
+    #     {
+    #       "teamA_backend" = [
+    #         "27ccd286ef:10.143.0.3/32",
+    #       ]
     #     },
-    #   {
-    #       teamB_frontend = [
-    #           "f18c2155:10.10.20.0/24",
-    #           "5cd9162c:10.11.20.0/24",
-    #           "b6a851a4:10.110.20.0/24",
-    #         ]
+    #     {
+    #       "teamA_frontend" = [
+    #         "4894792f26:10.143.0.16/32",
+    #       ]
     #     },
-    # ]
+    #     {
+    #       "hbf-server" = [
+    #         "53503b3b29:193.32.219.99/32",
+    #       ]
+    #     },
+    #     {
+    #       "world" = [
+    #         "06ee3732a5:176.0.0.0/8",
+    #       ]
+    #     },
+    #   ]
     security_groups_network__name_cidr__flatten = flatten([
         for security_group in var.security_groups : {
             "${security_group.name}": flatten([
@@ -30,17 +37,17 @@ locals {
 
     security_group_map = { for item in local.security_groups_network__name_cidr__flatten :
         keys(item)[0] => values(item)[0]
+        if item != {}
     }
 
     #### Формируем массив в котором подсети получают уникальные имена и находятся в одномерном массиве
     ##->
-    # {
-    #   "59d20aa4" = "10.11.10.0/24"
-    #   "5cd9162c" = "10.11.20.0/24"
-    #   "71d28fae" = "10.10.10.0/24"
-    #   "b6a851a4" = "10.110.20.0/24"
-    #   "f18c2155" = "10.10.20.0/24"
-    # }
+    #   [
+    #     "27ccd286ef: 10.143.0.3/32",
+    #     "4894792f26: 10.143.0.16/32",
+    #     "53503b3b29: 193.32.219.99/32",
+    #     "06ee3732a5: 176.0.0.0/8",
+    #   ]
     networks_flatten = flatten([
         for security_group in local.security_groups_network__name_cidr__flatten: [
             for key, value in security_group: [
@@ -56,12 +63,20 @@ locals {
     }
 
     # Формируем массив данных, где будет фигурировать sgName, networkName(list) в виде строки
-    # {
-    #     teamA_backend = "71d28fae,59d20aa4"
-    # },
-    # {
-    #     teamA_backend = "f18c2155,5cd9162c,b6a851a4"
-    # },
+    # [
+    #     {
+    #       "teamA_backend"   = "27ccd286ef"
+    #     },
+    #     {
+    #       "teamA_frontend"  = "4894792f26"
+    #     },
+    #     {
+    #       "hbf-server"      = "53503b3b29"
+    #     },
+    #     {
+    #       "world"           = "06ee3732a5"
+    #     },
+    # ]
     security_groups_network__name__flatten = flatten([
         for security_group in var.security_groups : {
             "${security_group.name}": join(",",flatten([
@@ -82,17 +97,21 @@ locals {
     # [
     #     {
     #         "teamA_backend" = [
-    #         {
-    #             "description" = "Access from backend to frontend"
-    #             "ports_to"    = "80"
-    #             "proto"       = "tcp"
-    #             "sg_from"     = "teamA_backend"
-    #             "sg_to"       = "teamB_frontend"
-    #         },
+    #             {
+    #                 "access" = [
+    #                     {
+    #                         "description" = "access from teamA_backend to teamA_frontend"
+    #                         "ports_to" = tolist([
+    #                             "80",
+    #                             "443",
+    #                         ])
+    #                         "protocol" = "tcp"
+    #                     },
+    #                 ]
+    #                 "sg_from" = "teamA_backend"
+    #                 "sg_to" = "teamA_frontend"
+    #             }
     #         ]
-    #     },
-    #     {
-    #         "teamB_frontend" = []
     #     },
     # ]
     security_group_rules_flatten = flatten([
@@ -108,11 +127,18 @@ locals {
     ##->
     # [
     #     {
-    #         "description" = "Access from backend to frontend"
-    #         "ports_to"    = "80"
-    #         "proto"       = "tcp"
-    #         "sg_from"     = "teamA_backend"
-    #         "sg_to"       = "teamB_frontend"
+    #         "access" = [
+    #             {
+    #                 "description" = "access from teamA_backend to teamA_frontend"
+    #                 "ports_to" = tolist([
+    #                     "80",
+    #                     "443",
+    #                 ])
+    #                 "protocol" = "tcp"
+    #             },
+    #         ]
+    #         "sg_from" = "teamA_backend"
+    #         "sg_to" = "teamA_frontend"
     #     },
     # ]
     rules_flatten = flatten([
@@ -132,30 +158,37 @@ locals {
     ##-> $src_SG:$dst_SG:$src_ports:$dst_ports:$protocol
     # [
     #     {
-    #         "944f91156c" = {
-    #           "access" = {
-    #               "description"   = ""
-    #               "ports_to"      = "80 443"
-    #               "ports_from"    = "5000"
-    #               "proto"         = "tcp"
-    #           }
-    #           "sg_from" = "teamA_backend"
-    #           "sg_to"   = "teamA_frontend"
+    #     "96b84b011f" = {
+    #         "access" = {
+    #             "ports_from" = null
+    #             "ports_to" = "80 443"
+    #             "proto" = "tcp"
+    #         }
+    #         "sg_from" = "teamA_backend"
+    #         "sg_to" = "teamA_frontend"
     #         }
     #     },
     # ]
     rules_access = flatten([
-        for key, value in local.rules_map: {
-            "${value.sg_from}-${value.sg_to}": {
-                    "sg_from"   : value.sg_from
-                    "sg_to"     : value.sg_to
-                    "access"    : value.access
-                } 
-        
+        for key, value in local.rules_flatten:{
+            
+            for access in value.access:
+                substr(sha256("${try(value.sg_from, "")}:${try(value.sg_to, "")}:${join(",", try(access.ports_from, []))}:${join(",",try(access.ports_to, []))}:${access.protocol}"), 0, 10) => {
+                "sg_from"   : value.sg_from
+                "sg_to"     : value.sg_to
+                "access"    : {
+                    "ports_from": try(join(" ", access.ports_from), null)
+                    "ports_to"  : try(join(" ", access.ports_to),   null)
+                    "proto"     : access.protocol
+                    }
+                }
+            
+            
         }
     ])
     # Конвертация flatten в map с уникальным именем
     rules_access_map = { for item in local.rules_access :
         keys(item)[0] => values(item)[0]
+        if item != {}
     }
 }
