@@ -2,14 +2,14 @@ locals {
     
     security_groups  = [
         {
-            name = "kubernetes/${local.cluster_name}"
+            name = "kubernetes/${local.cluster_name}/masters"
             cidrs = flatten([
                 for compute in yandex_compute_instance.master:
                     "${compute.network_interface[0].ip_address}/32"
             ])
             rules = [
                 {
-                    sg_to  = "kubernetes/${local.cluster_name}"
+                    sg_to  = "kubernetes/${local.cluster_name}/masters"
                     access = [
                         {
                             description = "access from kubernetes/${local.cluster_name} to kubernetes/${local.cluster_name}"
@@ -100,13 +100,13 @@ locals {
                     ]
                 },
                 {
-                    sg_to  = "yandex/storage.yandexcloud.net"
+                    sg_to  = "world/objects.githubusercontent.com"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to yandex/storage.yandexcloud.net"
+                            description = "access from kubernetes/${local.cluster_name} to world/objects.githubusercontent.com"
                             protocol    = "tcp"
                             ports_to    = [
-                                443,    # TO REGISTRY BIN
+                                443,    # TO GITHUB REPOSITORY
                             ]
                         }
                     ]
@@ -180,7 +180,9 @@ locals {
                 "64.233.162.82/32",
                 "142.251.1.82/32",
                 "173.194.222.82/32",
-                "64.233.161.82/32"
+                "64.233.161.82/32",
+                "64.233.165.82/32",
+                "173.194.73.82/32",
             ]
             rules = []
         },
@@ -188,13 +190,17 @@ locals {
             name = "world/github.com"
             cidrs = [
                 "140.82.121.3/32",
+                "140.82.121.4/32",
             ]
             rules = []
         },
         {
-            name = "yandex/storage.yandexcloud.net"
+            name = "world/objects.githubusercontent.com"
             cidrs = [
-                "213.180.193.243/32",
+                "185.199.109.133/32",
+                "185.199.108.133/32",
+                "185.199.111.133/32",
+                "185.199.110.133/32",
             ]
             rules = []
         },
@@ -208,7 +214,18 @@ locals {
         {
             name = "yandex/api"
             cidrs = [
+                "217.28.237.103/32",
+                "213.180.204.240/32",
+                "213.180.193.8/32",
+                "213.180.193.243/32",
                 "84.201.181.26/32",
+                "84.201.181.184/32",
+                "84.201.168.69/32",
+                "84.201.168.170/32",
+                "84.201.151.137/32",
+                "84.201.148.148/32",
+                "84.201.144.177/32",
+                "51.250.33.235/32",
             ]
             rules = []
         },
@@ -220,7 +237,7 @@ locals {
             ]
             rules = [
                 {
-                    sg_to  = "kubernetes/${local.cluster_name}"
+                    sg_to  = "kubernetes/${local.cluster_name}/masters"
                     access = [
                         {
                             description = "access from world to kubernetes/${local.cluster_name} by ssh"
