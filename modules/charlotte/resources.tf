@@ -1,39 +1,34 @@
-resource "sgroups_networks" "networks" {
 
-    dynamic "items" {
-      for_each = local.networks_map
-      content {
-        name    = items.key
-        cidr    = items.value
-      }
-    }
+resource "sgroups_network" "networks" {
+  for_each = local.networks_map
+
+  name    = each.key
+  cidr    = each.value
+
 }
-resource "sgroups_groups" "groups" {
+resource "sgroups_group" "groups" {
     depends_on = [
-      sgroups_networks.networks
+      sgroups_network.networks
     ]
 
     for_each    = local.security_groups_network__name__map
 
-    items {
-        name        = each.key
-        networks    = each.value
-    }
+    name        = each.key
+    networks    = each.value
 }
 
-resource "sgroups_rules" "rules" {
+resource "sgroups_rule" "rules" {
   depends_on = [
-    sgroups_groups.groups,
+    sgroups_group.groups,
   ]
 
   for_each = local.rules_access_map
 
-  items {
-      proto       = each.value.access.proto
-      sg_from     = each.value.sg_from
-      sg_to       = each.value.sg_to
-      ports_from  = each.value.access.ports_from
-      ports_to    = each.value.access.ports_to
-    }
-  }
+  proto       = each.value.access.proto
+  sg_from     = each.value.sg_from
+  sg_to       = each.value.sg_to
+  ports_from  = each.value.access.ports_from
+  ports_to    = each.value.access.ports_to
+
+}
 
