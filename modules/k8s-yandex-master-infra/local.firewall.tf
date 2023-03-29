@@ -1,12 +1,7 @@
 locals {
-    
-    security_groups  = [
+    security_rules  = [
         {
             name = "kubernetes/${local.cluster_name}/masters"
-            cidrs = flatten([
-                for compute in yandex_compute_instance.master:
-                    "${compute.network_interface[0].ip_address}/32"
-            ])
             rules = [
                 {
                     sg_to  = "kubernetes/${local.cluster_name}/masters"
@@ -138,25 +133,42 @@ locals {
             ]
         },
         {
+            name = "world"
+            rules = [
+                {
+                    sg_to  = "kubernetes/${local.cluster_name}/masters"
+                    access = [
+                        {
+                            description = "access from world to kubernetes/${local.cluster_name} by ssh"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                22,
+                                6443,
+                            ]
+                        },
+                    ]
+                },
+            ]
+        }
+    ]
+    security_groups  = [
+        {
             name = "infra/hbf-server"
             cidrs = [
                 "193.32.219.99/32",
             ]
-            rules = []
         },
         {
             name = "infra/dns"
             cidrs = [
                 "10.0.0.2/32",
             ]
-            rules = []
         },
         {
             name = "world/dl.k8s.io" # Хранилище бинарей
             cidrs = [
                 "34.107.204.206/32",
             ]
-            rules = []
         },
         {
             name = "world/storage.googleapis.com" # Хранилище бинарей
@@ -170,7 +182,6 @@ locals {
                 "64.233.164.128/32",
                 "74.125.205.128/32",
             ]
-            rules = []
         },
         {
             name = "world/k8s.gcr.io" # Хранилище бинарей
@@ -184,7 +195,6 @@ locals {
                 "64.233.165.82/32",
                 "173.194.73.82/32",
             ]
-            rules = []
         },
         {
             name = "world/github.com"
@@ -192,7 +202,6 @@ locals {
                 "140.82.121.3/32",
                 "140.82.121.4/32",
             ]
-            rules = []
         },
         {
             name = "world/objects.githubusercontent.com"
@@ -202,14 +211,12 @@ locals {
                 "185.199.111.133/32",
                 "185.199.110.133/32",
             ]
-            rules = []
         },
         {
             name = "yandex/iam"
             cidrs = [
                 "169.254.169.254/32",
             ]
-            rules = []
         },
         {
             name = "yandex/api"
@@ -227,28 +234,12 @@ locals {
                 "84.201.144.177/32",
                 "51.250.33.235/32",
             ]
-            rules = []
         },
         {
             name = "world"
             cidrs = [
                 "176.0.0.0/8",
                 "198.0.0.0/8"
-            ]
-            rules = [
-                {
-                    sg_to  = "kubernetes/${local.cluster_name}/masters"
-                    access = [
-                        {
-                            description = "access from world to kubernetes/${local.cluster_name} by ssh"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                22,
-                                6443,
-                            ]
-                        },
-                    ]
-                },
             ]
         }
     ]

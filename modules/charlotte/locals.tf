@@ -115,7 +115,7 @@ locals {
     #     },
     # ]
     security_group_rules_flatten = flatten([
-        for security_group in var.security_groups : {
+        for security_group in var.security_rules : {
             "${security_group.name}": flatten([
                 for rule in try(security_group.rules, []):
                     merge(rule, {"sg_from": security_group.name})
