@@ -1,10 +1,9 @@
 module "firewall" {
     depends_on = [
-      sgroups_group.groups
+      sgroups_group.masters
     ]
     source = "../charlotte"
-    security_groups = local.security_groups
-    security_rules  = local.security_rules
+    security_groups = local.charlotte_payload
 }
 
 resource "sgroups_network" "masters" {
@@ -15,7 +14,7 @@ resource "sgroups_network" "masters" {
     cidr    = "${each.value.network_interface[0].ip_address}/32"
 }
 
-resource "sgroups_group" "groups" {
+resource "sgroups_group" "masters" {
     depends_on = [
       sgroups_network.masters
     ]

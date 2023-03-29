@@ -3,7 +3,3 @@ variable "security_groups" {
   type      = any
 }
 
-variable "security_rules" {
-  # default   = []
-  type      = any
-}

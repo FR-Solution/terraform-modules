@@ -1,5 +1,33 @@
 locals {
-    security_rules  = [
+
+    charlotte_payload  = [
+        # { 
+        #     # Уникальное имя Security Group
+        #     name = "example"
+        #     # Список подсетей, которые присутствуют в Security Group
+        #     # Если список пустой или не указан вовсе, SG не будет создана (требуется создать ее отдельно вместе с нетворками)
+        #     # Обычно это требуется если сети не определены статикой а будут созданы позже.
+        #     # ERROR:> The "for_each" map includes keys derived from resource attributes that cannot be determined until apply, 
+        #     # and so Terraform cannot determine the full set of keys │ that will identify the instances of this resource.
+        #     cidrs = [
+        #         "193.32.219.99/32",
+        #     ]
+        #     rules = [
+        #         {
+        #             sg_to  = "example"
+        #             access = [
+        #                 {
+        #                     description = "access from example to example"
+        #                     protocol    = "tcp"
+        #                     ports_to    = [
+        #                         80,
+        #                         443,
+        #                     ]
+        #                 }
+        #             ]
+        #         },
+        #     ]
+        # },
         {
             name = "kubernetes/${local.cluster_name}/masters"
             rules = [
@@ -133,42 +161,25 @@ locals {
             ]
         },
         {
-            name = "world"
-            rules = [
-                {
-                    sg_to  = "kubernetes/${local.cluster_name}/masters"
-                    access = [
-                        {
-                            description = "access from world to kubernetes/${local.cluster_name} by ssh"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                22,
-                                6443,
-                            ]
-                        },
-                    ]
-                },
-            ]
-        }
-    ]
-    security_groups  = [
-        {
             name = "infra/hbf-server"
             cidrs = [
                 "193.32.219.99/32",
             ]
+            rules = []
         },
         {
             name = "infra/dns"
             cidrs = [
                 "10.0.0.2/32",
             ]
+            rules = []
         },
         {
             name = "world/dl.k8s.io" # Хранилище бинарей
             cidrs = [
                 "34.107.204.206/32",
             ]
+            rules = []
         },
         {
             name = "world/storage.googleapis.com" # Хранилище бинарей
@@ -182,6 +193,7 @@ locals {
                 "64.233.164.128/32",
                 "74.125.205.128/32",
             ]
+            rules = []
         },
         {
             name = "world/k8s.gcr.io" # Хранилище бинарей
@@ -196,6 +208,7 @@ locals {
                 "173.194.73.82/32",
                 "64.233.164.82/32"
             ]
+            rules = []
         },
         {
             name = "world/github.com"
@@ -203,6 +216,7 @@ locals {
                 "140.82.121.3/32",
                 "140.82.121.4/32",
             ]
+            rules = []
         },
         {
             name = "world/objects.githubusercontent.com"
@@ -212,12 +226,14 @@ locals {
                 "185.199.111.133/32",
                 "185.199.110.133/32",
             ]
+            rules = []
         },
         {
             name = "yandex/iam"
             cidrs = [
                 "169.254.169.254/32",
             ]
+            rules = []
         },
         {
             name = "yandex/api"
@@ -235,12 +251,28 @@ locals {
                 "84.201.144.177/32",
                 "51.250.33.235/32",
             ]
+            rules = []
         },
         {
             name = "world"
             cidrs = [
                 "176.0.0.0/8",
                 "198.0.0.0/8"
+            ]
+            rules = [
+                {
+                    sg_to  = "kubernetes/${local.cluster_name}/masters"
+                    access = [
+                        {
+                            description = "access from world to kubernetes/${local.cluster_name} by ssh"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                22,
+                                6443,
+                            ]
+                        },
+                    ]
+                },
             ]
         }
     ]
