@@ -1,6 +1,6 @@
 module "firewall" {
     depends_on = [
-      yandex_compute_instance.master
+      sgroups_group.groups
     ]
     source = "../charlotte"
     security_groups = local.security_groups

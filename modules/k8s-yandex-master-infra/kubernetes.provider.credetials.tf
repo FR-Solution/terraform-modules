@@ -31,7 +31,8 @@ resource "kubernetes_namespace_v1" "yandex_provider" {
     yandex_lb_target_group.master-tg,
     yandex_lb_network_load_balancer.api-external,
     yandex_dns_recordset.api-external,
-    yandex_dns_zone.cluster-external
+    yandex_dns_zone.cluster-external,
+    module.firewall
   ]
   metadata {
     name = var.k8s_global_vars.k8s_provider.namespace
@@ -41,7 +42,8 @@ resource "kubernetes_namespace_v1" "yandex_provider" {
 resource "kubernetes_secret_v1" "yandex_provider" {
     depends_on = [
       null_resource.cluster,
-      kubernetes_namespace_v1.yandex_provider
+      kubernetes_namespace_v1.yandex_provider,
+      module.firewall
     ]
   metadata {
     name = data.yandex_iam_service_account.yandex-k8s-controllers.name

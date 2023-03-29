@@ -37,7 +37,7 @@ runcmd:
   - chmod +x /usr/bin/hbf
   - systemctl enable  hbf.service
   - systemctl start   hbf.service
-  - sleep 15
+  # - sleep 15
   - mkdir -p /usr/bin/
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
