@@ -115,4 +115,11 @@ locals {
       item => {}
   }
 
+  cluster_external_instances_map = { for key, value in yandex_compute_instance.master :
+      key => value.network_interface.0.nat_ip_address
+  }
+  cluster_internal_instances_map = { for key, value in yandex_compute_instance.master :
+      key => value.network_interface[0].ip_address
+  }
+
 }

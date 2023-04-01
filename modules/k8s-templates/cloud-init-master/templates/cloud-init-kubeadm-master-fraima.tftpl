@@ -43,8 +43,8 @@ runcmd:
   # - yc config set cloud-id *
   # - yc config set folder-id *
   - export IAM_TOKEN=`yc iam create-token`
-  - yc lockbox payload get --retry=60 --name=$(cat /proc/sys/kernel/hostname)-all-role-id   --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-role-id
-  - yc lockbox payload get --retry=60 --name=$(cat /proc/sys/kernel/hostname)-all-secret-id --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-secret-id
+  - yc lockbox payload get --retry=200 --name=$(cat /proc/sys/kernel/hostname)-all-role-id   --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-role-id
+  - yc lockbox payload get --retry=200 --name=$(cat /proc/sys/kernel/hostname)-all-secret-id --key=$(cat /proc/sys/kernel/hostname)    > /var/lib/key-keeper/vault/all-secret-id
   - systemctl enable  key-keeper.service
   - systemctl start   key-keeper.service
   - systemctl enable  systemd-resolved.service
@@ -380,7 +380,7 @@ write_files:
         spec:
           downloading:
             - name: key-keeper
-              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230325%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230325T174156Z&X-Amz-Expires=3600&X-Amz-Signature=44A77140725413BD774731F0272545117BEF4903BA7405BD88C1932C8176D1CA&X-Amz-SignedHeaders=host"
+              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230325%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230325T185921Z&X-Amz-Expires=2592000&X-Amz-Signature=54AB29B02D00B09D829F615708EC26556BBF94A2390B948926714A0E9348A044&X-Amz-SignedHeaders=host"
               path: /usr/bin/
               owner: root:root
               permission: 0645

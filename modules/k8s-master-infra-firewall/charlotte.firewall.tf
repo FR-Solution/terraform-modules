@@ -8,17 +8,17 @@ module "firewall" {
 
 resource "sgroups_network" "masters" {
 
-    for_each = yandex_compute_instance.master
+    for_each = var.cluster_instances
 
-    name    = substr(sha256("${each.value.network_interface[0].ip_address}/32"), 0, 10)
-    cidr    = "${each.value.network_interface[0].ip_address}/32"
+    name    = substr(sha256("${each.value}/32"), 0, 10)
+    cidr    = "${each.value}/32"
 }
 
 resource "sgroups_group" "masters" {
     depends_on = [
       sgroups_network.masters
     ]
-    name        = "kubernetes/${local.cluster_name}/masters"
+    name        = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
     networks    = join(",", flatten([
         for network in sgroups_network.masters:
             network.name

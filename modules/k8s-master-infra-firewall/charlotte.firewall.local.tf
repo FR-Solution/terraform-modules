@@ -2,23 +2,35 @@ locals {
 
     charlotte_payload  = [
         # { 
-        #     # Уникальное имя Security Group
+        #     # Уникальное имя Security Group (обязательное поле)
         #     name = "example"
-        #     # Список подсетей, которые присутствуют в Security Group
+        #     # Список подсетей, которые присутствуют в Security Group (необязательное поле)
         #     # Если список пустой или не указан вовсе, SG не будет создана (требуется создать ее отдельно вместе с нетворками)
         #     # Обычно это требуется если сети не определены статикой а будут созданы позже.
         #     # ERROR:> The "for_each" map includes keys derived from resource attributes that cannot be determined until apply, 
         #     # and so Terraform cannot determine the full set of keys │ that will identify the instances of this resource.
         #     cidrs = [
-        #         "193.32.219.99/32",
+        #         "193.32.219.121/32",
         #     ]
+        #     # Список правил для SG (необязательное поле)
         #     rules = [
+        #         # Массив всегда имеет ключ sg_to, он не должен дублироваться, 
+        #         # все правила до одной SG прописываем в рамках одного массива.
         #         {
+        #             # Уникальное имя Security Group (обязательное поле)
+        #             # Название SG куда (ДО) открываем доступ
         #             sg_to  = "example"
+        #             # Список портов ОТ -> ДО | Протокол
         #             access = [
         #                 {
+        #                     # Короткое описание для чего данный доступ
         #                     description = "access from example to example"
         #                     protocol    = "tcp"
+        #                     # Открываем доступ ОТ портов
+        #                     ports_from    = [
+        #                         8000,
+        #                     ]
+        #                     # Открываем доступ ДО портов
         #                     ports_to    = [
         #                         80,
         #                         443,
@@ -29,13 +41,13 @@ locals {
         #     ]
         # },
         {
-            name = "kubernetes/${local.cluster_name}/masters"
+            name = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
             rules = [
                 {
-                    sg_to  = "kubernetes/${local.cluster_name}/masters"
+                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to kubernetes/${local.cluster_name}"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}"
                             protocol    = "tcp"
                             ports_to    = [
                                 10250, # :::10250   component: kubelet           purpose: server-port
@@ -52,7 +64,7 @@ locals {
                     sg_to  = "infra/hbf-server"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to hbf-server"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to hbf-server"
                             protocol    = "tcp"
                             ports_to    = [
                                 9000,   # TO HBF-SERVER
@@ -66,7 +78,7 @@ locals {
                     sg_to  = "infra/dns"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to infra/dns"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to infra/dns"
                             protocol    = "udp"
                             ports_to    = [
                                 53, # TO DNS-SERVERS
@@ -78,19 +90,26 @@ locals {
                     sg_to  = "world/dl.k8s.io"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to world/dl.k8s.io"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/dl.k8s.io"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO REGISTRY BIN
                             ]
-                        }
+                        },
+                        # {
+                        #     description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/dl.k8s.io"
+                        #     protocol    = "udp"
+                        #     ports_to    = [
+                        #         80,    # TO REGISTRY BIN
+                        #     ]
+                        # }
                     ]
                 },
                 {
                     sg_to  = "world/k8s.gcr.io"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to world/k8s.gcr.io"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/k8s.gcr.io"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO REGISTRY DOCKER
@@ -102,7 +121,7 @@ locals {
                     sg_to  = "world/storage.googleapis.com"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to world/storage.googleapis.com"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/storage.googleapis.com"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO REGISTRY DOCKER
@@ -114,7 +133,7 @@ locals {
                     sg_to  = "world/github.com"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to world/github.com"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/github.com"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO GITHUB REPOSITORY
@@ -126,7 +145,7 @@ locals {
                     sg_to  = "world/objects.githubusercontent.com"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to world/objects.githubusercontent.com"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/objects.githubusercontent.com"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO GITHUB REPOSITORY
@@ -138,7 +157,7 @@ locals {
                     sg_to  = "yandex/iam"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to yandex/iam"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to yandex/iam"
                             protocol    = "tcp"
                             ports_to    = [
                                 80,    # TO REGISTRY BIN
@@ -150,7 +169,7 @@ locals {
                     sg_to  = "yandex/api"
                     access = [
                         {
-                            description = "access from kubernetes/${local.cluster_name} to yandex/api"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to yandex/api"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # TO API
@@ -261,10 +280,10 @@ locals {
             ]
             rules = [
                 {
-                    sg_to  = "kubernetes/${local.cluster_name}/masters"
+                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
                     access = [
                         {
-                            description = "access from world to kubernetes/${local.cluster_name} by ssh"
+                            description = "access from world to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} by ssh"
                             protocol    = "tcp"
                             ports_to    = [
                                 22,

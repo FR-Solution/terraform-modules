@@ -174,17 +174,15 @@ locals {
         for key, value in local.rules_flatten:{
             
             for access in value.access:
-                substr(sha256("${try(value.sg_from, "")}:${try(value.sg_to, "")}:${join(",", try(access.ports_from, []))}"), 0, 10) => {
+                "${try(value.sg_from, "")}:${try(value.sg_to, "")}:${access.protocol}" => {
                 "sg_from"   : value.sg_from
                 "sg_to"     : value.sg_to
                 "access"    : {
                     "ports_from": try(join(" ", access.ports_from), null)
                     "ports_to"  : try(join(" ", access.ports_to),   null)
                     "proto"     : access.protocol
-                    }
                 }
-            
-            
+            }
         }
     ])
     # Конвертация flatten в map с уникальным именем

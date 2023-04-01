@@ -16,3 +16,11 @@ output "master_instance_list_map" {
 output "yandex_compute_instance_master" {
   value = yandex_compute_instance.master
 }
+
+output "cluster_external_instances_map" {
+  value = local.cluster_external_instances_map
+}
+
+output "cluster_internal_instances_map" {
+  value = local.cluster_internal_instances_map
+}
