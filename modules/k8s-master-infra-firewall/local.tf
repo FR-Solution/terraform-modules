@@ -9,5 +9,6 @@ locals {
             network.name
 
     ])
+
   networks_master = concat(local.internal, local.external)
 }

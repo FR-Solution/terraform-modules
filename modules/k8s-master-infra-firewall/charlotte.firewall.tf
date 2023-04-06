@@ -1,7 +1,7 @@
 module "firewall" {
     depends_on = [
       sgroups_group.masters,
-      sgroups_group.api
+      sgroups_group.api,
     ]
     source = "../charlotte"
     security_groups = local.charlotte_payload

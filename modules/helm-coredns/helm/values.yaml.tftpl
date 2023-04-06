@@ -1,0 +1,27 @@
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
+
+fullnameOverride: coredns
+
+replicaCount: 3
+service:
+  # TODO вывести в переменную под указанную подсеть
+  clusterIP: ${clusterIP}
+
+readinessProbe:
+  initialDelaySeconds: 0
+  failureThreshold: 15
+  periodSeconds: 5
+
+# daemonset:
+#   enabled: true
+
+%{ if extra_values != {} }
+${yamlencode(extra_values)}
+%{ endif ~}

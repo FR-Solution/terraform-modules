@@ -32,7 +32,7 @@ module "k8s-masters" {
 }
 
 module "k8s-masters-firewall" {
-  count = var.global_vars.firewall.enabled == true ? 1 : 0
+  count = try(var.global_vars.firewall.enabled, false) == true ? 1 : 0
 
   depends_on = [
     module.k8s-masters
@@ -44,10 +44,6 @@ module "k8s-masters-firewall" {
   k8s_global_vars             = module.k8s-global-vars
 }
 
-output "fucker" {
-  value = module.k8s-masters-firewall
-}
-
 module "k8s-ready-status" {
   depends_on = [
     module.k8s-masters
@@ -57,24 +53,3 @@ module "k8s-ready-status" {
   k8s_global_vars   = module.k8s-global-vars
 }
 
-module "yandex-cloud-controller" {
-  source = "../helm-yandex-cloud-controller"
-  depends_on = [
-    module.k8s-ready-status
-  ]
-  chart_version = "0.0.7"
-
-  yandex_default_vpc_name         = var.master_group.vpc_name
-  yandex_default_route_table_name = var.master_group.route_table_name
-  namespace                       = "kube-fraime-controllers"
-
-  global_vars = module.k8s-global-vars
-
-  extra_values = {
-    provider = {
-      secret = {
-        enabled = true
-      }
-    }
-  }
-}
