@@ -7,3 +7,7 @@ variable "k8s_global_vars" {
 variable "cluster_instances" {
     type        = any
 }
+
+variable "cluster_api_ip" {
+    type        = any
+}

@@ -31,9 +31,9 @@ locals {
     v                                   = "4"
     cloud-provider                      = "external"
     # oidc-client-id                      = "kubernetes-clusters"
-    oidc-username-claim                 = "sub"
-    oidc-groups-claim                   = "groups"
-    oidc-username-prefix                = "-"
+    # oidc-username-claim                 = "sub"
+    # oidc-groups-claim                   = "groups"
+    # oidc-username-prefix                = "-"
     # oidc-issuer-url                     = "https://auth.dobry-kot.ru/auth/realms/master"
   }
 }

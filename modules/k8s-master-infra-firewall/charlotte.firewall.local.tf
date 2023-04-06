@@ -50,12 +50,14 @@ locals {
                             description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}"
                             protocol    = "tcp"
                             ports_to    = [
-                                10250, # :::10250   component: kubelet           purpose: server-port
-                                6443,  # :::6443    component: kube-apiserver    purpose: server-port
-                                2379,  # :::2379    component: etcd              purpose: server-port
-                                2380,  # :::2380    component: etcd              purpose: peer-port
-                                2381,  # :::2381    component: etcd              purpose: metrics-port
-                                2382,  # :::2382    component: etcd              purpose: server-port-target-lb
+                                10250, # :::10250   component: kubelet              purpose: server-port
+                                6443,  # :::6443    component: kube-apiserver       purpose: server-port
+                                2379,  # :::2379    component: etcd                 purpose: server-port
+                                2380,  # :::2380    component: etcd                 purpose: peer-port
+                                2381,  # :::2381    component: etcd                 purpose: metrics-port
+                                2382,  # :::2382    component: etcd                 purpose: server-port-target-lb
+                                11258, # :::11258   component: yandex-controller    purpose: metrics-port
+                                443,   # :::443    component: kube-apiserver       purpose: server-port
                             ]
                         },
                     ]
@@ -177,6 +179,30 @@ locals {
                         }
                     ]
                 },
+                {
+                    sg_to  = "deckhouse/registry"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to deckhouse/registry"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to deckhouse/registry"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
             ]
         },
         {
@@ -225,7 +251,8 @@ locals {
                 "64.233.161.82/32",
                 "64.233.165.82/32",
                 "173.194.73.82/32",
-                "64.233.164.82/32"
+                "64.233.164.82/32",
+                "108.177.14.82/32"
             ]
             rules = []
         },
@@ -255,6 +282,15 @@ locals {
             rules = []
         },
         {
+            name = "deckhouse/registry"
+            cidrs = [
+                "77.223.120.232/32",
+                "46.148.230.218/32",
+                "46.4.145.194/32"
+            ]
+            rules = []
+        },
+        {
             name = "yandex/api"
             cidrs = [
                 "217.28.237.103/32",
@@ -276,7 +312,7 @@ locals {
             name = "world"
             cidrs = [
                 "176.0.0.0/8",
-                "198.0.0.0/8"
+                "198.0.0.0/8",
             ]
             rules = [
                 {
