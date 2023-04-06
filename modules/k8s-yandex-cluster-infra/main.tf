@@ -37,10 +37,15 @@ module "k8s-masters-firewall" {
   depends_on = [
     module.k8s-masters
   ]
-  source            = "../k8s-master-infra-firewall"
-  cluster_instances = module.k8s-masters.cluster_internal_instances_map
-  cluster_api_ip    = module.k8s-masters.kube-apiserver-lb
-  k8s_global_vars   = module.k8s-global-vars
+  source                      = "../k8s-master-infra-firewall"
+  cluster_instances_internal  = module.k8s-masters.cluster_internal_instances_map
+  cluster_instances_external  = module.k8s-masters.cluster_external_instances_map
+  cluster_api_ip              = module.k8s-masters.kube-apiserver-lb
+  k8s_global_vars             = module.k8s-global-vars
+}
+
+output "fucker" {
+  value = module.k8s-masters-firewall
 }
 
 module "k8s-ready-status" {

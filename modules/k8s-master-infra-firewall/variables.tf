@@ -4,7 +4,11 @@ variable "k8s_global_vars" {
   default     = {}
 }
 
-variable "cluster_instances" {
+variable "cluster_instances_internal" {
+    type        = any
+}
+
+variable "cluster_instances_external" {
     type        = any
 }
 
