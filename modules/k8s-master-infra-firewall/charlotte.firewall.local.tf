@@ -98,13 +98,6 @@ locals {
                                 443,    # TO REGISTRY BIN
                             ]
                         },
-                        # {
-                        #     description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/dl.k8s.io"
-                        #     protocol    = "udp"
-                        #     ports_to    = [
-                        #         80,    # TO REGISTRY BIN
-                        #     ]
-                        # }
                     ]
                 },
                 {
@@ -195,10 +188,115 @@ locals {
                     sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
                     access = [
                         {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to deckhouse/registry"
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
                             protocol    = "tcp"
                             ports_to    = [
                                 443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "redhat/quay.io"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/quay.io"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "redhat/cdn01.quay.io"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn01.quay.io"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "redhat/cdn02.quay.io"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn02.quay.io"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "cloudflare/cdn03.quay.io.cdn.cloudflare.net"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/cdn03.quay.io.cdn.cloudflare.net"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "docker/registry-1.docker.io"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to docker/registry-1.docker.io"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "cloudflare/production.cloudflare.docker.com"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/production.cloudflare.docker.com"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,    # to deckhouse/registry
+                            ]
+                        }
+                    ]
+                },
+            ]
+        },
+        {
+            name = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
+            cidrs = [
+                "10.202.0.0/16",
+            ]
+            rules = [
+                {
+                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                "1-65535",    # to pods
+                            ]
+                        }
+                    ]
+                },
+                {
+                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
+                    access = [
+                        {
+                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
+                            protocol    = "tcp"
+                            ports_to    = [
+                                443,
+                                6443
                             ]
                         }
                     ]
@@ -254,6 +352,69 @@ locals {
                 "64.233.164.82/32",
                 "108.177.14.82/32",
                 "74.125.205.82/32"
+            ]
+            rules = []
+        },
+        {
+            name = "redhat/quay.io" # Хранилище бинарей
+            cidrs = [
+                "34.196.205.78/32",
+                "54.175.192.12/32",
+                "34.239.202.225/32",
+                "54.85.89.0/32",
+                "3.228.127.23/32",
+                "18.233.104.15/32",
+                "34.235.95.169/32",
+                "3.214.105.117/32",
+            ]
+            rules = []
+        },
+        {
+            name = "redhat/cdn01.quay.io" # Хранилище бинарей
+            cidrs = [
+                "13.33.243.21/32",
+                "13.33.243.6/32",
+                "13.33.243.66/32",
+                "13.33.243.108/32",
+            ]
+            rules = []
+        },
+        {
+            name = "redhat/cdn02.quay.io" # Хранилище бинарей
+            cidrs = [
+                "52.85.49.51/32",
+                "52.85.49.120/32",
+                "52.85.49.31/32",
+                "52.85.49.101/32",
+            ]
+            rules = []
+        },
+        {
+            name = "cloudflare/cdn03.quay.io.cdn.cloudflare.net" # Хранилище бинарей
+            cidrs = [
+                "172.64.150.58/32",
+                "104.18.37.198/32",
+            ]
+            rules = []
+        },
+        {
+            name = "cloudflare/production.cloudflare.docker.com" # Хранилище бинарей
+            cidrs = [
+                "104.18.121.25/32",
+                "104.18.124.25/32",
+                "104.18.123.25/32",
+                "104.18.122.25/32",
+                "104.18.125.25/32",
+            ]
+            rules = []
+        },
+        {
+            name = "docker/registry-1.docker.io" # Хранилище бинарей
+            cidrs = [
+                "34.194.164.123/32",
+                "18.215.138.58/32",
+                "52.1.184.176/32",
+
             ]
             rules = []
         },
