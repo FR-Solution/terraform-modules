@@ -1,27 +1,27 @@
 
 variable "release_name" {
   type = string
-  default = "cilium"
+  default = "gatekeeper"
 }
 
 variable "chart_repo" {
   type = string
-  default = "https://helm.cilium.io"
+  default = "https://open-policy-agent.github.io/gatekeeper/charts"
 }
 
 variable "chart_name" {
   type = string
-  default = "cilium"
+  default = "gatekeeper"
 }
 
 variable "chart_version" {
   type = string
-  default = "1.12.0"
+  default = "3.11.0"
 }
 
 variable "namespace" {
   type = string
-  default = "kube-fraima-sdn"
+  default = "kube-fraima-opa"
 }
 
 variable "global_vars" {

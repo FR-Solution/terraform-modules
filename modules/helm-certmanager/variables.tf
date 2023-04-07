@@ -1,27 +1,27 @@
 
 variable "release_name" {
   type = string
-  default = "cilium"
+  default = "cert-manager"
 }
 
 variable "chart_repo" {
   type = string
-  default = "https://helm.cilium.io"
+  default = "https://charts.jetstack.io"
 }
 
 variable "chart_name" {
   type = string
-  default = "cilium"
+  default = "cert-manager"
 }
 
 variable "chart_version" {
   type = string
-  default = "1.12.0"
+  default = "v1.9.1"
 }
 
 variable "namespace" {
   type = string
-  default = "kube-fraima-sdn"
+  default = "kube-fraima-certmanager"
 }
 
 variable "global_vars" {

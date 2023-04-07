@@ -156,6 +156,7 @@ locals {
                             protocol    = "tcp"
                             ports_to    = [
                                 80,    # TO REGISTRY BIN
+                                443,
                             ]
                         }
                     ]

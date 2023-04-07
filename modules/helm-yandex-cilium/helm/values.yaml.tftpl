@@ -8,10 +8,10 @@ k8sServicePort: ${k8s_api_server_port}
 
 cluster:
   # -- Name of the cluster. Only required for Cluster Mesh.
-  name: ${cluster_name}
+  name: example
   # -- (int) Unique ID of the cluster. Must be unique across all connected
   # clusters and in the range of 1 to 255. Only required for Cluster Mesh.
-  id: ${cluster_id} 
+  id: 11
 
 ipam:
   # -- Configure IP Address Management mode.
@@ -196,7 +196,3 @@ endpointRoutes:
 # routing and full KPR mode. Moreover, this option cannot be enabled when Cilium
 # is running in a managed Kubernetes environment or in a chained CNI setup.
 installNoConntrackIptablesRules: false
-
-%{ if extra_values != {} }
-${yamlencode(extra_values)}
-%{ endif ~}

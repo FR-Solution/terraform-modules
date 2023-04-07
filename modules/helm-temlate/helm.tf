@@ -1,4 +1,4 @@
-resource "helm_release" "coredns" {
+resource "helm_release" "template" {
   name       = var.release_name
 
   repository = var.chart_repo
@@ -10,7 +10,6 @@ resource "helm_release" "coredns" {
 
   values = [
       templatefile("${path.module}/helm/values.yaml.tftpl", {
-          clusterIP     = var.global_vars.k8s-addresses.dns_address
           extra_values  = var.extra_values
       })
       

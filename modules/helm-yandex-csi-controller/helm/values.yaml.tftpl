@@ -1,7 +1,2 @@
 serviceAccountJSON: ${ base64encode(jsonencode(yandex_cloud_controller_sa.service_account_json)) }
 folderID: ${ base64encode(yandex_cloud_controller_sa.folder_id) }
-
-
-%{ if extra_values != {} }
-${yamlencode(extra_values)}
-%{ endif ~}
