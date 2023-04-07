@@ -75,7 +75,7 @@ module "certmanager" {
 
     source = "../helm-certmanager"
     depends_on = [
-        module.coredns,
+        module.gatekeeper,
     ]
 
     global_vars         = module.k8s-global-vars
