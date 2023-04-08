@@ -36,7 +36,7 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /usr/bin/fraimactl "https://storage.yandexcloud.net/m.images/fraimactl/fraimactl-FD-55-tests-v3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230325%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230325T174134Z&X-Amz-Expires=2592000&X-Amz-Signature=AB15A7216D64FEF315DBCC09D2D63F1225D535894A17D6649E52EFC94D564A1F&X-Amz-SignedHeaders=host"
+  - wget -O /usr/bin/fraimactl "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
   # - yc config profile create my-robot-profile
@@ -380,10 +380,17 @@ write_files:
         spec:
           downloading:
             - name: key-keeper
-              src: "https://storage.yandexcloud.net/m.images/key-keeper-R3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=YCAJEhOlYpv1GRY7hghCojNX5%2F20230325%2Fru-central1%2Fs3%2Faws4_request&X-Amz-Date=20230325T185921Z&X-Amz-Expires=2592000&X-Amz-Signature=54AB29B02D00B09D829F615708EC26556BBF94A2390B948926714A0E9348A044&X-Amz-SignedHeaders=host"
+              src: "https://github.com/fraima/key-keeper/releases/download/v0.0.1/key-keeper-v0.0.1-linux-amd64.tar.gz"
+              checkSum:
+                src: https://github.com/fraima/key-keeper/releases/download/v0.0.1/key-keeper-v0.0.1-linux-amd64.tar.gz.sha256
+                type: "sha256"
               path: /usr/bin/
               owner: root:root
               permission: 0645
+              unzip:
+                status: true
+                files: 
+                  - "key-keeper"
 
       - apiVersion: fraima.io/v1alpha
         kind: YandexCloud
