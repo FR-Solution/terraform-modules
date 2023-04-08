@@ -11,25 +11,9 @@ base/providers-dev.tf
 1.yaml
 test.yaml
 terragrunt/*
-k8s/terraform.tfstate.d/cluster-2/terraform.tfstate
-k8s/terraform.tfstate.d/cluster-2/terraform.tfstate.backup
-k8s/terraform.tfstate.d/cluster-3/terraform.tfstate
-k8s/terraform.tfstate.d/cluster-3/terraform.tfstate.backup
-k8s/terraform.tfstate.d/cluster-2/.terraform.tfstate.lock.info
-k8s/terraform.tfstate.d/cluster-3/.terraform.tfstate.lock.info
+k8s/terraform.tfstate.d/*
 
 
 k8s-yandex-cluster-naked/*
-test-modules/hbf/terraform.tfstate
-test-modules/hbf/terraform.tfstate.backup
-test-modules/hbf/.terraform/providers/registry.terraform.io/h-bf/sgroups/1.0.0/linux_amd64
-test-modules/hbf/.terraform.lock.hcl
-test-modules/hbf/.terraform/modules/modules.json
-test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.81.0/linux_amd64
-test-modules/hbf/.terraform/providers/registry.terraform.io/yandex-cloud/yandex/0.87.0/linux_amd64
-test-modules/hbf/export.sh
-test-modules/hbf/.terraform/environment
-test-modules/hbf/.terraform/terraform.tfstate
-test-modules/hbf/states/example/terraform.tfstate
-test-modules/hbf/states/example/terraform.tfstate.backup
+
 charlotte-example/*

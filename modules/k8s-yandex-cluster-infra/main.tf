@@ -53,3 +53,16 @@ module "k8s-ready-status" {
   k8s_global_vars   = module.k8s-global-vars
 }
 
+
+module "addons" {
+
+    source = "../k8s-addons"
+    
+    depends_on = [
+        module.k8s-ready-status
+    ]
+
+    global_vars         = module.k8s-global-vars
+    extra_values        = var.global_vars
+    master_group        = var.master_group
+}
