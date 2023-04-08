@@ -1,0 +1,57 @@
+
+machineContoller:
+  namespace: kube-fraima-machine-controller-manager
+
+clusterUrl: ${k8s_api_server_fqdn}
+clusterPort: ${k8s_api_server_port}
+
+replicas: ${replicas}
+minReadySeconds: 300
+
+strategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  type: RollingUpdate
+
+selector:
+  matchLabels:
+    instance-group: example
+
+metadata:
+  labels:
+    instance-group: example
+  nodeLabels:
+    node-role.kubernetes.io/example: ""
+    provider: yandex
+  cloudLabels:
+    tair: critical
+    
+template:
+      
+  spec:
+    bootDisk:
+      imageID: ${image_id}
+      typeID: network-hdd
+      autoDelete: true
+      size: 20
+
+    resources:
+      cpu: 8
+      coreFraction: 20
+      memory: 8
+
+    networkInterfaces:
+      nat: true
+      regionID: ru-central1
+      subnetID: "${subnet_id}"
+      zoneID: "${zone}"
+      networkType: STANDARD
+
+    provider:
+      type: YandexCloud
+      name: ${provider_secret_name}
+
+ssh:
+  username: ${ssh_username}
+  key: ${ssh_key}

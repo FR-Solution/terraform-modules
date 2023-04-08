@@ -40,7 +40,7 @@ module "k8s-masters-firewall" {
   source                      = "../k8s-master-infra-firewall"
   cluster_instances_internal  = module.k8s-masters.cluster_internal_instances_map
   cluster_instances_external  = module.k8s-masters.cluster_external_instances_map
-  cluster_api_ip              = module.k8s-masters.kube-apiserver-lb
+  cluster_api_ip              = try(module.k8s-masters.kube-apiserver-lb, "")
   k8s_global_vars             = module.k8s-global-vars
 }
 

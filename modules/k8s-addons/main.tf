@@ -111,3 +111,18 @@ module "machine-controller-manager" {
     global_vars         = var.global_vars
     extra_values        = try(var.extra_values.addons.machine-controller-manager.extra_values, {})
 }
+
+module "compute-instance" {
+    source = "../helm-yandex-machine-instance"
+
+    count = try(var.extra_values.addons.compute-instance.enabled, false) == true ? 1 : 0
+
+    depends_on = [
+      module.certmanager,
+      module.machine-controller-manager
+    ]
+
+    global_vars         = var.global_vars
+    custom_values       = try(var.extra_values.addons.compute-instance.custom_values, {})
+    extra_values        = try(var.extra_values.addons.compute-instance.extra_values, {})
+}
