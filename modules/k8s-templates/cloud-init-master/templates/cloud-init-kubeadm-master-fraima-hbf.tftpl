@@ -42,7 +42,8 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /usr/bin/fraimactl "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"
+  - wget -O /tmp/fraimactl "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"
+  - tar -xzf /tmp/fraimactl -C /usr/bin/
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
   # - yc config profile create my-robot-profile

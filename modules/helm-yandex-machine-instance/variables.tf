@@ -16,7 +16,7 @@ variable "chart_name" {
 
 variable "chart_version" {
   type = string
-  default = "0.1.12"
+  default = "0.1.13"
 }
 
 variable "namespace" {
