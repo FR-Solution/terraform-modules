@@ -128,7 +128,7 @@ module "compute-instance" {
 }
 
 module "victoria-metrics-operator" {
-    source = "../helm-victoria-metrics"
+    source = "../helm-victoria-metrics-operator"
 
     count = try(var.extra_values.addons.victoria-metrics-operator.enabled, false) == true ? 1 : 0
 
