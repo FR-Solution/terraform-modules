@@ -24,6 +24,14 @@ vmcluster:
 grafana:
   enabled: true
   defaultDashboardsEnabled: true
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+    - key: node.cloudprovider.kubernetes.io/uninitialized
+      value: "true"
+      effect: NoSchedule
 
 prometheus-node-exporter:
   enabled: true
