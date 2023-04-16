@@ -83,3 +83,12 @@ victoria-metrics-operator:
       enabled: false
       # --If needed, provide own issuer. Operator will create self-signed if empty.
       issuer: {}
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: node.cloudprovider.kubernetes.io/uninitialized
+    value: "true"
+    effect: NoSchedule
