@@ -23,6 +23,8 @@ vmcluster:
 
 grafana:
   enabled: true
+  service:
+    type: "LoadBalancer"
   defaultDashboardsEnabled: true
   tolerations:
     - key: node-role.kubernetes.io/master
