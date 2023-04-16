@@ -67,7 +67,7 @@ victoria-metrics-operator:
             - key: app.kubernetes.io/instance
               operator: In
               values:
-              - {{ .Release.Name }}
+              - ${release_name}
           topologyKey: failure-domain.beta.kubernetes.io/region
         weight: 100
 
