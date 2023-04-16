@@ -31,7 +31,7 @@ module "yandex-cloud-controller" {
 
     global_vars = var.global_vars
 
-    extra_values = try(var.extra_values.addons.yandex-cloud-controller.extra_values, {})
+    extra_values = try(var.extra_values.addons.yandex-cloud-controller, {})
 }
 
 module "yandex-csi-controller" {

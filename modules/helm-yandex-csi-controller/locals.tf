@@ -7,5 +7,5 @@ locals {
     kubeApiServerIP             = "https://${local.k8s_api_server}:${local.k8s_api_server_port}"
   }))
 
-  merge_values = merge(local.base_values, var.extra_values)
+  merge_values = merge(local.base_values, var.extra_values.extra_values)
 }
