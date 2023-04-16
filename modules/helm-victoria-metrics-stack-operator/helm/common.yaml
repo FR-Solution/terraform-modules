@@ -53,13 +53,13 @@ kube-state-metrics:
     allowPrivilegeEscalation: false
 
 kubelet:
-  enabled: false
+  enabled: true
 
 kubeApiServer:
-  enabled: false
+  enabled: true
 
 kubeControllerManager:
-  enabled: false
+  enabled: true
 
 kubeDns:
   enabled: false
@@ -68,47 +68,47 @@ coreDns:
   enabled: false
 
 kubeEtcd:
-  enabled: false
+  enabled: true
 
 kubeScheduler:
-  enabled: false
+  enabled: true
 
 kubeProxy:
   enabled: false
 
 defaultRules:
-  create: false
+  create: true
 
-  labels:
-    pfm-admins: 'true'
+  # labels:
+  #   pfm-admins: 'true'
 
   rules:
-    etcd: false
-    general: false
-    k8s: false
-    kubeApiserver: false
-    kubeApiserverAvailability: false
-    kubeApiserverSlos: false
-    kubelet: false
-    kubePrometheusGeneral: false
-    kubePrometheusNodeRecording: false
-    kubernetesApps: false
-    kubernetesResources: false
-    kubernetesStorage: false
-    kubernetesSystem: false
-    kubeScheduler: false
-    kubeStateMetrics: false
-    network: false
-    node: false
-    vmagent: false
-    vmsingle: false
-    vmhealth: false
-    alertmanager: false
+    etcd: true
+    general: true
+    k8s: true
+    kubeApiserver: true
+    kubeApiserverAvailability: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    vmagent: true
+    vmsingle: true
+    vmhealth: true
+    alertmanager: true
 
     # Custom conditions
-    kubeControllerManager: false
-    kubeApiserverBurnrate: false
-    kubeApiserverHistogram: false
+    kubeControllerManager: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
 
 
 alertmanager:
