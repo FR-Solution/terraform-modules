@@ -1,7 +1,7 @@
 
 variable "release_name" {
   type = string
-  default = "victoria-metrics-operator"
+  default = "victoria-metrics-k8s-stack"
 }
 
 variable "chart_repo" {
@@ -11,12 +11,12 @@ variable "chart_repo" {
 
 variable "chart_name" {
   type = string
-  default = "victoria-metrics-operator"
+  default = "victoria-metrics-k8s-stack"
 }
 
 variable "chart_version" {
   type = string
-  default = "0.18.0"
+  default = "0.14.17"
 }
 
 variable "namespace" {
