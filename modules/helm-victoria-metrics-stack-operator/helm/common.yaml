@@ -28,8 +28,29 @@ grafana:
 prometheus-node-exporter:
   enabled: false
 
+
 kube-state-metrics:
-  enabled: false
+  enabled: true
+
+  resources:
+    requests:
+      # C-0050 - Resources CPU limit and request
+      cpu: 100m
+      # C-0004 - Resources memory limit and request
+      memory: 256Mi
+    limits:
+      # C-0050 - Resources CPU limit and request
+      cpu: 1000m
+      # C-0004 - Resources memory limit and request
+      memory: 1Gi
+
+  containerSecurityContext:
+    # C-0013 - Non-root containers
+    runAsNonRoot: true
+    # C-0017 - Immutable container filesystem
+    readOnlyRootFilesystem: true
+    # C-0197 - Minimize the admission of containers with allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
 
 kubelet:
   enabled: false
