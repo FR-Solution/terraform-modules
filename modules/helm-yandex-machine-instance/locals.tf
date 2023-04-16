@@ -12,5 +12,5 @@ locals {
     ssh_key               = file(var.global_vars.base.ssh_rsa_path)
   }))
 
-  merge_values = merge(local.base_values, var.extra_values.extra_values)
+  merge_values = merge(local.base_values, try(var.extra_values.extra_values, {}))
 }

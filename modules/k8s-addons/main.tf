@@ -2,7 +2,7 @@ module "base-roles" {
     source = "../helm-base-roles"
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.cilium.extra_values, {})
+    extra_values        = try(var.extra_values.addons.cilium, {})
 }
 
 module "cilium" {
@@ -15,7 +15,7 @@ module "cilium" {
     chart_version       = "1.12.6"
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.cilium.extra_values, {})
+    extra_values        = try(var.extra_values.addons.cilium, {})
 }
 
 module "yandex-cloud-controller" {
@@ -47,7 +47,7 @@ module "yandex-csi-controller" {
 
     chart_version       = "0.0.8"
     global_vars         = var.global_vars
-    extra_values = try(var.extra_values.addons.yandex-csi-controller.extra_values, {})
+    extra_values = try(var.extra_values.addons.yandex-csi-controller, {})
 }
 
 module "coredns" {
@@ -60,7 +60,7 @@ module "coredns" {
     chart_version       = "1.19.4"
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.coredns.extra_values, {})
+    extra_values        = try(var.extra_values.addons.coredns, {})
 }
 
 module "gatekeeper" {
@@ -72,7 +72,7 @@ module "gatekeeper" {
     ]
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.gatekeeper.extra_values, {})
+    extra_values        = try(var.extra_values.addons.gatekeeper, {})
 }
 
 module "certmanager" {
@@ -84,7 +84,7 @@ module "certmanager" {
     ]
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.certmanager.extra_values, {})
+    extra_values        = try(var.extra_values.addons.certmanager, {})
 }
 
 module "vault-issuer" {
@@ -109,7 +109,7 @@ module "machine-controller-manager" {
     ]
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.machine-controller-manager.extra_values, {})
+    extra_values        = try(var.extra_values.addons.machine-controller-manager, {})
 }
 
 module "compute-instance" {
@@ -124,5 +124,5 @@ module "compute-instance" {
 
     global_vars         = var.global_vars
     custom_values       = try(var.extra_values.addons.compute-instance.custom_values, {})
-    extra_values        = try(var.extra_values.addons.compute-instance.extra_values, {})
+    extra_values        = try(var.extra_values.addons.compute-instance, {})
 }

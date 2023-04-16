@@ -9,5 +9,5 @@ locals {
     cluster_name            = local.cluster_name
   }))
 
-  merge_values = merge(local.base_values, var.extra_values.extra_values)
+  merge_values = merge(local.base_values, try(var.extra_values.extra_values, {}))
 }
