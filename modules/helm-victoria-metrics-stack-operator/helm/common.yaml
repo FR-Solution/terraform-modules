@@ -32,6 +32,15 @@ prometheus-node-exporter:
 kube-state-metrics:
   enabled: true
 
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+    - key: node.cloudprovider.kubernetes.io/uninitialized
+      value: "true"
+      effect: NoSchedule
+
   resources:
     requests:
       # C-0050 - Resources CPU limit and request
