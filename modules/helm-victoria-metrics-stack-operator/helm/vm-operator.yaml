@@ -1,7 +1,8 @@
 operator:
-  enabled: true
   createCRD: true
-
+  cleanupCRD: false
+  cleanupSA:
+    create: false
 
 serviceAccount:
   create: false
