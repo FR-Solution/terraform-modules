@@ -26,6 +26,17 @@ grafana:
   service:
     type: "LoadBalancer"
   defaultDashboardsEnabled: true
+  additionalDataSources:
+    - name: prometheus-sample
+      access: proxy
+      editable: false
+      jsonData:
+          tlsSkipVerify: true
+      orgId: 1
+      type: prometheus
+      url: http://vmselect-vm-vmcluster-persistent-additional-service:8481/select/0/prometheus/
+      version: 1
+
   tolerations:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
