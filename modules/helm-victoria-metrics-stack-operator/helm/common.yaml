@@ -22,12 +22,11 @@ vmcluster:
   enabled: false
 
 grafana:
-  enabled: false
-  defaultDashboardsEnabled: false
+  enabled: true
+  defaultDashboardsEnabled: true
 
 prometheus-node-exporter:
-  enabled: false
-
+  enabled: true
 
 kube-state-metrics:
   enabled: true
