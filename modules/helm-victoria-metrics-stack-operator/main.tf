@@ -1,4 +1,4 @@
-module "certmanager" {
+module "victoria-metrics" {
 
   source = "../helm-temlate"
 
