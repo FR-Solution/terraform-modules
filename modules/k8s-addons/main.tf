@@ -127,15 +127,15 @@ module "compute-instance" {
     extra_values        = try(var.extra_values.addons.compute-instance, {})
 }
 
-module "victoria-metrics-operator" {
-    source = "../helm-victoria-metrics-operator"
+module "victoria-metrics-stack" {
+    source = "../helm-victoria-metrics-stack"
 
-    count = try(var.extra_values.addons.victoria-metrics-operator.enabled, false) == true ? 1 : 0
+    count = try(var.extra_values.addons.victoria-metrics-stack.enabled, false) == true ? 1 : 0
 
     depends_on = [
         module.coredns,
     ]
 
     global_vars         = var.global_vars
-    extra_values        = try(var.extra_values.addons.victoria-metrics-operator, {})
+    extra_values        = try(var.extra_values.addons.victoria-metrics-stack, {})
 }
