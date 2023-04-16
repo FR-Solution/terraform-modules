@@ -1,0 +1,230 @@
+victoria-metrics-operator:
+  createCRD: false
+  useLegacyCRD: false
+  rbac:
+    create: false
+    pspEnabled: false
+
+operator:
+  enabled: false
+  createCRD: false
+  cleanupCRD: false
+  cleanupSA:
+    create: false
+
+serviceAccount:
+  create: false
+
+vmsingle:
+  enabled: false
+
+vmcluster:
+  enabled: false
+
+grafana:
+  enabled: false
+  defaultDashboardsEnabled: false
+
+prometheus-node-exporter:
+  enabled: false
+
+kube-state-metrics:
+  enabled: false
+
+kubelet:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeDns:
+  enabled: false
+
+coreDns:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+defaultRules:
+  create: false
+
+  labels:
+    pfm-admins: 'true'
+
+  rules:
+    etcd: false
+    general: false
+    k8s: false
+    kubeApiserver: false
+    kubeApiserverAvailability: false
+    kubeApiserverSlos: false
+    kubelet: false
+    kubePrometheusGeneral: false
+    kubePrometheusNodeRecording: false
+    kubernetesApps: false
+    kubernetesResources: false
+    kubernetesStorage: false
+    kubernetesSystem: false
+    kubeScheduler: false
+    kubeStateMetrics: false
+    network: false
+    node: false
+    vmagent: false
+    vmsingle: false
+    vmhealth: false
+    alertmanager: false
+
+    # Custom conditions
+    kubeControllerManager: false
+    kubeApiserverBurnrate: false
+    kubeApiserverHistogram: false
+
+
+alertmanager:
+  enabled: false
+  ingress:
+    enabled: false
+
+  annotations: {}
+
+  monzoTemplate:
+    enabled: false
+
+  spec:
+    selectAllByDefault: false
+    replicaCount: 1
+
+    priorityClassName: system-cluster-critical
+
+    configSelector:
+      matchLabels:
+        pfm-admins: 'true'
+
+    configNamespaceSelector: {}
+
+    resources:
+      requests:
+        cpu: '4'
+        memory: 2Gi
+      limits:
+        cpu: '4'
+        memory: 2Gi
+
+vmalert:
+  enabled: false
+  ingress:
+    enabled: false
+
+  spec:
+
+    imagePullSecrets: []
+
+    resources:
+      requests:
+        cpu: '2'
+        memory: 2Gi
+      limits:
+        cpu: '2'
+        memory: 2Gi
+
+    replicaCount: 3
+    updateStrategy: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10%
+      maxUnavailable: 0
+
+    remoteWrite:
+      concurrency: 4
+
+
+    evaluationInterval: 15s
+
+    selectAllByDefault: false
+    ruleNamespaceSelector: {}
+    ruleSelector:
+      matchLabels:
+        pfm-admins: 'true'
+
+
+vmagent:
+  enabled: false
+  ingress:
+    enabled: false
+
+  spec:
+
+    imagePullSecrets: []
+
+    resources:
+      requests:
+        cpu: '4'
+        memory: 2Gi
+      limits:
+        cpu: '4'
+        memory: 2Gi
+  
+    extraArgs:
+      promscrape.streamParse: 'false'
+      promscrape.suppressDuplicateScrapeTargetErrors: 'true'
+
+    replicaCount: 1 # we don't support deduplication for multiple vmagent replicas
+    shardCount: 4
+
+    updateStrategy: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10%
+      maxUnavailable: 0
+
+    # because multiple deployments are used, one deployment per shard
+    topologySpreadConstraints:
+    - maxSkew: 1
+      minDomains: 1
+      topologyKey: region
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: vmagent
+          app.kubernetes.io/instance: vmagent
+          pfm-admins: 'true'
+
+    # ALERT: This usually means that `-remoteWrite.queues`
+    # https://docs.victoriametrics.com/operator/api.html#vmagentremotewritesettings
+    remoteWriteSettings:
+      queues: 16
+
+    statefulMode: false
+
+    selectAllByDefault: false
+    serviceScrapeSelector:
+      matchLabels:
+        pfm-admins: 'true'
+    serviceScrapeNamespaceSelector: {}
+
+    podScrapeSelector:
+      matchLabels:
+        pfm-admins: 'true'
+    podScrapeNamespaceSelector: {}
+
+    nodeScrapeSelector:
+      matchLabels:
+        pfm-admins: 'true'
+    nodeScrapeNamespaceSelector: {}
+
+    staticScrapeSelector:
+      matchLabels:
+        pfm-admins: 'true'
+    staticScrapeNamespaceSelector: {}
+
+    scrapeInterval: 15s
+    minScrapeInterval: 15s
+    maxScrapeInterval: 15s
