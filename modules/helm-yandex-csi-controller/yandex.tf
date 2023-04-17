@@ -1,6 +1,6 @@
 resource "yandex_iam_service_account_key" "yandex-k8s-controllers-key" {
   service_account_id = data.yandex_iam_service_account.yandex-k8s-controllers.id
-  description        = "key for service account"
+  description        = "key for cluster <${var.global_vars.cluster_metadata.cluster_name}>"
   key_algorithm      = "RSA_4096"
 
 }
