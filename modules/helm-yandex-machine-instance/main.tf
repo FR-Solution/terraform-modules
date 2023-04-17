@@ -1,7 +1,8 @@
 module "yandex-machine-instance" {
 
   depends_on = [
-    kubernetes_secret.cloud-secret
+    kubernetes_secret.cloud-secret,
+    yandex_iam_service_account_key.yandex-k8s-controllers-key
   ]
   source = "../helm-temlate"
 

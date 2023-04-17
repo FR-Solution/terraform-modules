@@ -23,8 +23,6 @@ vmcluster:
 
 grafana:
   enabled: true
-  service:
-    type: "LoadBalancer"
   defaultDashboardsEnabled: true
   additionalDataSources:
     - name: prometheus-sample
