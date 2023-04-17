@@ -27,30 +27,27 @@ metadata:
   cloudLabels:
     tair: critical
     
-template:
-      
-  spec:
-    bootDisk:
-      imageID: ${image_id}
-      typeID: network-hdd
-      autoDelete: true
-      size: 20
+bootDisk:
+  imageID: ${image_id}
+  typeID: network-hdd
+  autoDelete: true
+  size: 20
 
-    resources:
-      cpu: 8
-      coreFraction: 20
-      memory: 8
+resources:
+  cpu: 8
+  coreFraction: 20
+  memory: 8
 
-    networkInterfaces:
-      nat: true
-      regionID: ru-central1
-      subnetID: "${subnet_id}"
-      zoneID: "${zone}"
-      networkType: STANDARD
+networkInterfaces:
+  nat: true
+  regionID: ru-central1
+  subnetID: "${subnet_id}"
+  zoneID: "${zone}"
+  networkType: STANDARD
 
-    provider:
-      type: YandexCloud
-      name: ${provider_secret_name}
+provider:
+  type: YandexCloud
+  name: ${provider_secret_name}
 
 ssh:
   username: ${ssh_username}

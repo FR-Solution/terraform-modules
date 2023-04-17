@@ -17,3 +17,13 @@ k8s/terraform.tfstate.d/*
 k8s-yandex-cluster-naked/*
 
 charlotte-example/*
+charlotte-demo/.terraform.lock.hcl
+charlotte-demo/export.sh
+charlotte-demo/hbf-server.tf
+charlotte-demo/main.tf
+charlotte-demo/providers.tf
+charlotte-demo/README.md
+charlotte-demo/terraform.tfstate
+charlotte-demo/terraform.tfstate.backup
+charlotte-demo/.terraform/terraform.tfstate
+charlotte-demo/.terraform/providers/registry.terraform.io/fraima/charlotte/1.0.3/linux_amd64
