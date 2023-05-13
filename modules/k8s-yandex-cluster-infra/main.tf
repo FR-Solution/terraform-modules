@@ -25,7 +25,7 @@ module "k8s-vault-master" {
     module.k8s-vault-cluster,
   ]
   source = "../k8s-vault-master"
-  k8s_global_vars   = var.k8s_global_vars
+  k8s_global_vars   = module.k8s-global-vars
 }   
 
 module "k8s-masters" {
