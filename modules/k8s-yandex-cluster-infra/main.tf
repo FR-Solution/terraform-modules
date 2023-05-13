@@ -70,7 +70,7 @@ module "addons" {
         module.k8s-ready-status
     ]
 
-    global_vars         = module.k8s-global-vars
-    extra_values        = var.global_vars
+    k8s_global_vars         = module.k8s-global-vars
+    extra_values            = var.global_vars
 
 }
