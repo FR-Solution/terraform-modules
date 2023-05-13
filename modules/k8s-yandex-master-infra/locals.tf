@@ -48,12 +48,12 @@ locals {
   }
 
   etcd_member_servers_srv = flatten([
-    for master_index, master_value in local.master_instance_extra_list: [
+    for master_index, master_value in var.k8s_global_vars.master_vars.master_instance_extra_list: [
      "0 0 ${local.etcd_peer_port} ${master_value}.${local.base_cluster_fqdn}."
     ]
   ])
   etcd_member_clients_srv = flatten([
-    for master_index, master_value in local.master_instance_extra_list: [
+    for master_index, master_value in var.k8s_global_vars.master_vars.master_instance_extra_list: [
      "0 0 ${local.etcd_peer_port} ${master_value}.${local.base_cluster_fqdn}."
     ]
   ])

@@ -6,7 +6,7 @@ resource "yandex_compute_instance" "master" {
     yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_all,
     yandex_lockbox_secret_version.master_key_keeper_approles_role_id_all,
   ]
-  for_each    = local.master_instance_list_map
+  for_each    = var.k8s_global_vars.master_vars.master_instance_list_map
 
   name        = "${replace(each.key, "-", "-${local.extra_cluster_name}-")}"
   hostname    = "${replace(each.key, "-", "-${local.extra_cluster_name}-")}.${local.base_cluster_fqdn}"
