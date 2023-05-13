@@ -5,7 +5,7 @@ resource "yandex_lb_target_group" "master-tg" {
   region_id   = "ru-central1"
 
   dynamic "target" {
-    for_each = local.master_instance_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_list_map
 
     content {
       subnet_id = yandex_vpc_subnet.master-subnets[

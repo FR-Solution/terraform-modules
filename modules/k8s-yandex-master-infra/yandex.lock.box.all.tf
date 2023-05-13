@@ -1,11 +1,11 @@
 
 resource "yandex_lockbox_secret" "master_key_keeper_approles_role_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
     name = "${each.key}-all-role-id"
 }
 
 resource "yandex_lockbox_secret_version" "master_key_keeper_approles_role_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
 
     secret_id = yandex_lockbox_secret.master_key_keeper_approles_role_id_all[each.key].id
 
@@ -19,12 +19,12 @@ resource "yandex_lockbox_secret_version" "master_key_keeper_approles_role_id_all
 }
 
 resource "yandex_lockbox_secret" "master_key_keeper_approles_secret_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
     name = "${each.key}-all-secret-id"
 }
 
 resource "yandex_lockbox_secret_version" "master_key_keeper_approles_secret_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
 
     secret_id = yandex_lockbox_secret.master_key_keeper_approles_secret_id_all[each.key].id
 

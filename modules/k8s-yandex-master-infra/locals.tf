@@ -36,29 +36,9 @@ locals {
 
   master_regexp = "${local.master_group.name}-\\d*"
 
-  master_instance_list        = flatten([
-    for master-index in range(local.master_group.count): [
-     "${local.master_group.name}-${sum([master-index, 1])}"
-    ]
-  ])
-
-  master_instance_list_map = { for item in local.master_instance_list :
-    item => {}
-  }
-
-  master_instance_extra_list        = flatten([
-    for master-index in range(local.master_group.count): [
-     "${local.master_group.name}-${local.extra_cluster_name}-${sum([master-index, 1])}"
-    ]
-  ])
-
-  master_instance_extra_list_map = { for item in local.master_instance_extra_list :
-    item => {}
-  }
-
   instances_disk = flatten([
   for disk_index, disk_name in keys(local.master_group.resources.disk.secondary_disk) : [
-      for instance_name in local.master_instance_list:
+      for instance_name in var.k8s_global_vars.master_vars.master_instance_list:
         {"${disk_name}_${instance_name}" = {}}
         ]
       ]
@@ -102,7 +82,7 @@ locals {
   }
 
   subnets = flatten([
-  for instance_name in keys(local.master_instance_list_map) : 
+  for instance_name in keys(local.master_vars.master_instance_list_map) : 
         "${try(
         local.master_group.resources_overwrite[instance_name].network_interface.subnet,
         local.master_group.default_subnet
