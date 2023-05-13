@@ -72,5 +72,5 @@ module "addons" {
 
     global_vars         = module.k8s-global-vars
     extra_values        = var.global_vars
-    master_group        = var.master_group
+
 }

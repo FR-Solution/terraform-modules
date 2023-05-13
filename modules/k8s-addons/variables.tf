@@ -5,7 +5,3 @@ variable "global_vars" {
 variable "extra_values" {
   type = any
 }
-
-variable "master_group" {
-  type = any
-}

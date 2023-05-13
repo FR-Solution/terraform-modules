@@ -25,8 +25,8 @@ module "yandex-cloud-controller" {
 
     chart_version = "0.0.7"
 
-    yandex_default_vpc_name         = var.master_group.vpc_name
-    yandex_default_route_table_name = var.master_group.route_table_name
+    yandex_default_vpc_name         = var.k8s_global_vars.master_vars.master_group.vpc_name
+    yandex_default_route_table_name = var.k8s_global_vars.master_vars.master_group.route_table_name
     namespace                       = "kube-fraima-yandex-cloud-controller"
 
     global_vars = var.global_vars
