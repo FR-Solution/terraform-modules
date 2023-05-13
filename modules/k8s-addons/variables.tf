@@ -1,4 +1,4 @@
-variable "global_vars" {
+variable "k8s_global_vars" {
   type = any
 }
 

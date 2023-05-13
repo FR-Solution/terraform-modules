@@ -1,7 +1,7 @@
 module "base-roles" {
     source = "../helm-base-roles"
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.cilium, {})
 }
 
@@ -14,7 +14,7 @@ module "cilium" {
     ]
     chart_version       = "1.12.6"
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.cilium, {})
 }
 
@@ -29,7 +29,7 @@ module "yandex-cloud-controller" {
     yandex_default_route_table_name = var.k8s_global_vars.master_vars.master_group.route_table_name
     namespace                       = "kube-fraima-yandex-cloud-controller"
 
-    global_vars = var.global_vars
+    global_vars = var.k8s_global_vars
 
     extra_values = try(var.extra_values.addons.yandex-cloud-controller, {})
 }
@@ -46,7 +46,7 @@ module "yandex-csi-controller" {
     namespace           = "kube-fraima-yandex-csi-controller"
 
     chart_version       = "0.0.8"
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values = try(var.extra_values.addons.yandex-csi-controller, {})
 }
 
@@ -59,7 +59,7 @@ module "coredns" {
     ]
     chart_version       = "1.19.4"
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.coredns, {})
 }
 
@@ -71,7 +71,7 @@ module "gatekeeper" {
         module.coredns,
     ]
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.gatekeeper, {})
 }
 
@@ -83,7 +83,7 @@ module "certmanager" {
         module.gatekeeper,
     ]
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.certmanager, {})
 }
 
@@ -96,7 +96,7 @@ module "vault-issuer" {
         module.gatekeeper,
     ]
 
-    global_vars = var.global_vars
+    global_vars = var.k8s_global_vars
 
 }
 
@@ -108,7 +108,7 @@ module "machine-controller-manager" {
         module.gatekeeper,
     ]
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.machine-controller-manager, {})
 }
 
@@ -122,7 +122,7 @@ module "compute-instance" {
       module.machine-controller-manager
     ]
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     custom_values       = try(var.extra_values.addons.compute-instance.custom_values, {})
     extra_values        = try(var.extra_values.addons.compute-instance, {})
 }
@@ -136,6 +136,6 @@ module "victoria-metrics-stack-operator" {
         module.coredns,
     ]
 
-    global_vars         = var.global_vars
+    global_vars         = var.k8s_global_vars
     extra_values        = try(var.extra_values.addons.victoria-metrics-stack-operator, {})
 }
