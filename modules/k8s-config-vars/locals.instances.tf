@@ -33,8 +33,8 @@ locals {
   }
   
   master_instance_list        = flatten([
-    for master-index in range(local.master_group.count): [
-     "${local.master_group.name}-${sum([master-index, 1])}"
+    for master-index in range(var.extra_args.master_group.count): [
+     "${var.extra_args.master_group.name}-${sum([master-index, 1])}"
     ]
   ])
 
@@ -43,8 +43,8 @@ locals {
   }
 
   master_instance_extra_list        = flatten([
-    for master-index in range(local.master_group.count): [
-     "${local.master_group.name}-${local.extra_cluster_name}-${sum([master-index, 1])}"
+    for master-index in range(var.extra_args.master_group.count): [
+     "${var.extra_args.master_group.name}-${var.k8s_global_vars.k8s-addresses.extra_cluster_name}-${sum([master-index, 1])}"
     ]
   ])
 
