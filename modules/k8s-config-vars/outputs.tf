@@ -49,3 +49,7 @@ output "kube_flags" {
 output "k8s_provider" {
   value = local.k8s_provider
 }
+
+output "master_vars" {
+  value = local.master_vars
+}

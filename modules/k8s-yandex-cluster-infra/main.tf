@@ -20,15 +20,23 @@ module "k8s-vault-cluster" {
   k8s_global_vars = module.k8s-global-vars
 }
 
+module "k8s-vault-master" {
+  depends_on = [
+    module.k8s-vault-cluster,
+  ]
+  source = "../k8s-vault-master"
+  k8s_global_vars   = var.k8s_global_vars
+}   
+
 module "k8s-masters" {
   depends_on = [
-    module.k8s-vault,
+    module.k8s-vault-master,
   ]
-  source          = "../k8s-yandex-master-infra"
-  k8s_global_vars = module.k8s-global-vars
+  source            = "../k8s-yandex-master-infra"
 
-  master_group   = var.master_group
-  cloud_metadata = var.cloud_metadata
+  k8s_global_vars   = module.k8s-global-vars
+  cloud_metadata    = var.cloud_metadata
+  k8s_vault_master  = module.k8s-vault-master
 }
 
 # module "k8s-masters-firewall" {

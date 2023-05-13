@@ -16,26 +16,26 @@ resource "yandex_compute_instance" "master" {
   platform_id = "standard-v1"
 
   zone = try(
-    var.master_group.resources_overwrite[each.key].network_interface.zone, 
-    var.master_group.default_zone 
+    local.master_group.resources_overwrite[each.key].network_interface.zone, 
+    local.master_group.default_zone 
   )
   
   service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
 
   resources {
-    cores         = var.master_group.resources.core
-    memory        = var.master_group.resources.memory
-    core_fraction = var.master_group.resources.core_fraction
+    cores         = local.master_group.resources.core
+    memory        = local.master_group.resources.memory
+    core_fraction = local.master_group.resources.core_fraction
   }
 
   boot_disk {
     initialize_params {
       image_id = try(
-        var.master_group.resources_overwrite[each.key].disk.boot.image_id, 
-        var.master_group.resources.disk.boot.image_id
+        local.master_group.resources_overwrite[each.key].disk.boot.image_id, 
+        local.master_group.resources.disk.boot.image_id
       )
-      size     = var.master_group.resources.disk.boot.size
-      type     = var.master_group.resources.disk.boot.type
+      size     = local.master_group.resources.disk.boot.size
+      type     = local.master_group.resources.disk.boot.type
     }
   }
 
@@ -56,14 +56,14 @@ resource "yandex_compute_instance" "master" {
   network_interface {
     subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
-        var.master_group.resources_overwrite[each.key].network_interface.subnet, 
-        var.master_group.default_subnet 
+        local.master_group.resources_overwrite[each.key].network_interface.subnet, 
+        local.master_group.default_subnet 
       )}:${try(
-        var.master_group.resources_overwrite[each.key].network_interface.zone, 
-        var.master_group.default_zone 
+        local.master_group.resources_overwrite[each.key].network_interface.zone, 
+        local.master_group.default_zone 
       )}"
     ].id
-    nat = var.master_group.resources.network_interface.nat
+    nat = local.master_group.resources.network_interface.nat
   }
 
   lifecycle {

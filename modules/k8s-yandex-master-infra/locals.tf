@@ -11,8 +11,8 @@ locals {
   etcd_srv_server_record            = "_etcd-server-ssl._tcp.${local.base_cluster_fqdn}."
   etcd_srv_client_record            = "_etcd-client-ssl._tcp.${local.base_cluster_fqdn}."
 
-  master_secondary_disk             = var.master_group.resources.disk.secondary_disk
-  master_subnet_prefix_name         = "${local.cluster_name}-${var.master_group.name}"
+  master_secondary_disk             = local.master_group.resources.disk.secondary_disk
+  master_subnet_prefix_name         = "${local.cluster_name}-${local.master_group.name}"
   
   kube_apiserver_port_lb            = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
   kube_apiserver_port               = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
@@ -23,19 +23,22 @@ locals {
 
   yandex_lb_target_group_master     = "${local.cluster_name}${data.yandex_vpc_network.cluster-vpc.id}"
 
-  secret_id_all                     = module.k8s-vault-master.secret_id_all
-  role_id_all                       = module.k8s-vault-master.role_id_all 
+  secret_id_all                     = var.k8s_vault_master.secret_id_all
+  role_id_all                       = var.k8s_vault_master.role_id_all 
 
   user_data                         = module.k8s-cloud-init-master.cloud-init-render
 }
 
 
 locals {
-  master_regexp = "${var.master_group.name}-\\d*"
+  master_vars   = var.k8s_global_vars.master_vars
+  master_group  = local.master_vars.master_group
+
+  master_regexp = "${local.master_group.name}-\\d*"
 
   master_instance_list        = flatten([
-    for master-index in range(var.master_group.count): [
-     "${var.master_group.name}-${sum([master-index, 1])}"
+    for master-index in range(local.master_group.count): [
+     "${local.master_group.name}-${sum([master-index, 1])}"
     ]
   ])
 
@@ -44,8 +47,8 @@ locals {
   }
 
   master_instance_extra_list        = flatten([
-    for master-index in range(var.master_group.count): [
-     "${var.master_group.name}-${local.extra_cluster_name}-${sum([master-index, 1])}"
+    for master-index in range(local.master_group.count): [
+     "${local.master_group.name}-${local.extra_cluster_name}-${sum([master-index, 1])}"
     ]
   ])
 
@@ -54,7 +57,7 @@ locals {
   }
 
   instances_disk = flatten([
-  for disk_index, disk_name in keys(var.master_group.resources.disk.secondary_disk) : [
+  for disk_index, disk_name in keys(local.master_group.resources.disk.secondary_disk) : [
       for instance_name in local.master_instance_list:
         {"${disk_name}_${instance_name}" = {}}
         ]
@@ -101,11 +104,11 @@ locals {
   subnets = flatten([
   for instance_name in keys(local.master_instance_list_map) : 
         "${try(
-        var.master_group.resources_overwrite[instance_name].network_interface.subnet,
-        var.master_group.default_subnet
+        local.master_group.resources_overwrite[instance_name].network_interface.subnet,
+        local.master_group.default_subnet
         )}:${try(
-        var.master_group.resources_overwrite[instance_name].network_interface.zone,
-        var.master_group.default_zone 
+        local.master_group.resources_overwrite[instance_name].network_interface.zone,
+        local.master_group.default_zone 
         )}"
       ]
   )

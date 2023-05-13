@@ -8,3 +8,8 @@ variable "master_instance_list_map" {
   type        = any
   default     = null
 }
+
+variable "vault_approle_auth_backend_role_secret_id" {
+  type        = bool
+  default     = true
+}

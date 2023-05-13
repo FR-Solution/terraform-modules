@@ -42,48 +42,49 @@ variable "cloud_metadata" {
 variable "global_vars" {
   type = any
 }
-variable "master_group"{
-  type = object({
-    name = string
-    count = number
-    vpc_name = string
-    route_table_name = string
-    # subnets = any
-    default_subnet  = optional(string, "")
-    default_zone    = optional(string, "")
-    resources_overwrite = any
-    resources = any
-    metadata = any
-    # ssh_username = string
-    # ssh_rsa_path = string
 
-  })
-  validation {
-      condition = (
-        contains([1,3,5], var.master_group.count) == true
-      )
-      error_message = "var.master_group.count is not correct. Number of master can be 1,3,5"
-  }
-  default = {
-    name = "master"
-    count = 0
-    vpc_name = null
-    # subnets = null
-    route_table_name = ""
-    default_subnet = "10.1.0.0/16"
-    default_zone = "ru-central1-a"
-    resources_overwrite = {}
-    metadata = {}
-    resources = {
-      core = 4
-      memory = 8
-      core_fraction = 100
-      disk = {}
-      first_disk = 20
-      etcd_disk = 60
-    }
-    # ssh_username = "dkot"
-    # ssh_rsa_path = "~/.ssh/id_rsa"
+# variable "master_group"{
+#   type = object({
+#     name = string
+#     count = number
+#     vpc_name = string
+#     route_table_name = string
+#     # subnets = any
+#     default_subnet  = optional(string, "")
+#     default_zone    = optional(string, "")
+#     resources_overwrite = any
+#     resources = any
+#     metadata = any
+#     # ssh_username = string
+#     # ssh_rsa_path = string
 
-  }
-}
+#   })
+#   validation {
+#       condition = (
+#         contains([1,3,5], var.master_group.count) == true
+#       )
+#       error_message = "var.master_group.count is not correct. Number of master can be 1,3,5"
+#   }
+#   default = {
+#     name = "master"
+#     count = 0
+#     vpc_name = null
+#     # subnets = null
+#     route_table_name = ""
+#     default_subnet = "10.1.0.0/16"
+#     default_zone = "ru-central1-a"
+#     resources_overwrite = {}
+#     metadata = {}
+#     resources = {
+#       core = 4
+#       memory = 8
+#       core_fraction = 100
+#       disk = {}
+#       first_disk = 20
+#       etcd_disk = 60
+#     }
+#     # ssh_username = "dkot"
+#     # ssh_rsa_path = "~/.ssh/id_rsa"
+
+#   }
+# }

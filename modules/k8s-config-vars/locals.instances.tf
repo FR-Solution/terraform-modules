@@ -32,4 +32,7 @@ locals {
 
   }
 
+  master_vars = {
+    master_group = var.extra_args.master_group
+  }
 }
