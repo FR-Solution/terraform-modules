@@ -12,7 +12,7 @@ locals {
   etcd_srv_client_record            = "_etcd-client-ssl._tcp.${local.base_cluster_fqdn}."
 
   master_secondary_disk             = var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk
-  master_subnet_prefix_name         = "${local.cluster_name}-${var.k8s_global_vars.master_vars.masteg_group.name}"
+  master_subnet_prefix_name         = "${local.cluster_name}-${var.k8s_global_vars.master_vars.master_group.name}"
   
   kube_apiserver_port_lb            = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
   kube_apiserver_port               = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
@@ -34,7 +34,7 @@ locals {
   master_vars   = var.k8s_global_vars.master_vars
   master_group  = local.master_vars.master_group
 
-  master_regexp = "${var.k8s_global_vars.master_vars.masteg_group.name}-\\d*"
+  master_regexp = "${var.k8s_global_vars.master_vars.master_group.name}-\\d*"
 
   instances_disk = flatten([
   for disk_index, disk_name in keys(var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk) : [
