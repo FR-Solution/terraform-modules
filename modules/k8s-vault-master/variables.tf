@@ -9,7 +9,7 @@ variable "master_instance_list_map" {
   default     = null
 }
 
-variable "k8s_vault_master_secre_id" {
+variable "k8s_vault_master_secret_id" {
   type = object({
     enabled = bool
   })
