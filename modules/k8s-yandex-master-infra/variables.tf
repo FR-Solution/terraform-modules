@@ -37,7 +37,7 @@ variable "cloud_metadata" {
 #     # subnets = any
 #     default_subnet  = optional(string, "")
 #     default_zone    = optional(string, "")
-#     resources_overwrite = any
+#     resources_override = any
 #     resources = any
 #     metadata = any
 #   })
@@ -49,7 +49,7 @@ variable "cloud_metadata" {
 #     default_subnet = null
 #     route_table_name = ""
 #     default_zone = "ru-central1-a"
-#     resources_overwrite = {}
+#     resources_override = {}
 #     metadata = {}
 #     resources = {
 #       core = 4

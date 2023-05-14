@@ -16,7 +16,7 @@ resource "yandex_compute_instance" "master" {
   platform_id = "standard-v1"
 
   zone = try(
-    var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.zone, 
+    var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.zone, 
     var.k8s_global_vars.master_vars.master_group.default_zone 
   )
   
@@ -31,7 +31,7 @@ resource "yandex_compute_instance" "master" {
   boot_disk {
     initialize_params {
       image_id = try(
-        var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].disk.boot.image_id, 
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].disk.boot.image_id, 
         var.k8s_global_vars.master_vars.master_group.resources.disk.boot.image_id
       )
       size     = var.k8s_global_vars.master_vars.master_group.resources.disk.boot.size
@@ -56,10 +56,10 @@ resource "yandex_compute_instance" "master" {
   network_interface {
     subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
-        var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.subnet, 
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.subnet, 
         var.k8s_global_vars.master_vars.master_group.default_subnet 
       )}:${try(
-        var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.zone, 
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.zone, 
         var.k8s_global_vars.master_vars.master_group.default_zone 
       )}"
     ].id

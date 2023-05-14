@@ -10,10 +10,10 @@ resource "yandex_lb_target_group" "master-tg" {
     content {
       subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
-        var.k8s_global_vars.master_vars.master_group.resources_overwrite[target.key].network_interface.subnet, 
+        var.k8s_global_vars.master_vars.master_group.resources_override[target.key].network_interface.subnet, 
         var.k8s_global_vars.master_vars.master_group.default_subnet 
       )}:${try(
-        var.k8s_global_vars.master_vars.master_group.resources_overwrite[target.key].network_interface.zone, 
+        var.k8s_global_vars.master_vars.master_group.resources_override[target.key].network_interface.zone, 
         var.k8s_global_vars.master_vars.master_group.default_zone 
       )}"
       ].id
