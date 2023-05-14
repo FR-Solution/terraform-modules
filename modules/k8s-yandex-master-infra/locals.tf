@@ -11,7 +11,7 @@ locals {
   etcd_srv_server_record            = "_etcd-server-ssl._tcp.${local.base_cluster_fqdn}."
   etcd_srv_client_record            = "_etcd-client-ssl._tcp.${local.base_cluster_fqdn}."
 
-  master_secondary_disk             = var.k8s_global_vars.master_vars.resources.disk.secondary_disk
+  master_secondary_disk             = var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk
   master_subnet_prefix_name         = "${local.cluster_name}-${var.k8s_global_vars.master_vars.name}"
   
   kube_apiserver_port_lb            = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
@@ -37,7 +37,7 @@ locals {
   master_regexp = "${var.k8s_global_vars.master_vars.name}-\\d*"
 
   instances_disk = flatten([
-  for disk_index, disk_name in keys(var.k8s_global_vars.master_vars.resources.disk.secondary_disk) : [
+  for disk_index, disk_name in keys(var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk) : [
       for instance_name in var.k8s_global_vars.master_vars.master_instance_list:
         {"${disk_name}_${instance_name}" = {}}
         ]
@@ -84,10 +84,10 @@ locals {
   subnets = flatten([
   for instance_name in keys(local.master_vars.master_instance_list_map) : 
         "${try(
-        var.k8s_global_vars.master_vars.resources_overwrite[instance_name].network_interface.subnet,
+        var.k8s_global_vars.master_vars.master_group.resources_overwrite[instance_name].network_interface.subnet,
         var.k8s_global_vars.master_vars.default_subnet
         )}:${try(
-        var.k8s_global_vars.master_vars.resources_overwrite[instance_name].network_interface.zone,
+        var.k8s_global_vars.master_vars.master_group.resources_overwrite[instance_name].network_interface.zone,
         var.k8s_global_vars.master_vars.default_zone 
         )}"
       ]
