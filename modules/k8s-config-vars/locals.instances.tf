@@ -31,5 +31,32 @@ locals {
     }
 
   }
+  
+  master_instance_list        = flatten([
+    for master-index in range(var.extra_args.master_group.count): [
+     "${var.extra_args.master_group.name}-${sum([master-index, 1])}"
+    ]
+  ])
 
+  master_instance_list_map = { for item in local.master_instance_list :
+    item => {}
+  }
+
+  master_instance_extra_list        = flatten([
+    for master-index in range(var.extra_args.master_group.count): [
+     "${var.extra_args.master_group.name}-${local.k8s-addresses.extra_cluster_name}-${sum([master-index, 1])}"
+    ]
+  ])
+
+  master_instance_extra_list_map = { for item in local.master_instance_extra_list :
+    item => {}
+  }
+
+  master_vars = {
+    master_group = var.extra_args.master_group
+    master_instance_list            = local.master_instance_list
+    master_instance_list_map        = local.master_instance_list_map
+    master_instance_extra_list      = local.master_instance_extra_list
+    master_instance_extra_list_map  = local.master_instance_extra_list_map
+  }
 }

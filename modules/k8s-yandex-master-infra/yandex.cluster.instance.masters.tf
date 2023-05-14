@@ -6,7 +6,7 @@ resource "yandex_compute_instance" "master" {
     yandex_lockbox_secret_version.master_key_keeper_approles_secret_id_all,
     yandex_lockbox_secret_version.master_key_keeper_approles_role_id_all,
   ]
-  for_each    = local.master_instance_list_map
+  for_each    = var.k8s_global_vars.master_vars.master_instance_list_map
 
   name        = "${replace(each.key, "-", "-${local.extra_cluster_name}-")}"
   hostname    = "${replace(each.key, "-", "-${local.extra_cluster_name}-")}.${local.base_cluster_fqdn}"
@@ -16,26 +16,26 @@ resource "yandex_compute_instance" "master" {
   platform_id = "standard-v1"
 
   zone = try(
-    var.master_group.resources_overwrite[each.key].network_interface.zone, 
-    var.master_group.default_zone 
+    var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.zone, 
+    var.k8s_global_vars.master_vars.master_group.default_zone 
   )
   
   service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
 
   resources {
-    cores         = var.master_group.resources.core
-    memory        = var.master_group.resources.memory
-    core_fraction = var.master_group.resources.core_fraction
+    cores         = var.k8s_global_vars.master_vars.master_group.resources.core
+    memory        = var.k8s_global_vars.master_vars.master_group.resources.memory
+    core_fraction = var.k8s_global_vars.master_vars.master_group.resources.core_fraction
   }
 
   boot_disk {
     initialize_params {
       image_id = try(
-        var.master_group.resources_overwrite[each.key].disk.boot.image_id, 
-        var.master_group.resources.disk.boot.image_id
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].disk.boot.image_id, 
+        var.k8s_global_vars.master_vars.master_group.resources.disk.boot.image_id
       )
-      size     = var.master_group.resources.disk.boot.size
-      type     = var.master_group.resources.disk.boot.type
+      size     = var.k8s_global_vars.master_vars.master_group.resources.disk.boot.size
+      type     = var.k8s_global_vars.master_vars.master_group.resources.disk.boot.type
     }
   }
 
@@ -56,14 +56,14 @@ resource "yandex_compute_instance" "master" {
   network_interface {
     subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
-        var.master_group.resources_overwrite[each.key].network_interface.subnet, 
-        var.master_group.default_subnet 
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.subnet, 
+        var.k8s_global_vars.master_vars.master_group.default_subnet 
       )}:${try(
-        var.master_group.resources_overwrite[each.key].network_interface.zone, 
-        var.master_group.default_zone 
+        var.k8s_global_vars.master_vars.master_group.resources_override[each.key].network_interface.zone, 
+        var.k8s_global_vars.master_vars.master_group.default_zone 
       )}"
     ].id
-    nat = var.master_group.resources.network_interface.nat
+    nat = var.k8s_global_vars.master_vars.master_group.resources.network_interface.nat
   }
 
   lifecycle {

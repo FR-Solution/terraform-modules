@@ -5,16 +5,16 @@ resource "yandex_lb_target_group" "master-tg" {
   region_id   = "ru-central1"
 
   dynamic "target" {
-    for_each = local.master_instance_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_list_map
 
     content {
       subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
-        var.master_group.resources_overwrite[target.key].network_interface.subnet, 
-        var.master_group.default_subnet 
+        var.k8s_global_vars.master_vars.master_group.resources_override[target.key].network_interface.subnet, 
+        var.k8s_global_vars.master_vars.master_group.default_subnet 
       )}:${try(
-        var.master_group.resources_overwrite[target.key].network_interface.zone, 
-        var.master_group.default_zone 
+        var.k8s_global_vars.master_vars.master_group.resources_override[target.key].network_interface.zone, 
+        var.k8s_global_vars.master_vars.master_group.default_zone 
       )}"
       ].id
       address   = yandex_compute_instance.master[target.key].network_interface.0.ip_address

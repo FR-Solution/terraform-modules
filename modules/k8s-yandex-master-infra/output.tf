@@ -9,10 +9,6 @@ output "master_cidr_list" {
     ])
 }
 
-output "master_instance_list_map" {
-  value = local.master_instance_list_map
-}
-
 output "yandex_compute_instance_master" {
   value = yandex_compute_instance.master
 }

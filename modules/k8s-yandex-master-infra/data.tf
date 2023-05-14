@@ -12,9 +12,9 @@ data "yandex_resourcemanager_folder" "current" {
 }
 
 data "yandex_vpc_network" "cluster-vpc" {
-  name = var.master_group.vpc_name
+  name = var.k8s_global_vars.master_vars.master_group.vpc_name
 }
 
 data "yandex_vpc_route_table" "cluster-vpc-route-table" {
-  name = var.master_group.route_table_name
+  name = var.k8s_global_vars.master_vars.master_group.route_table_name
 }

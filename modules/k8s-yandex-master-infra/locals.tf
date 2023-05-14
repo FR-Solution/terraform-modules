@@ -11,8 +11,8 @@ locals {
   etcd_srv_server_record            = "_etcd-server-ssl._tcp.${local.base_cluster_fqdn}."
   etcd_srv_client_record            = "_etcd-client-ssl._tcp.${local.base_cluster_fqdn}."
 
-  master_secondary_disk             = var.master_group.resources.disk.secondary_disk
-  master_subnet_prefix_name         = "${local.cluster_name}-${var.master_group.name}"
+  master_secondary_disk             = var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk
+  master_subnet_prefix_name         = "${local.cluster_name}-${var.k8s_global_vars.master_vars.master_group.name}"
   
   kube_apiserver_port_lb            = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb
   kube_apiserver_port               = var.k8s_global_vars.kubernetes-ports.kube-apiserver-port
@@ -23,39 +23,22 @@ locals {
 
   yandex_lb_target_group_master     = "${local.cluster_name}${data.yandex_vpc_network.cluster-vpc.id}"
 
-  secret_id_all                     = module.k8s-vault-master.secret_id_all
-  role_id_all                       = module.k8s-vault-master.role_id_all 
+  secret_id_all                     = var.k8s_vault_master.secret_id_all
+  role_id_all                       = var.k8s_vault_master.role_id_all 
 
   user_data                         = module.k8s-cloud-init-master.cloud-init-render
 }
 
 
 locals {
-  master_regexp = "${var.master_group.name}-\\d*"
+  master_vars   = var.k8s_global_vars.master_vars
+  master_group  = local.master_vars.master_group
 
-  master_instance_list        = flatten([
-    for master-index in range(var.master_group.count): [
-     "${var.master_group.name}-${sum([master-index, 1])}"
-    ]
-  ])
-
-  master_instance_list_map = { for item in local.master_instance_list :
-    item => {}
-  }
-
-  master_instance_extra_list        = flatten([
-    for master-index in range(var.master_group.count): [
-     "${var.master_group.name}-${local.extra_cluster_name}-${sum([master-index, 1])}"
-    ]
-  ])
-
-  master_instance_extra_list_map = { for item in local.master_instance_extra_list :
-    item => {}
-  }
+  master_regexp = "${var.k8s_global_vars.master_vars.master_group.name}-\\d*"
 
   instances_disk = flatten([
-  for disk_index, disk_name in keys(var.master_group.resources.disk.secondary_disk) : [
-      for instance_name in local.master_instance_list:
+  for disk_index, disk_name in keys(var.k8s_global_vars.master_vars.master_group.resources.disk.secondary_disk) : [
+      for instance_name in var.k8s_global_vars.master_vars.master_instance_list:
         {"${disk_name}_${instance_name}" = {}}
         ]
       ]
@@ -65,12 +48,12 @@ locals {
   }
 
   etcd_member_servers_srv = flatten([
-    for master_index, master_value in local.master_instance_extra_list: [
+    for master_index, master_value in var.k8s_global_vars.master_vars.master_instance_extra_list: [
      "0 0 ${local.etcd_peer_port} ${master_value}.${local.base_cluster_fqdn}."
     ]
   ])
   etcd_member_clients_srv = flatten([
-    for master_index, master_value in local.master_instance_extra_list: [
+    for master_index, master_value in var.k8s_global_vars.master_vars.master_instance_extra_list: [
      "0 0 ${local.etcd_peer_port} ${master_value}.${local.base_cluster_fqdn}."
     ]
   ])
@@ -99,13 +82,13 @@ locals {
   }
 
   subnets = flatten([
-  for instance_name in keys(local.master_instance_list_map) : 
+  for instance_name in keys(local.master_vars.master_instance_list_map) : 
         "${try(
-        var.master_group.resources_overwrite[instance_name].network_interface.subnet,
-        var.master_group.default_subnet
+        var.k8s_global_vars.master_vars.master_group.resources_override[instance_name].network_interface.subnet,
+        var.k8s_global_vars.master_vars.master_group.default_subnet
         )}:${try(
-        var.master_group.resources_overwrite[instance_name].network_interface.zone,
-        var.master_group.default_zone 
+        var.k8s_global_vars.master_vars.master_group.resources_override[instance_name].network_interface.zone,
+        var.k8s_global_vars.master_vars.master_group.default_zone 
         )}"
       ]
   )

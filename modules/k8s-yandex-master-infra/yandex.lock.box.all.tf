@@ -1,11 +1,11 @@
 
 resource "yandex_lockbox_secret" "master_key_keeper_approles_role_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
     name = "${each.key}-all-role-id"
 }
 
 resource "yandex_lockbox_secret_version" "master_key_keeper_approles_role_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
 
     secret_id = yandex_lockbox_secret.master_key_keeper_approles_role_id_all[each.key].id
 
@@ -13,18 +13,18 @@ resource "yandex_lockbox_secret_version" "master_key_keeper_approles_role_id_all
         for_each = local.map_role_id_all
         content {
             key        = replace(entries.key, "-", "-${local.extra_cluster_name}-")
-            text_value = module.k8s-vault-master.role_id_all[entries.key].role_id
+            text_value = local.role_id_all[entries.key].role_id
         }
     }
 }
 
 resource "yandex_lockbox_secret" "master_key_keeper_approles_secret_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
     name = "${each.key}-all-secret-id"
 }
 
 resource "yandex_lockbox_secret_version" "master_key_keeper_approles_secret_id_all" {
-    for_each = local.master_instance_extra_list_map
+    for_each = var.k8s_global_vars.master_vars.master_instance_extra_list_map
 
     secret_id = yandex_lockbox_secret.master_key_keeper_approles_secret_id_all[each.key].id
 
@@ -32,7 +32,7 @@ resource "yandex_lockbox_secret_version" "master_key_keeper_approles_secret_id_a
         for_each = local.map_secret_id_alls
         content {
             key        = replace(entries.key, "-", "-${local.extra_cluster_name}-")
-            text_value = module.k8s-vault-master.secret_id_all[entries.key].secret_id
+            text_value = local.secret_id_all[entries.key].secret_id
         }
     }
 }
