@@ -1,9 +1,9 @@
 locals {
   default_kube_controller_manager_flags = {
-    secure-port         = "${ local.kubernetes-ports.kube-controller-manager-port }"
-    cluster-cidr        = "${ local.k8s_network.pod_cidr }"
-    node-cidr-mask-size = "${ local.k8s_network.node_cidr_mask }"
-    cluster-name        = "${ local.cluster_metadata.cluster_name}"
+    secure-port         = "${local.kubernetes-ports.kube-controller-manager-port}"
+    cluster-cidr        = "${local.k8s_network.pod_cidr}"
+    node-cidr-mask-size = "${local.k8s_network.node_cidr_mask}"
+    cluster-name        = "${local.cluster_metadata.cluster_name}"
   }
 }
 

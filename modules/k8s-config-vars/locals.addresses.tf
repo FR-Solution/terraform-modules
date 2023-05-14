@@ -1,13 +1,13 @@
 locals {
   cluster_metadata = {
     cluster_name    = try(var.extra_args.cluster_name, null)   == null ? "default"        : var.extra_args.cluster_name
-    base_domain     = try(var.extra_args.base_domain, null)    == null ? "example.ru"     : var.extra_args.base_domain
+    base_domain     = try(var.extra_args.base_domain,  null)   == null ? "example.ru"     : var.extra_args.base_domain
   }
 
   k8s_network = {
-    pod_cidr        = try(var.extra_args.pod_cidr, null)       == null ? "10.0.0.0/16"    : var.extra_args.pod_cidr
+    pod_cidr        = try(var.extra_args.pod_cidr,       null) == null ? "10.0.0.0/16"    : var.extra_args.pod_cidr
     node_cidr_mask  = try(var.extra_args.node_cidr_mask, null) == null ? "24"             : var.extra_args.node_cidr_mask
-    service_cidr    = try(var.extra_args.service_cidr, null)   == null ? "172.16.0.0/16"  : var.extra_args.service_cidr
+    service_cidr    = try(var.extra_args.service_cidr,   null) == null ? "172.16.0.0/16"  : var.extra_args.service_cidr
   }
 
   k8s-addresses-main = {
@@ -27,7 +27,7 @@ locals {
     extra_cluster_name                  = substr(sha256(local.cluster_metadata.cluster_name), 0, 8)
 
     kube_apiserver_lb_fqdn_local  = try(var.extra_args.kube_apiserver_lb_fqdn_local, null) == null ? local.k8s-addresses-main.base_kube_apiserver_lb_fqdn_local : var.extra_args.kube_apiserver_lb_fqdn_local
-    kube_apiserver_lb_fqdn        = try(var.extra_args.kube_apiserver_lb_fqdn, null)       == null ? local.k8s-addresses-main.base_kube_apiserver_lb_fqdn       : var.extra_args.kube_apiserver_lb_fqdn
+    kube_apiserver_lb_fqdn        = try(var.extra_args.kube_apiserver_lb_fqdn,       null) == null ? local.k8s-addresses-main.base_kube_apiserver_lb_fqdn       : var.extra_args.kube_apiserver_lb_fqdn
   }
 
 }

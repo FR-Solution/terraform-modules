@@ -1,6 +1,6 @@
 locals {
   default_kube_scheduler_flags = {
-    secure-port = "${ local.kubernetes-ports.kube-scheduler-port }"
+    secure-port = "${local.kubernetes-ports.kube-scheduler-port}"
   }
 }
 
