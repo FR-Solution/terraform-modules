@@ -20,7 +20,7 @@ locals {
 data "utils_deep_merge_yaml" "kubelet_config_flags" {
   input = [
     yamlencode(local.default_kubelet_config_flags),
-    file("default/kube-controller-manager.yaml"),
+    file("${path.module}/default/kube-controller-manager.yaml"),
     yamlencode(try(var.extra_args.kubelet_config_flags, {}))
   ]
 }
