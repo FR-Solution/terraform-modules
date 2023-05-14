@@ -17,7 +17,7 @@ resource "yandex_compute_instance" "master" {
 
   zone = try(
     var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.zone, 
-    var.k8s_global_vars.master_vars.default_zone 
+    var.k8s_global_vars.master_vars.master_group.default_zone 
   )
   
   service_account_id  = data.yandex_iam_service_account.yandex-k8s-controllers.id
