@@ -85,10 +85,10 @@ locals {
   for instance_name in keys(local.master_vars.master_instance_list_map) : 
         "${try(
         var.k8s_global_vars.master_vars.master_group.resources_overwrite[instance_name].network_interface.subnet,
-        var.k8s_global_vars.master_vars.default_subnet
+        var.k8s_global_vars.master_vars.master_group.default_subnet
         )}:${try(
         var.k8s_global_vars.master_vars.master_group.resources_overwrite[instance_name].network_interface.zone,
-        var.k8s_global_vars.master_vars.default_zone 
+        var.k8s_global_vars.master_vars.master_group.default_zone 
         )}"
       ]
   )

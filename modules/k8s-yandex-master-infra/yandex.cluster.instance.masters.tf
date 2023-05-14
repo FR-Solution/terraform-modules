@@ -57,10 +57,10 @@ resource "yandex_compute_instance" "master" {
     subnet_id = yandex_vpc_subnet.master-subnets[
       "${try(
         var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.subnet, 
-        var.k8s_global_vars.master_vars.default_subnet 
+        var.k8s_global_vars.master_vars.master_group.default_subnet 
       )}:${try(
         var.k8s_global_vars.master_vars.master_group.resources_overwrite[each.key].network_interface.zone, 
-        var.k8s_global_vars.master_vars.default_zone 
+        var.k8s_global_vars.master_vars.master_group.default_zone 
       )}"
     ].id
     nat = var.k8s_global_vars.master_vars.master_group.resources.network_interface.nat
