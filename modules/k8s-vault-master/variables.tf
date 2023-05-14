@@ -9,7 +9,7 @@ variable "master_instance_list_map" {
   default     = null
 }
 
-variable "vault_approle_auth_backend_role_secret_id" {
+variable "k8s_vault_master_secre_id" {
   type = object({
     enabled = bool
   })
