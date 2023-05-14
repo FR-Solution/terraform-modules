@@ -1,36 +1,16 @@
 locals {
   default_kube_controller_manager_flags = {
-    v                                       = "2"
-    allocate-node-cidrs                     = "true"
-    secure-port                             = "${ local.kubernetes-ports.kube-controller-manager-port }"
-    cluster-cidr                            = "${ local.k8s_network.pod_cidr }"
-    node-cidr-mask-size                     = "${ local.k8s_network.node_cidr_mask }"
-    cluster-name                            = "${ local.cluster_metadata.cluster_name}"
-    concurrent-deployment-syncs             = "5"
-    concurrent-endpoint-syncs               = "5"
-    concurrent-namespace-syncs              = "10"
-    concurrent-replicaset-syncs             = "20"
-    concurrent-resource-quota-syncs         = "5"
-    horizontal-pod-autoscaler-sync-period   = "30s"
-    kube-api-burst                          = "120"
-    kube-api-qps                            = "100"
-    leader-elect                            = "true"
-    leader-elect-lease-duration             = "15s"
-    leader-elect-renew-deadline             = "10s"
-    leader-elect-retry-period               = "2s"
-    namespace-sync-period                   = "2m0s"
-    node-monitor-grace-period               = "40s"
-    node-monitor-period                     = "5s"
-    node-startup-grace-period               = "10s"
-    pod-eviction-timeout                    = "30s"
-    profiling                               = "false"
-    resource-quota-sync-period              = "5m0s"
-    terminated-pod-gc-threshold             = "0"
-    cluster-signing-duration                = "1440m"
-    use-service-account-credentials         = "true"
-    authorization-always-allow-paths        = "/healthz,/metrics"
-    feature-gates                           = "RotateKubeletServerCertificate=true"
-    cloud-provider                          = "external"
-    controllers                             = "*,bootstrapsigner,tokencleaner"
+    secure-port         = "${local.kubernetes-ports.kube-controller-manager-port}"
+    cluster-cidr        = "${local.k8s_network.pod_cidr}"
+    node-cidr-mask-size = "${local.k8s_network.node_cidr_mask}"
+    cluster-name        = "${local.cluster_metadata.cluster_name}"
   }
+}
+
+data "utils_deep_merge_yaml" "kube_controller_manager_flags" {
+  input = [
+    yamlencode(local.default_kube_controller_manager_flags),
+    file("${path.module}/default/kube-controller-manager.yaml"),
+    yamlencode(try(var.extra_args.kube_controller_manager_flags, {}))
+  ]
 }

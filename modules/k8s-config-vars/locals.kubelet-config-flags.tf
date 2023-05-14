@@ -1,130 +1,27 @@
 
 locals {
   default_kubelet_config_flags = {
-    apiVersion                          =  "kubelet.config.k8s.io/v1beta1"
-    kind                                =  "KubeletConfiguration"
-    registerNode                        =  true
-    cgroupDriver                        =  "systemd"
-    clusterDomain                       =  "cluster.local"
-    cpuManagerReconcilePeriod           =  "0s"
-    fileCheckFrequency                  =  "0s"
-    healthzBindAddress                  =  "127.0.0.1"
-    healthzPort                         =  10248
-    httpCheckFrequency                  =  "0s"
-    imageMinimumGCAge                   =  "0s"
-    memorySwap                          =  {}
-    nodeStatusReportFrequency           =  "1s"
-    nodeStatusUpdateFrequency           =  "1s"
-    resolvConf                          =  "/run/systemd/resolve/resolv.conf"
-    runtimeRequestTimeout               =  "0s"
-    shutdownGracePeriod                 =  "15s"
-    shutdownGracePeriodCriticalPods     =  "5s"
-    staticPodPath                       =  "${local.global_path.base_static_pod_path}"
-    streamingConnectionIdleTimeout      =  "0s"
-    syncFrequency                       =  "0s"
-    volumeStatsAggPeriod                =  "0s"
-    containerLogMaxSize                 =  "50Mi"
-    maxPods                             =  250
-    kubeAPIQPS                          =  50
-    kubeAPIBurst                        =  100
-    podPidsLimit                        =  4096
-    serializeImagePulls                 =  false
-    rotateCertificates                  =  false
-    serverTLSBootstrap                  =  true
-    tlsMinVersion                       =  "VersionTLS12"
-    evictionPressureTransitionPeriod    =  "5s" 
-    imageGCHighThresholdPercent         =  55
-    imageGCLowThresholdPercent          =  50
-    tlsCertFile                         = "${local.ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server.pem"
-    tlsPrivateKeyFile                   = "${local.ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server-key.pem"
-
+    staticPodPath       = "${local.global_path.base_static_pod_path}"
+    tlsCertFile         = "${local.ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server.pem"
+    tlsPrivateKeyFile   = "${local.ssl.intermediate["kubernetes-ca"].issuers["kubelet-server"].certificates["kubelet-server"].key-keeper-args.host_path}/kubelet-server-key.pem"
+    healthzPort         = "${local.kubernetes-ports.kubelet-healthz-port }"
     authentication = {
-        anonymous = {
-            enabled =  false
-        }
-        webhook = {
-            cacheTTL =  "0s"
-            enabled =  true
-        }
         x509 = {
-            clientCAFile =  "${local.ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem"
-        }
-    }
-
-    authorization = {
-        mode =  "Webhook"
-        webhook = {
-            cacheAuthorizedTTL =  "0s"
-            cacheUnauthorizedTTL =  "0s"
+            clientCAFile = "${local.ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem"
         }
     }
 
     clusterDNS = [
         "${local.k8s-addresses.dns_address}"
     ]
-    
-    logging = {
-        flushFrequency =  0
-        options = {
-            json = {
-                infoBufferSize =  0
-            }
-        
-        }
-        verbosity =  0
-    }
-
-    systemReserved = {
-        ephemeral-storage =  "1Gi"
-    }
-
-    featureGates = {
-        RotateKubeletServerCertificate    =  true
-        APIPriorityAndFairness            =  true
-        DownwardAPIHugePages              =  true
-        PodSecurity                       =  true
-        CSIMigrationAWS                   =  false
-        CSIMigrationAzureFile             =  false
-        CSIMigrationGCE                   =  false
-        CSIMigrationvSphere               =  false
-    }
-
-    tlsCipherSuites = [
-        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-        "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
-        "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
-    ]
-
-    allowedUnsafeSysctls = [
-        "net.core.somaxconn",
-    ]
-
-    evictionSoft = {
-        "memory.available"      =  "3Gi"
-        "nodefs.available"      =  "25%"
-        "nodefs.inodesFree"     =  "15%"
-        "imagefs.available"     =  "30%"
-        "imagefs.inodesFree"    =  "25%"
-    }
-
-    evictionSoftGracePeriod = {
-        "memory.available"      =  "2m30s"
-        "nodefs.available"      =  "2m30s"
-        "nodefs.inodesFree"     =  "2m30s"
-        "imagefs.available"     =  "2m30s"
-        "imagefs.inodesFree"    =  "2m30s"
-    }
-
-    evictionHard = {
-        "memory.available"      =  "2Gi"
-        "nodefs.available"      =  "20%"
-        "nodefs.inodesFree"     =  "10%"
-        "imagefs.available"     =  "25%"
-        "imagefs.inodesFree"    =  "15%"
-    }
-
   }
 }
+
+data "utils_deep_merge_yaml" "kubelet_config_flags" {
+  input = [
+    yamlencode(local.default_kubelet_config_flags),
+    file("${path.module}/default/kubelet.yaml"),
+    yamlencode(try(var.extra_args.kubelet_config_flags, {}))
+  ]
+}
+
