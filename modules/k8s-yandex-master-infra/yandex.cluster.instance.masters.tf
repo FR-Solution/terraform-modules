@@ -66,11 +66,11 @@ resource "yandex_compute_instance" "master" {
     nat = var.k8s_global_vars.master_vars.master_group.resources.network_interface.nat
   }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     metadata
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
 
  metadata = {
    user-data = local.user_data[replace(each.key, "-", "-${local.extra_cluster_name}-")]
