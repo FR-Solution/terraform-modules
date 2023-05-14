@@ -19,8 +19,6 @@ alias ke='kubectl edit'
 alias k='kubectl '
 alias kl='kubectl logs '
 
-alias crictl='crictl  --runtime-endpoint unix:///run/containerd/containerd.sock '
-
 new_kubeconfig () {
 SRC_SSH_PORT=$(env | grep SSH_CONNECTION | awk '{print $2}')
 cp -uf ${main_path.base_kubernetes_path}/admin.conf /tmp/kubeconfig
