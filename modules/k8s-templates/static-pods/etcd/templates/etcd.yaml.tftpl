@@ -72,7 +72,7 @@ spec:
       - --proxy-read-timeout=0
       - --metrics=extensive
       - --logger=zap
-    image: ${etcd_image}:${etcd_version}
+    image: ${component_versions.static_pod.etcd.registry}:${component_versions.static_pod.etcd.version}
     imagePullPolicy: IfNotPresent
     livenessProbe:
       failureThreshold: 8

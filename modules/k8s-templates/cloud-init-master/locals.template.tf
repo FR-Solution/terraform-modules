@@ -13,7 +13,7 @@ locals {
         hostname                          = "${master_name}"
         node_name                         = "${master_name}"
         actual_release                    = var.actual-release
-        release_vars                      = local.release-vars
+
         # kube_apiserver_lb_fqdn            = var.kube-apiserver-lb-fqdn
         # kube_apiserver_port_lb            = var.kube-apiserver-port-lb
         # bootstrap_token_all               = var.bootstrap_token_all[master_name].client_token
@@ -50,6 +50,8 @@ locals {
         # modprobe-k8s                        = module.modprobe.k8s
         # cni-base                            = module.cni.base
         bashrc-k8s                          = module.bashrc.k8s
+
+        component_versions                  = var.k8s_global_vars.component_versions
       })}
     ])
   cloud-init-master-map = { for item in local.cloud-init-master :

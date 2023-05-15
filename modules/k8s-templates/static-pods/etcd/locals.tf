@@ -6,8 +6,7 @@ locals {
         ssl                             = var.k8s_global_vars.ssl
         cluster_name                    = var.k8s_global_vars.cluster_metadata.cluster_name
         base_domain                     = var.k8s_global_vars.cluster_metadata.base_domain
-        etcd_image                      = var.etcd_image
-        etcd_version                    = var.etcd_version
+        component_versions              = var.k8s_global_vars.component_versions
         discovery_srv                   = var.k8s_global_vars.k8s-addresses.base_cluster_fqdn
         full_instance_name              = format("${node_name}.${var.k8s_global_vars.k8s-addresses.base_cluster_fqdn}")
         etcd_peer_port                  = var.k8s_global_vars.kubernetes-ports.etcd-peer-port

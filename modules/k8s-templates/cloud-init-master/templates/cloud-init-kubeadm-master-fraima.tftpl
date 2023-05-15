@@ -36,7 +36,7 @@ runcmd:
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
   - touch /var/lib/key-keeper/bootstrap.token
-  - wget -O /tmp/fraimactl "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"
+  - wget -O /tmp/fraimactl "${component_versions.bin.fraimactl.bin_url}"
   - tar -xzf /tmp/fraimactl -C /usr/bin/
   - chmod +x /usr/bin/fraimactl
   - fraimactl --config=/etc/kubernetes/fraimactl/config.yaml
@@ -221,11 +221,13 @@ write_files:
                           # To configure containerd to use the systemd driver, set the following option:
                           SystemdCgroup: true
           downloading:
-            - name: cotainerd
-              src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
+            - name: containerd
+              src: "${component_versions.bin.containerd.bin_url}"
+              %{~ if try(component_versions.bin.containerd.sha256_url, "") != "" ~}
               checkSum:
-                src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz.sha256sum
+                src: "${component_versions.bin.containerd.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -240,7 +242,12 @@ write_files:
                   - bin/ctr
 
             - name: runc
-              src: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+              src: "${component_versions.bin.runc.bin_url}"
+              %{~ if try(component_versions.bin.runc.sha256_url, "") != "" ~}
+              checkSum:
+                src: "${component_versions.bin.runc.sha256_url}"
+                type: "sha256"
+              %{~ endif ~}              
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -292,10 +299,12 @@ write_files:
           # configuration: {}
           downloading:
             - name: kubelet
-              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubelet
+              src: "${component_versions.bin.kubelet.bin_url}"
+              %{~ if try(component_versions.bin.kubelet.sha256_url, "") != "" ~}
               checkSum:
-                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubelet.sha256"
+                src: "${component_versions.bin.kubelet.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -329,10 +338,12 @@ write_files:
         spec:
           downloading:
             - name: kubeadm
-              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubeadm
+              src: "${component_versions.bin.kubeadm.bin_url}"
+              %{~ if try(component_versions.bin.kubeadm.sha256_url, "") != "" ~}
               checkSum:
-                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubeadm.sha256"
+                src: "${component_versions.bin.kubeadm.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -342,10 +353,12 @@ write_files:
         spec:
           downloading:
             - name: kubectl
-              src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubectl
+              src: "${component_versions.bin.kubectl.bin_url}"
+              %{~ if try(component_versions.bin.kubectl.sha256_url, "") != "" ~}
               checkSum:
-                src: "https://dl.k8s.io/v1.23.12/bin/linux/amd64/kubectl.sha256"
+                src: "${component_versions.bin.kubectl.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -356,11 +369,13 @@ write_files:
         spec:
           downloading:
             - name: crictl
-              src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.26.0/crictl-v1.26.0-linux-amd64.tar.gz
-              path: /usr/bin/
+              src: "${component_versions.bin.crictl.bin_url}"
+              %{~ if try(component_versions.bin.crictl.sha256_url, "") != "" ~}
               checkSum:
-                src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.26.0/crictl-v1.26.0-linux-amd64.tar.gz.sha256
+                src: "${component_versions.bin.crictl.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
+              path: /usr/bin/
               owner: root:root
               permission: 0645
               unzip:
@@ -373,7 +388,12 @@ write_files:
         spec:
           downloading:
             - name: etcdctl
-              src: https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
+              src: "${component_versions.bin.etcdctl.bin_url}"
+              %{~ if try(component_versions.bin.etcdctl.sha256_url, "") != "" ~}
+              checkSum:
+                src: "${component_versions.bin.etcdctl.sha256_url}"
+                type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -387,10 +407,12 @@ write_files:
         spec:
           downloading:
             - name: key-keeper
-              src: "https://github.com/fraima/key-keeper/releases/download/v0.0.1/key-keeper-v0.0.1-linux-amd64.tar.gz"
+              src: "${component_versions.bin.key_keeper.bin_url}"
+              %{~ if try(component_versions.bin.key_keeper.sha256_url, "") != "" ~}
               checkSum:
-                src: https://github.com/fraima/key-keeper/releases/download/v0.0.1/key-keeper-v0.0.1-linux-amd64.tar.gz.sha256
+                src: "${component_versions.bin.key_keeper.sha256_url}"
                 type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
@@ -404,7 +426,12 @@ write_files:
         spec:
           downloading:
             - name: yc
-              src: "https://storage.yandexcloud.net/yandexcloud-yc/release/0.102.0/linux/amd64/yc"
+              src: "${component_versions.bin.yc.bin_url}"
+              %{~ if try(component_versions.bin.yc.sha256_url, "") != "" ~}
+              checkSum:
+                src: "${component_versions.bin.yc.sha256_url}"
+                type: "sha256"
+              %{~ endif ~}
               path: /usr/bin/
               owner: root:root
               permission: 0645
