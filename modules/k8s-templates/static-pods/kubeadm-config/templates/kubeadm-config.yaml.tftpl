@@ -10,6 +10,9 @@ skipPhases:
   - kubelet-finalize
   - addon
   - bootstrap-token
+  # TODO добавить условие для версии
+  # 1.27.1
+  #- show-join-command
 
 nodeRegistration:
   ignorePreflightErrors:
@@ -17,6 +20,9 @@ nodeRegistration:
     - Port-10250
     - FileAvailable--etc-kubernetes-manifests-etcd.yaml
     - FileExisting-iptables
+    # TODO добавить условие для версии
+    # 1.27.1
+    - ImagePull
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
@@ -72,6 +78,7 @@ apiServer:
     ${indent(4,kube_flags.kube_apiserver_flags)}
 
   extraVolumes:
+
   - name: "k8s-ca"
     hostPath: "${base_path.base_local_path_certs}/ca"
     mountPath: "${base_path.base_local_path_certs}/ca"

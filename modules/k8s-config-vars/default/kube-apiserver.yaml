@@ -1,6 +1,8 @@
 v: "4"
 event-ttl: "1h0m0s"
 kubernetes-service-node-port: "0"
+# 1.27.1 DEPRECATED
+# TODO
 master-service-namespace: "default"
 max-connection-bytes-per-sec: "0"
 max-requests-inflight: "400"
