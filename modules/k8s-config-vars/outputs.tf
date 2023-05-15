@@ -53,3 +53,7 @@ output "k8s_provider" {
 output "master_vars" {
   value = local.master_vars
 }
+
+output "component_versions" {
+  value = yamldecode(data.utils_deep_merge_yaml.component_versions.output)
+}

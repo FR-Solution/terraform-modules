@@ -23,7 +23,8 @@ kind: ClusterConfiguration
 networking:
   serviceSubnet: "${service_cidr}"
   dnsDomain: "cluster.local"
-kubernetesVersion: "${kubernetes_version}"
+kubernetesVersion: "${component_versions.kubernetes_version}"
+imageRepository: "${component_versions.image_repository}"
 controlPlaneEndpoint: "${kube_api_fqdn}:${kube_apiserver_port}"
 etcd:
   external:
