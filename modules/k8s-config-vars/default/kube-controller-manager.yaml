@@ -16,6 +16,8 @@ namespace-sync-period: "2m0s"
 node-monitor-grace-period: "40s"
 node-monitor-period: "5s"
 node-startup-grace-period: "10s"
+# 1.27.1 DEPRECATED
+# TODO
 pod-eviction-timeout: "30s"
 profiling: "false"
 resource-quota-sync-period: "5m0s"

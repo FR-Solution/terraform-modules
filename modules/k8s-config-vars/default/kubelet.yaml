@@ -7,7 +7,6 @@ clusterDomain: "cluster.local"
 cpuManagerReconcilePeriod: "0s"
 fileCheckFrequency: "0s"
 healthzBindAddress: "127.0.0.1"
-healthzPort: 10248
 httpCheckFrequency: "0s"
 imageMinimumGCAge: "0s"
 memorySwap: {}
