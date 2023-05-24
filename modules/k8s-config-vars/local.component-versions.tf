@@ -9,8 +9,8 @@ locals {
     image_repository    = yamldecode(data.utils_deep_merge_yaml.base_versions.output).image_repository
     bin = {
         roy = {
-            bin_url     = "https://github.com/fraima/sgroups/releases/download/1.0.4/to-nft-1.0.4-linux-amd64.tar.gz"
-            sha256_url  = "https://github.com/fraima/sgroups/releases/download/1.0.4/to-nft-1.0.4-linux-amd64.tar.gz.sha256"
+            bin_url     = "https://github.com/fraima/roy/releases/download/1.0.1/to-nft-1.0.1-linux-amd64.tar.gz"
+            sha256_url  = "https://github.com/fraima/roy/releases/download/1.0.1/to-nft-1.0.1-linux-amd64.tar.gz.sha256"
         }
         fraimactl = {
             bin_url     = "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"
