@@ -19,19 +19,20 @@ resource "yandex_dns_recordset" "api-external" {
 
 #### INTERNAL DNS FRO ETCD DISCOVERY ######
 ##-->
-resource "yandex_dns_recordset" "etcd-srv-server" {
-  zone_id   = yandex_dns_zone.cluster-external.id
-  name      = local.etcd_srv_server_record
-  type      = "SRV"
-  ttl       = 60
-  data      = local.etcd_member_servers_srv
-}
+# Включить, если требуется дискавери ETCD через SRV
+# resource "yandex_dns_recordset" "etcd-srv-server" {
+#   zone_id   = yandex_dns_zone.cluster-external.id
+#   name      = local.etcd_srv_server_record
+#   type      = "SRV"
+#   ttl       = 60
+#   data      = local.etcd_member_servers_srv
+# }
 
-resource "yandex_dns_recordset" "etcd-srv-client" {
-  zone_id   = yandex_dns_zone.cluster-external.id
-  name      = local.etcd_srv_client_record
-  type      = "SRV"
-  ttl       = 60
-  data      = local.etcd_member_clients_srv
-}
+# resource "yandex_dns_recordset" "etcd-srv-client" {
+#   zone_id   = yandex_dns_zone.cluster-external.id
+#   name      = local.etcd_srv_client_record
+#   type      = "SRV"
+#   ttl       = 60
+#   data      = local.etcd_member_clients_srv
+# }
 

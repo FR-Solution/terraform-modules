@@ -16,6 +16,8 @@ packages:
   - conntrack
   - ethtool
   - nftables
+  - net-tools
+
 
 disk_setup:
   /dev/disk/by-id/virtio-etcd-data:
@@ -34,7 +36,7 @@ mounts:
 
 runcmd:
   - mkdir /tmp/hbf
-  - wget -O /tmp/hbf/hbf.tar.gz "${component_versions.bin.roy.bin_url}"
+  - wget -O /tmp/hbf/hbf.tar.gz "${component_versions.bin.swarm.bin_url}"
   - tar -xzf /tmp/hbf/hbf.tar.gz -C /tmp/hbf/
   - cp /tmp/hbf/bin/to-nft /usr/bin/hbf
   - chmod +x /usr/bin/hbf

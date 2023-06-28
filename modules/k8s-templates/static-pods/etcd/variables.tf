@@ -27,3 +27,10 @@ variable "instance_list_map" {
   type        = any
   default     = {}
 }
+
+
+variable "etcd_initial_cluster" {
+  description = "K8S: ?"
+  type        = string
+  default     = null
+}

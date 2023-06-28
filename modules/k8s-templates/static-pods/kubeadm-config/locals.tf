@@ -5,7 +5,6 @@ locals {
         
         etcd_list_servers               = var.etcd_list_servers
         secrets                         = var.k8s_global_vars.secrets
-        etcd_advertise_client_urls      = var.etcd_advertise_client_urls
         service_cidr                    = var.k8s_global_vars.k8s_network.service_cidr
         ssl                             = var.k8s_global_vars.ssl
         component_versions              = var.k8s_global_vars.component_versions

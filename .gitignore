@@ -26,4 +26,4 @@ charlotte-demo/README.md
 charlotte-demo/terraform.tfstate
 charlotte-demo/terraform.tfstate.backup
 charlotte-demo/.terraform/terraform.tfstate
-charlotte-demo/.terraform/providers/registry.terraform.io/fraima/charlotte/1.0.3/linux_amd64
+charlotte-demo/.terraform/providers/registry.terraform.io/fraima/charlotte/*/linux_amd64

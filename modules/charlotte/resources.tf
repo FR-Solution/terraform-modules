@@ -17,18 +17,35 @@ resource "sgroups_group" "groups" {
     networks    = each.value
 }
 
-resource "sgroups_rule" "rules" {
+resource "sgroups_rules" "rules" {
   depends_on = [
     sgroups_group.groups,
   ]
 
-  for_each = local.rules_access_map
+  for_each = local.rules_map
 
-  proto       = each.value.access.proto
-  sg_from     = each.value.sg_from
-  sg_to       = each.value.sg_to
-  ports_from  = each.value.access.ports_from
-  ports_to    = each.value.access.ports_to
+  dynamic "items" {
+    for_each = { 
+      for k, v in each.value.access: 
+        k => v
+    }
+    content {
+      proto   = items.key
+      sg_from = each.value.sg_from
+      sg_to   = each.value.sg_to
 
+      dynamic "ports" {
+        for_each = { 
+          for access_item in items.value: 
+            "${each.value.sg_from}:${each.value.sg_to}:${substr(sha256(try(join(",", access_item.ports_from), "")), 0, 10)}" => access_item
+        }
+        content {
+          s = try(join(",", ports.value.ports_from), null)
+          d = try(join(",", ports.value.ports_to),   null)
+        }
+
+      }
+
+    }
+  }
 }
-

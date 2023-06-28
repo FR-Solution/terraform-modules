@@ -21,22 +21,24 @@ locals {
         #             # Название SG куда (ДО) открываем доступ
         #             sg_to  = "example"
         #             # Список портов ОТ -> ДО | Протокол
-        #             access = [
-        #                 {
-        #                     # Короткое описание для чего данный доступ
-        #                     description = "access from example to example"
-        #                     protocol    = "tcp"
-        #                     # Открываем доступ ОТ портов
-        #                     ports_from    = [
-        #                         8000,
-        #                     ]
-        #                     # Открываем доступ ДО портов
-        #                     ports_to    = [
-        #                         80,
-        #                         443,
-        #                     ]
-        #                 }
-        #             ]
+        #             access = {
+        #                 tcp = [
+        #                     {
+        #                         # Короткое описание для чего данный доступ
+        #                         description = "access from example to example"
+        #                         # Открываем доступ ОТ портов
+        #                         ports_from    = [
+        #                             8000,
+        #                         ]
+        #                         # Открываем доступ ДО портов
+        #                         ports_to    = [
+        #                             80,
+        #                             443,
+        #                         ]
+        #                     }
+        #                 ]
+        #                 udp = []
+
         #         },
         #     ]
         # },
@@ -45,262 +47,247 @@ locals {
             rules = [
                 {
                     sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                10250, # :::10250   component: kubelet              purpose: server-port
-                                6443,  # :::6443    component: kube-apiserver       purpose: server-port
-                                2379,  # :::2379    component: etcd                 purpose: server-port
-                                2380,  # :::2380    component: etcd                 purpose: peer-port
-                                2381,  # :::2381    component: etcd                 purpose: metrics-port
-                                2382,  # :::2382    component: etcd                 purpose: server-port-target-lb
-                                11258, # :::11258   component: yandex-controller    purpose: metrics-port
-                                443,   # :::443    component: kube-apiserver       purpose: server-port
-                            ]
-                        },
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}"
+                                
+                                ports_to    = [
+                                    var.k8s_global_vars.kubernetes-ports.etcd-server-port,
+                                    var.k8s_global_vars.kubernetes-ports.etcd-peer-port,
+                                    var.k8s_global_vars.kubernetes-ports.etcd-metrics-port,
+                                    var.k8s_global_vars.kubernetes-ports.kubelet-server-port,
+                                    var.k8s_global_vars.kubernetes-ports.kube-apiserver-port,
+                                    var.k8s_global_vars.kubernetes-ports.kube-apiserver-port-lb,
+                                    var.k8s_global_vars.kubernetes-ports.yandex-controller-manager,
+                                ]
+                            },
+                        ]
+                    }
                 },
                 {
                     sg_to  = "infra/hbf-server"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to hbf-server"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                9000,   # TO HBF-SERVER
-                                9200,   # TO VAULT
-                                443,    # TO OIDP
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to hbf-server"
+                                ports_to    = [
+                                    9000,   # TO HBF-SERVER
+                                    9200,   # TO VAULT
+                                    443,    # TO OIDP
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "infra/dns"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to infra/dns"
-                            protocol    = "udp"
-                            ports_to    = [
-                                53, # TO DNS-SERVERS
-                            ]
-                        }
-                    ]
+                    access = {
+                        udp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to infra/dns"
+                                ports_to    = [
+                                    53, # TO DNS-SERVERS
+                                ]
+                            }               
+                        ]
+                    }
                 },
                 {
                     sg_to  = "world/dl.k8s.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/dl.k8s.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO REGISTRY BIN
-                            ]
-                        },
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/dl.k8s.io"
+                                ports_to    = [
+                                    443,    # TO REGISTRY BIN
+                                ]
+                            },
+                        ]
+                    }
                 },
                 {
                     sg_to  = "world/k8s.gcr.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/k8s.gcr.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO REGISTRY DOCKER
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/k8s.gcr.io"
+                                ports_to    = [
+                                    443,    # TO REGISTRY DOCKER
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "world/storage.googleapis.com"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/storage.googleapis.com"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO REGISTRY DOCKER
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/storage.googleapis.com"
+                                ports_to    = [
+                                    443,    # TO REGISTRY DOCKER
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "world/github.com"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/github.com"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO GITHUB REPOSITORY
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/github.com"
+                                ports_to    = [
+                                    443,    # TO GITHUB REPOSITORY
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "world/objects.githubusercontent.com"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/objects.githubusercontent.com"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO GITHUB REPOSITORY
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to world/objects.githubusercontent.com"
+                                ports_to    = [
+                                    443,    # TO GITHUB REPOSITORY
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "yandex/iam"
-                    access = [
+                    access = {
+                        tcp = [
                         {
                             description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to yandex/iam"
-                            protocol    = "tcp"
                             ports_to    = [
                                 80,    # TO REGISTRY BIN
                                 443,
                             ]
                         }
-                    ]
+                        ]
+                    }
                 },
                 {
                     sg_to  = "yandex/api"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to yandex/api"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # TO API
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to yandex/api"
+                                ports_to    = [
+                                    443,    # TO API
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "deckhouse/registry"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to deckhouse/registry"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to deckhouse/registry"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/api"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "redhat/quay.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/quay.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/quay.io"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "redhat/cdn01.quay.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn01.quay.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn01.quay.io"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "redhat/cdn02.quay.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn02.quay.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to redhat/cdn02.quay.io"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "cloudflare/cdn03.quay.io.cdn.cloudflare.net"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/cdn03.quay.io.cdn.cloudflare.net"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/cdn03.quay.io.cdn.cloudflare.net"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "docker/registry-1.docker.io"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to docker/registry-1.docker.io"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to docker/registry-1.docker.io"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
                     sg_to  = "cloudflare/production.cloudflare.docker.com"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/production.cloudflare.docker.com"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,    # to deckhouse/registry
-                            ]
-                        }
-                    ]
-                },
-            ]
-        },
-        {
-            name = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
-            cidrs = [
-                "10.202.0.0/16",
-            ]
-            rules = [
-                {
-                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                "1-65535",    # to pods
-                            ]
-                        }
-                    ]
-                },
-                {
-                    sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
-                    access = [
-                        {
-                            description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/pods to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                443,
-                                6443
-                            ]
-                        }
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} to cloudflare/production.cloudflare.docker.com"
+                                ports_to    = [
+                                    443,    # to deckhouse/registry
+                                ]
+                            }
+                        ]
+                    }
                 },
             ]
         },
@@ -314,7 +301,7 @@ locals {
         {
             name = "infra/dns"
             cidrs = [
-                "10.0.0.2/32",
+                "10.100.0.2/32",
             ]
             rules = []
         },
@@ -355,7 +342,8 @@ locals {
                 "64.233.164.82/32",
                 "108.177.14.82/32",
                 "74.125.205.82/32",
-                "108.177.119.82/32"
+                "108.177.119.82/32",
+                "64.233.163.82/32"
             ]
             rules = []
         },
@@ -484,16 +472,35 @@ locals {
             rules = [
                 {
                     sg_to  = "kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name}/masters"
-                    access = [
-                        {
-                            description = "access from world to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} by ssh"
-                            protocol    = "tcp"
-                            ports_to    = [
-                                22,
-                                6443,
-                            ]
-                        },
-                    ]
+                    access = {
+                        tcp = [
+                            {
+                                description = "access from world to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} by ssh"
+                                ports_to    = [
+                                    22,
+                                    6443,
+                                ]
+                            },
+                            # {
+                            #     description = "access from world to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} by ssh"
+                            #     ports_from = [
+                            #         5050
+                            #     ]
+                            #     ports_to    = [
+                            #         8080,
+                            #     ]
+                            # },
+                            # {
+                            #     description = "access from world to kubernetes/${var.k8s_global_vars.cluster_metadata.cluster_name} by ssh"
+                            #     ports_from = [
+                            #         5051
+                            #     ]
+                            #     ports_to    = [
+                            #         6443,
+                            #     ]
+                            # },
+                        ]
+                    }
                 },
             ]
         }

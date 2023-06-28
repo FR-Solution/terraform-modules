@@ -14,10 +14,17 @@ spec:
     command:
       - etcd
     args:
-      - --discovery-srv=${discovery_srv}
+      #- --discovery-srv=${discovery_srv}
       - --name=${full_instance_name}
+      - --initial-cluster=${etcd_initial_cluster}
+      - --initial-cluster-token=etcd
+      - --initial-cluster-state=new
       - --initial-advertise-peer-urls=https://${full_instance_name}:${etcd_peer_port}
       - --advertise-client-urls=https://${full_instance_name}:${etcd_server_port}
+      - --listen-client-urls=https://0.0.0.0:${etcd_server_port}
+      - --listen-peer-urls=https://0.0.0.0:${etcd_peer_port}
+      - --listen-metrics-urls=http://0.0.0.0:${etcd_metrics_port}
+
     %{~ for intermediate_name, intermediate_content in ssl.intermediate ~}
       %{~ if  try(intermediate_content.labels.static-pod-etcd-args, {}) != {} ~}
         %{~ for key, value in intermediate_content.labels.static-pod-etcd-args ~}
@@ -44,11 +51,7 @@ spec:
         %{~ endfor ~}
       %{~ endfor ~}
     %{~ endfor ~}
-      - --listen-client-urls=https://0.0.0.0:${etcd_server_port},https://0.0.0.0:${etcd_server_port_target_lb}
-      - --listen-peer-urls=https://0.0.0.0:${etcd_peer_port}
-      - --listen-metrics-urls=http://0.0.0.0:${etcd_metrics_port}
-      - --initial-cluster-token=etcd
-      - --initial-cluster-state=new
+
       - --data-dir=${data_dir}
       - --strict-reconfig-check=true
       - --peer-client-cert-auth=true

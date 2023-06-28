@@ -89,6 +89,8 @@ locals {
     # Конвертация flatten в map
     security_groups_network__name__map = { for item in local.security_groups_network__name__flatten :
         keys(item)[0] => values(item)[0]
+        # Удаляет SG если в ней нету Networks
+        # Нужна, что бы можно было сначала создать SG и Networks потом добавить правила иначе будет перезапись в 0 
         if values(item)[0] != ""
     }
 
@@ -98,17 +100,17 @@ locals {
     # [
     #     {
     #         "teamA_backend" = [
-    #             {
-    #                 "access" = [
-    #                     {
-    #                         "description" = "access from teamA_backend to teamA_frontend"
-    #                         "ports_to" = tolist([
-    #                             "80",
-    #                             "443",
-    #                         ])
-    #                         "protocol" = "tcp"
-    #                     },
-    #                 ]
+    #                {
+    #                    "access" = {
+    #                        tcp = [
+    #                            {
+    #                                "description" = "access from teamA_backend to teamA_frontend"
+    #                                "ports_to" = tolist([
+    #                                    "80",
+    #                                    "443",
+    #                                ])
+    #                            },           
+    #                        ]
     #                 "sg_from" = "teamA_backend"
     #                 "sg_to" = "teamA_frontend"
     #             }
@@ -128,16 +130,18 @@ locals {
     ##->
     # [
     #     {
-    #         "access" = [
-    #             {
-    #                 "description" = "access from teamA_backend to teamA_frontend"
-    #                 "ports_to" = tolist([
-    #                     "80",
-    #                     "443",
-    #                 ])
-    #                 "protocol" = "tcp"
-    #             },
-    #         ]
+    #         "access" = {
+    #             tcp = [
+    #                 {
+    #                     "description" = "access from teamA_backend to teamA_frontend"
+    #                     "ports_to" = tolist([
+    #                         "80",
+    #                         "443",
+    #                     ])
+    #                 },           
+    #             ]
+    #         }
+
     #         "sg_from" = "teamA_backend"
     #         "sg_to" = "teamA_frontend"
     #     },
@@ -155,39 +159,4 @@ locals {
         "${item.sg_from}:${item.sg_to}" => item
     }
 
-    #### Формирует список массивов для формирования уникального хеша для каждого правила в цепочке 5 Tuple
-    ##-> $src_SG:$dst_SG:$src_ports:$dst_ports:$protocol
-    # [
-    #     {
-    #     "96b84b011f" = {
-    #         "access" = {
-    #             "ports_from" = null
-    #             "ports_to" = "80 443"
-    #             "proto" = "tcp"
-    #         }
-    #         "sg_from" = "teamA_backend"
-    #         "sg_to" = "teamA_frontend"
-    #         }
-    #     },
-    # ]
-    rules_access = flatten([
-        for key, value in local.rules_flatten:{
-            
-            for access in value.access:
-                "${try(value.sg_from, "")}:${try(value.sg_to, "")}:${access.protocol}" => {
-                "sg_from"   : value.sg_from
-                "sg_to"     : value.sg_to
-                "access"    : {
-                    "ports_from": try(join(" ", access.ports_from), null)
-                    "ports_to"  : try(join(" ", access.ports_to),   null)
-                    "proto"     : access.protocol
-                }
-            }
-        }
-    ])
-    # Конвертация flatten в map с уникальным именем
-    rules_access_map = { for item in local.rules_access :
-        keys(item)[0] => values(item)[0]
-        if item != {}
-    }
 }

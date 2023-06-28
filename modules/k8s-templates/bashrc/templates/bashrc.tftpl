@@ -36,7 +36,7 @@ export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certific
 export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
 
 etcd_endpoints () {
-export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:2379
+export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:${etcd_server_port}
 etcdctl \
 --endpoints=$ENDPOINTS \
 member list |

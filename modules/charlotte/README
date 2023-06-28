@@ -1,4 +1,4 @@
 mkdir -p ~/.terraform.d/plugins/registry.terraform.io/fraima/charlotte/1.0.0/linux_amd64
 
-cp bin/terraform-provider-sgroups ~/.terraform.d/plugins/registry.terraform.io/fraima/charlotte/1.0.0/linux_amd64/terraform-provider-charlotte
+cp bin/terraform-provider-sgroups ~/.terraform.d/plugins/registry.terraform.io/fraima/charlotte/1.1.0/linux_amd64/terraform-provider-charlotte_v1.1.0
 

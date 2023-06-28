@@ -6,7 +6,7 @@ terraform {
       version = "0.81.0"
     }
     sgroups = {
-       version = "1.0.3"
+       version = "1.1.0"
        source = "fraima/charlotte"
     }
   }

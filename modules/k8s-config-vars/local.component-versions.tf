@@ -8,9 +8,9 @@ locals {
     kubernetes_version  = yamldecode(data.utils_deep_merge_yaml.base_versions.output).kubernetes_version
     image_repository    = yamldecode(data.utils_deep_merge_yaml.base_versions.output).image_repository
     bin = {
-        roy = {
-            bin_url     = "https://github.com/fraima/roy/releases/download/1.0.1/to-nft-1.0.1-linux-amd64.tar.gz"
-            sha256_url  = "https://github.com/fraima/roy/releases/download/1.0.1/to-nft-1.0.1-linux-amd64.tar.gz.sha256"
+        swarm = {
+            bin_url     = "https://github.com/fraima/swarm/releases/download/1.1.2/to-nft-1.1.2-linux-amd64.tar.gz"
+            sha256_url  = "https://github.com/fraima/swarm/releases/download/1.1.2/to-nft-1.1.2-linux-amd64.tar.gz.sha256"
         }
         fraimactl = {
             bin_url     = "https://github.com/fraima/fraima/releases/download/v0.0.1/fraimactl-v0.0.1-linux-amd64.tar.gz"

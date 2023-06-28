@@ -65,9 +65,6 @@ module "addons" {
 module "k8s-masters-firewall" {
   count = try(var.global_vars.firewall.enabled, false) == true ? 1 : 0
 
-  depends_on = [
-    module.k8s-masters
-  ]
   source                      = "../k8s-master-infra-firewall"
   cluster_instances_internal  = module.k8s-masters.cluster_internal_instances_map
   cluster_instances_external  = module.k8s-masters.cluster_external_instances_map
