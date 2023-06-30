@@ -57,3 +57,7 @@ output "master_vars" {
 output "component_versions" {
   value = yamldecode(data.utils_deep_merge_yaml.component_versions.output)
 }
+
+output "vault_instances" {
+  value = local.vault_instances
+}

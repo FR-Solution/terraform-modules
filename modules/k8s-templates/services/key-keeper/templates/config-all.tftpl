@@ -98,9 +98,9 @@ certificates:
       name: ${intermediate_name}
     isCa: true
     ca:
-      exportedKey: ${intermediate.exportedKey}
-      generate: ${intermediate.generate}
-    hostPath: "${intermediate.host_path}"
+      exportedKey: ${intermediate.key-keeper-args.spec.exportedKey}
+      generate: ${intermediate.key-keeper-args.spec.generate}
+    hostPath: "${intermediate.default.host_path}"
   %{~ endif ~}
 
   %{~ for issuer_name, issuers in intermediate.issuers ~}
@@ -228,9 +228,9 @@ certificates:
       name: ${external_intermediate_name}
     isCa: true
     ca:
-      exportedKey: ${external_intermediate.exportedKey}
-      generate: ${external_intermediate.generate}
-    hostPath: "${external_intermediate.host_path}"
+      exportedKey: ${external_intermediate.key-keeper-args.spec.exportedKey}
+      generate: ${external_intermediate.key-keeper-args.spec.generate}
+    hostPath: "${external_intermediate.default.host_path}"
   %{~ endif ~}
 %{~ endfor ~}
 

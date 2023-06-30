@@ -1,4 +1,4 @@
-path "auth/${base_vault_path_approle}/login" {
+path "auth/${k8s_global_vars.global_path.base_vault_path_approle}/login" {
   capabilities = [ "update" ]
 }
 
@@ -10,28 +10,28 @@ path "auth/token/renew-self" {
     capabilities = ["update"]
 }
 
-%{~for external_intermediate_name, external_intermediate_content in external_intermediates ~}
+%{~for external_intermediate_name, external_intermediate_content in k8s_global_vars.ssl.external_intermediate ~}
   %{~ if try(external_intermediate_content.labels["instance-${instance_type}"], false) == true ~}
 
-path "${ external_intermediate_content.path }/cert/ca" {
+path "${ external_intermediate_content.default.path }/cert/ca" {
     capabilities = ["read"]
 }
 
-path "${ external_intermediate_content.path }/cert/ca_chain" {
+path "${ external_intermediate_content.default.path }/cert/ca_chain" {
     capabilities = ["read"]
 }
 
   %{~ endif ~}
 %{~endfor~}
 
-%{~for intermediate_name, intermediate_content in intermediates ~}
+%{~for intermediate_name, intermediate_content in k8s_global_vars.ssl.intermediate ~}
   %{~ if try(intermediate_content.labels["instance-${instance_type}"], false) == true ~}
 
-path "${ intermediate_content.path }/cert/ca" {
+path "${ intermediate_content.default.path }/cert/ca" {
     capabilities = ["read"]
 }
 
-path "${ intermediate_content.path }/cert/ca_chain" {
+path "${ intermediate_content.default.path }/cert/ca_chain" {
     capabilities = ["read"]
 }
 
@@ -42,11 +42,11 @@ path "${ intermediate_content.path }/cert/ca_chain" {
     %{~ if try(issuer_content.labels["instance-${instance_type}"], false) == true ~}
 
 
-path "${intermediate_content.path}/sign/${issuer_name}" {
+path "${intermediate_content.default.path}/sign/${issuer_name}" {
     capabilities = ["update"]
 }
 
-path "${intermediate_content.path}/${issuer_name}/certs" {
+path "${intermediate_content.default.path}/${issuer_name}/certs" {
     capabilities = ["list"]
 }
 
@@ -54,7 +54,7 @@ path "${intermediate_content.path}/${issuer_name}/certs" {
   %{~endfor~}
 %{~endfor~}
 
-%{for secret_name, secret_content in secrets }
+%{for secret_name, secret_content in k8s_global_vars.secrets }
   %{~ if try(secret_content.labels["instance-${instance_type}"], false) == true ~}
 
 path "${secret_content.path}/data/${secret_name}" {

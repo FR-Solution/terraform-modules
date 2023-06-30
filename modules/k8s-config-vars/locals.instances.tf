@@ -13,6 +13,17 @@ locals {
       ]
     ]
   )
+  root_ca_default_only = flatten([
+    for root_name, root_value in local.ssl.root_ca : {
+      "${root_name}" = merge(local.ssl["global-args"]["root-ca-args"], try(root_value["default"], {})) 
+    }
+  ])
+
+  intermediate_ca_default_only = flatten([
+    for intermediate_name, intermediate_value in local.ssl.intermediate : {
+      "${intermediate_name}" = merge(local.ssl["global-args"]["intermediate-ca-args"], try(intermediate_value["default"], {})) 
+    }
+  ])
 
   secret_content_only = flatten([
     for secret_name in keys(local.secrets) : 
@@ -27,6 +38,14 @@ locals {
     }
 
     issuers_content_map_only = { for item in local.issuers_content_only :
+      keys(item)[0] => values(item)[0]
+    }
+
+    root_ca_default_map_only = { for item in local.root_ca_default_only :
+      keys(item)[0] => values(item)[0]
+    }
+
+    intermediate_ca_default_map_only = { for item in local.intermediate_ca_default_only :
       keys(item)[0] => values(item)[0]
     }
 

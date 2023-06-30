@@ -1,4 +1,5 @@
 module "base-roles" {
+    count = try(var.extra_values.addons.base.enabled, false) == true ? 1 : 0
     source = "../helm-base-roles"
 
     global_vars         = var.k8s_global_vars

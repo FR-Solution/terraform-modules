@@ -3,12 +3,88 @@ locals {
 
   ssl = {
     global-args = {
+      root-ca-args = {
+        mount = {
+          default_lease_ttl_seconds        = 321408000
+          max_lease_ttl_seconds            = 321408000
+          mount_type                       = "pki"
+          description                      = "default description"
+          allowed_managed_keys             = []
+          audit_non_hmac_request_keys      = []
+          audit_non_hmac_response_keys     = []
+          options                          = {}
+          external_entropy_access          = false
+          seal_wrap                        = false
+          local                            = false
+        }
+        ttl                                = 321408000
+        key_bits                           = 4096
+        max_path_length                    = -1
+        description                        = "default description"
+        ou                                 = ""
+        organization                       = ""
+        country                            = ""
+        locality                           = "" 
+        province                           = ""
+        street_address                     = ""
+        postal_code                        = ""
+        permitted_dns_domains              = ""
+        alt_names                          = []
+        ip_sans                            = []
+        uri_sans                           = []
+        other_sans                         = []
+        add_basic_constraints              = false
+        exclude_cn_from_sans               = false
+        type                               = "internal"
+        format                             = "pem"
+        private_key_format                 = "der"
+        key_type                           = "rsa"
+
+      }
+      intermediate-ca-args = {
+        mount = {
+          default_lease_ttl_seconds        = 321408000
+          max_lease_ttl_seconds            = 321408000
+          mount_type                       = "pki"
+          description                      = "default description"
+          allowed_managed_keys             = []
+          audit_non_hmac_request_keys      = []
+          audit_non_hmac_response_keys     = []
+          options                          = {}
+          external_entropy_access          = false
+          seal_wrap                        = false
+          local                            = false
+        }
+        sign = {
+          revoke                           = false
+        }
+        description                        = "default description"
+        ou                                 = ""
+        organization                       = ""
+        country                            = ""
+        locality                           = "" 
+        province                           = ""
+        street_address                     = ""
+        postal_code                        = ""
+        alt_names                          = []
+        ip_sans                            = []
+        uri_sans                           = []
+        other_sans                         = []
+        add_basic_constraints              = false
+        exclude_cn_from_sans               = false
+        type                               = "internal"
+        format                             = "pem"
+        private_key_format                 = "der"
+        key_type                           = "rsa"
+        key_bits                           = 4096
+        
+      }
       issuer-args = {
         allow_any_name                     = false
-        allow_bare_domains                 = true
-        allow_glob_domains                 = true
+        allow_bare_domains                 = false
+        allow_glob_domains                 = false
         allow_subdomains                   = false
-        allowed_domains_template           = true
+        allowed_domains_template           = false
         basic_constraints_valid_for_non_ca = false
         code_signing_flag                  = false
         email_protection_flag              = false
@@ -18,6 +94,10 @@ locals {
         allow_localhost                    = false
         client_flag                        = false
         server_flag                        = false
+        no_store                           = false
+        require_cn                         = false
+        use_csr_common_name                = false
+        ttl                                = 31540000
         key_bits                           = 4096
         key_type                           = "rsa"
         key_usage                          = []
@@ -33,11 +113,6 @@ locals {
         allowed_serial_numbers             = []
         allowed_uri_sans                   = []
         ext_key_usage                      = []
-        no_store                           = false
-        require_cn                         = false
-        ttl                                = 31540000
-        use_csr_common_name                = true
-
       }
       key-keeper-args = {
         spec = {
@@ -67,7 +142,7 @@ locals {
         withUpdate  = true
 
       }
-    }
+    },
     intermediate = {
       kubernetes-ca = {
         labels = {
@@ -82,17 +157,24 @@ locals {
             cluster-signing-cert-file = "cert-public-arg"
           }
         }
-        common_name               = "Kubernetes Intermediate CA",
-        description               = "Kubernetes Intermediate CA"
-        path                      = "${local.global_path.base_vault_path_pki}/kubernetes"
-        root_path                 = "${local.global_path.root_vault_path_pki}"
-        host_path                 = "${local.global_path.base_local_path_certs}/ca"
-        type                      = "internal"
-        organization              = "Kubernetes"
-        exportedKey               = false
-        generate                  = false
-        default_lease_ttl_seconds = 321408000
-        max_lease_ttl_seconds     = 321408000
+        default = {
+          common_name               = "Kubernetes Intermediate CA",
+          description               = "Kubernetes Intermediate CA"
+          path                      = "${local.global_path.base_vault_path_pki}/kubernetes"
+          root_path                 = "${local.global_path.root_vault_path_pki}"
+          host_path                 = "${local.global_path.base_local_path_certs}/ca"
+          organization              = "Kubernetes"
+          sign = {
+            revoke                  = true
+          }
+          key-keeper-args = {
+            spec = {
+              exportedKey           = false
+              generate              = false
+            }
+          }
+        }
+
         issuers = {
           cilium = {
             labels = {
@@ -115,10 +197,13 @@ locals {
                 "remote",
                 "root"
               ]
-              client_flag     = true
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              client_flag         = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
+              
             }
             certificates = {
               hubble-server-certs = {
@@ -251,7 +336,9 @@ locals {
               organization = [
                 "system:bootstrappers"
               ]
-              client_flag = true
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               bootstrappers-client = {
@@ -289,7 +376,9 @@ locals {
               allowed_domains = [
                 "system:kube-controller-manager"
               ]
-              client_flag = true
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-controller-manager-client = {
@@ -330,9 +419,11 @@ locals {
                 "kube-controller-manager.default.svc.cluster.local",
                 "custom:kube-controller-manager"
               ]
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-controller-manager-server = {
@@ -385,7 +476,12 @@ locals {
               allowed_domains = [
                 "custom:kube-apiserver-kubelet-client",
               ]
-              client_flag = true
+              organization = [
+                "system:masters"
+              ]
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-apiserver-kubelet-client = {
@@ -400,6 +496,9 @@ locals {
                   spec = {
                     subject = {
                       commonName = "custom:kube-apiserver-kubelet-client",
+                      organizationalUnit = [
+                        "system:masters"
+                      ]
                     }
                     usages = [
                       "client auth"
@@ -424,8 +523,13 @@ locals {
               allowed_domains = [
                 "custom:kubeadm-client",
               ]
-              organization = ["system:masters"]
-              client_flag  = true
+              organization = [
+                "system:masters"
+              ]
+
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kubeadm-client = {
@@ -467,8 +571,12 @@ locals {
               allowed_domains = [
                 "custom:terraform-kubeconfig",
               ]
-              organization = ["system:masters"]
-              client_flag  = true
+              organization = [
+                "system:masters"
+              ]
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               # kube-apiserver-cluster-admin-client = {
@@ -518,9 +626,11 @@ locals {
                 local.k8s-addresses.kube_apiserver_lb_fqdn,
                 local.k8s-addresses.kube_apiserver_lb_fqdn_local
               ]
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-apiserver = {
@@ -586,9 +696,11 @@ locals {
                 "kube-scheduler.default.svc.cluster.local",
                 "custom:kube-scheduler"
               ]
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-scheduler-server = {
@@ -643,7 +755,9 @@ locals {
               allowed_domains = [
                 "system:kube-scheduler"
               ]
-              client_flag = true
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-scheduler-client = {
@@ -688,10 +802,12 @@ locals {
               organization = [
                 "system:nodes",
               ]
-              server_flag     = true
-              client_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              server_flag         = true
+              client_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {}
           }
@@ -719,9 +835,12 @@ locals {
                 "system:nodes",
                 "system:authenticated"
               ]
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              allow_glob_domains  = true
+              allow_bare_domains  = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              use_csr_common_name = true
             }
             certificates = {
               kubelet-server = {
@@ -775,7 +894,10 @@ locals {
               organization = [
                 "system:nodes",
               ]
-              client_flag = true
+              client_flag         = true
+              allow_glob_domains  = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kubelet-client = {
@@ -812,17 +934,26 @@ locals {
             etcd-cafile = "cert-public-arg"
           }
         }
-        common_name               = "ETCD Intermediate CA",
-        description               = "ETCD Intermediate CA"
-        path                      = "${local.global_path.base_vault_path_pki}/etcd"
-        root_path                 = "${local.global_path.root_vault_path_pki}"
-        host_path                 = "${local.global_path.base_local_path_certs}/ca"
-        type                      = "internal"
-        organization              = "Kubernetes"
-        exportedKey               = false
-        generate                  = false
-        default_lease_ttl_seconds = 321408000
-        max_lease_ttl_seconds     = 321408000
+        default = {
+          common_name               = "ETCD Intermediate CA",
+          description               = "ETCD Intermediate CA"
+          path                      = "${local.global_path.base_vault_path_pki}/etcd"
+          root_path                 = "${local.global_path.root_vault_path_pki}"
+          host_path                 = "${local.global_path.base_local_path_certs}/ca"
+          organization              = "Kubernetes"
+
+          sign = {
+            revoke                  = true
+          }
+          key-keeper-args = {
+            spec = {
+              exportedKey           = false
+              generate              = false
+            }
+          }
+        }
+
+
         issuers = {
           etcd-server = {
             issuer-args = {
@@ -838,9 +969,13 @@ locals {
                 "*.${local.cluster_metadata.cluster_name}.${local.cluster_metadata.base_domain}",
                 "custom:etcd-server"
               ]
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_glob_domains  = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
+
             }
             certificates = {
             }
@@ -868,10 +1003,12 @@ locals {
                 "master-${local.k8s-addresses.extra_cluster_name}-2",
                 "master-${local.k8s-addresses.extra_cluster_name}-3"
               ]
-              client_flag     = true
-              server_flag     = true
-              allow_ip_sans   = true
-              allow_localhost = true
+              client_flag         = true
+              server_flag         = true
+              allow_ip_sans       = true
+              allow_localhost     = true
+              allow_glob_domains  = true
+              allow_bare_domains  = true
             }
             certificates = {
               etcd-server = {
@@ -959,7 +1096,10 @@ locals {
                 "system:etcd-healthcheck-client",
                 "custom:etcd-client"
               ]
-              client_flag = true
+              client_flag         = true
+              allow_glob_domains  = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               kube-apiserver-etcd-client = {
@@ -996,17 +1136,26 @@ locals {
             requestheader-client-ca-file = "cert-public-arg"
           }
         }
-        common_name               = "Front-proxy Intermediate CA",
-        description               = "Front-proxy Intermediate CA"
-        path                      = "${local.global_path.base_vault_path_pki}/front-proxy"
-        root_path                 = "${local.global_path.root_vault_path_pki}"
-        host_path                 = "${local.global_path.base_local_path_certs}/ca"
-        type                      = "internal"
-        organization              = "Kubernetes"
-        exportedKey               = false
-        generate                  = false
-        default_lease_ttl_seconds = 321408000
-        max_lease_ttl_seconds     = 321408000
+
+        default = {
+          common_name               = "Front-proxy Intermediate CA",
+          description               = "Front-proxy Intermediate CA"
+          path                      = "${local.global_path.base_vault_path_pki}/front-proxy"
+          root_path                 = "${local.global_path.root_vault_path_pki}"
+          host_path                 = "${local.global_path.base_local_path_certs}/ca"
+          organization              = "Kubernetes"
+
+          sign = {
+            revoke                  = true
+          }
+          key-keeper-args = {
+            spec = {
+              exportedKey           = false
+              generate              = false
+            }
+          }
+        }
+
         issuers = {
           front-proxy-client = {
             labels = {
@@ -1023,7 +1172,9 @@ locals {
                 "system:kube-apiserver-front-proxy-client",
                 "custom:kube-apiserver-front-proxy-client"
               ]
-              client_flag = true
+              client_flag         = true
+              allow_bare_domains  = true
+              use_csr_common_name = true
             }
             certificates = {
               front-proxy-client = {
@@ -1068,11 +1219,24 @@ locals {
         labels = {
           instance-master = true
         }
-        description = "OIDC CA"
-        path        = "pki-root"
-        exportedKey = false
-        generate    = false
-        host_path   = "${local.global_path.base_local_path_certs}/ca"
+
+        default = {
+          description = "OIDC CA"
+          path        = "pki-root"
+
+          sign = {
+            revoke                  = true
+          }
+          key-keeper-args = {
+            spec = {
+              exportedKey           = false
+              generate              = false
+            }
+          }
+          host_path   = "${local.global_path.base_local_path_certs}/ca"
+
+        }
+
       }
     }
   }

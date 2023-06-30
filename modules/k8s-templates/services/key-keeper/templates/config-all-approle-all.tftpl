@@ -37,7 +37,7 @@ issuers:
           secretIDLocalPath: ${base_path.base_local_path_vault}/all-secret-id
           roleIDLocalPath: ${base_path.base_local_path_vault}/all-role-id
       resource:
-        CAPath: "${external_intermediate.path}"
+        CAPath: "${external_intermediate.default.path}"
       timeout: 15s
   %{~ endif ~}
 %{~ endfor ~}
@@ -57,8 +57,8 @@ issuers:
           secretIDLocalPath: ${base_path.base_local_path_vault}/all-secret-id
           roleIDLocalPath: ${base_path.base_local_path_vault}/all-role-id
       resource:
-        CAPath: "${intermediate.path}"
-        rootCAPath: "${intermediate.root_path}"
+        CAPath: "${intermediate.default.path}"
+        rootCAPath: "${intermediate.default.root_path}"
       timeout: 15s
   %{~ endif ~}
 
@@ -78,7 +78,7 @@ issuers:
           roleIDLocalPath: ${base_path.base_local_path_vault}/all-role-id
       resource:
         role: ${issuer_name}
-        CAPath: "${intermediate.path}"
+        CAPath: "${intermediate.default.path}"
       timeout: 15s
 
     %{~ endif ~}
@@ -94,9 +94,9 @@ certificates:
       name: ${intermediate_name}
     isCa: true
     ca:
-      exportedKey: ${intermediate.exportedKey}
-      generate: ${intermediate.generate}
-    hostPath: "${intermediate.host_path}"
+      exportedKey: ${intermediate.default.key-keeper-args.spec.exportedKey}
+      generate: ${intermediate.default.key-keeper-args.spec.generate}
+    hostPath: "${intermediate.default.host_path}"
   %{~ endif ~}
 
   %{~ for issuer_name, issuers in intermediate.issuers ~}
@@ -224,9 +224,9 @@ certificates:
       name: ${external_intermediate_name}
     isCa: true
     ca:
-      exportedKey: ${external_intermediate.exportedKey}
-      generate: ${external_intermediate.generate}
-    hostPath: "${external_intermediate.host_path}"
+      exportedKey: ${external_intermediate.default.key-keeper-args.spec.exportedKey}
+      generate: ${external_intermediate.default.key-keeper-args.spec.generate}
+    hostPath: "${external_intermediate.default.host_path}"
   %{~ endif ~}
 %{~ endfor ~}
 
@@ -237,7 +237,7 @@ secrets:
   - name: ${secret_name}
     issuerRef:
       name: ${secret_name}
-    key: ${key_name}  
+    key: ${key_name}
     hostPath: ${key.host_path}
 
     %{~ endfor ~}

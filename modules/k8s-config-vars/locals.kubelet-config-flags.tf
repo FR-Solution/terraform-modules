@@ -6,7 +6,7 @@ locals {
     healthzPort         = local.kubernetes-ports.kubelet-healthz-port
     authentication = {
         x509 = {
-            clientCAFile = "${local.ssl.intermediate["kubernetes-ca"].host_path}/kubernetes-ca.pem"
+            clientCAFile = "${local.ssl.intermediate["kubernetes-ca"].default.host_path}/kubernetes-ca.pem"
         }
     }
 

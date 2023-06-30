@@ -33,7 +33,7 @@ kubectl config set-context --current --namespace=$1
 
 export ETCDCTL_CERT=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client.pem \
 export ETCDCTL_KEY=${ssl.intermediate["etcd-ca"].issuers["etcd-client"].certificates["kube-apiserver-etcd-client"].key-keeper-args.host_path}/kube-apiserver-etcd-client-key.pem \
-export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].host_path}/etcd-ca.pem \
+export ETCDCTL_CACERT=${ssl.intermediate["etcd-ca"].default.host_path}/etcd-ca.pem \
 
 etcd_endpoints () {
 export ENDPOINTS=$(echo $(ENDPOINTS=127.0.0.1:${etcd_server_port}

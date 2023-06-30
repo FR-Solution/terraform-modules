@@ -29,10 +29,10 @@ spec:
       %{~ if  try(intermediate_content.labels.static-pod-etcd-args, {}) != {} ~}
         %{~ for key, value in intermediate_content.labels.static-pod-etcd-args ~}
           %{~ if value == "cert-public-arg" ~}
-      - --${key}=${intermediate_content.host_path}/${intermediate_name}.pem
+      - --${key}=${intermediate_content.default.host_path}/${intermediate_name}.pem
           %{~ endif ~}
           %{~ if value == "cert-private-arg" ~}
-      - --${key}=${intermediate_content.host_path}/${intermediate_name}-key.pem
+      - --${key}=${intermediate_content.default.host_path}/${intermediate_name}-key.pem
           %{~ endif ~}
         %{~ endfor ~}
       %{~ endif ~}

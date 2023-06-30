@@ -1,19 +1,5 @@
 variable "k8s_global_vars" {
-  description = "module:K8S-CERTIFICATE-VARS: base certificate vars"
+  description = "Module:k8s-config-vars: base vars"
   type        = any
   default     = {}
-}
-
-variable "master_instance_list_map" {
-  type        = any
-  default     = null
-}
-
-variable "k8s_vault_master_secret_id" {
-  type = object({
-    enabled = bool
-  })
-  default = {
-    enabled = true
-  }
 }
