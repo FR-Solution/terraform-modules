@@ -38,6 +38,7 @@ module "k8s-ready-status" {
   source            = "../k8s-ready-status"
   cluster_instances = module.k8s-masters.cluster_external_instances_map
   k8s_global_vars   = module.k8s-global-vars
+  kube_apiserver_lb = module.k8s-masters.kube-apiserver-lb
 }
 
 
