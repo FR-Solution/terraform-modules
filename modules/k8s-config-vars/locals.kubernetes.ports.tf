@@ -1,6 +1,6 @@
 locals {
   kubernetes-ports = {
-    etcd-server-port              = "2383"
+    etcd-server-port              = "2379"
     etcd-peer-port                = "2380"
     etcd-metrics-port             = "2381"
     etcd-server-port-target-lb    = "2382"
