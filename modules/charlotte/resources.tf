@@ -22,7 +22,7 @@ resource "sgroups_networks" "networks" {
 
 resource "sgroups_group" "groups" {
     depends_on = [
-      sgroups_network.networks
+      sgroups_networks.networks
     ]
 
     for_each    = local.security_groups_network__name__map
