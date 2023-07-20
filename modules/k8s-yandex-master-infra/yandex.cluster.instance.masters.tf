@@ -66,6 +66,8 @@ resource "yandex_compute_instance" "master" {
     nat = var.k8s_global_vars.master_vars.master_group.resources.network_interface.nat
   }
 
+  labels      = {}
+
   lifecycle {
     ignore_changes = [
       metadata

@@ -113,7 +113,7 @@ bpf:
   # -- Configure the eBPF-based TPROXY to reduce reliance on iptables rules
   # for implementing Layer 7 policy.
   tproxy: true
-  hostLegacyRouting: false
+  hostLegacyRouting: true
 
 # Требует включенное состояние при развертывании в облаках и интегрируя с cloud-controllers
 # -- Configure N-S k8s service loadbalancing
@@ -189,7 +189,7 @@ externalWorkloads:
 endpointRoutes:
   # -- Enable use of per endpoint routes instead of routing via
   # the cilium_host interface. (required "false" if bpf.hostLegacyRouting=false)
-  enabled: false
+  enabled: true
 
 # -- Install Iptables rules to skip netfilter connection tracking on all pod
 # traffic. This option is only effective when Cilium is running in direct

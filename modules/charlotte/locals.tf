@@ -30,7 +30,7 @@ locals {
         for security_group in var.security_groups : {
             "${security_group.name}": flatten([
                 for cidr in try(security_group.cidrs, []):
-                    "${substr(sha256(cidr), 0, 10)}:${cidr}"
+                    "${cidr}:${cidr}"
             ])
         }
     ])
@@ -81,7 +81,7 @@ locals {
         for security_group in var.security_groups : {
             "${security_group.name}": join(",",flatten([
                 for cidr in try(security_group.cidrs, []):
-                    "${substr(sha256(cidr), 0, 10)}"
+                    "${cidr}"
             ]))
         }
     ])
