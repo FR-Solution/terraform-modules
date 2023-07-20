@@ -29,7 +29,7 @@ resource "sgroups_groups" "groups" {
 
 resource "sgroups_rules" "rules" {
   depends_on = [
-    sgroups_group.groups,
+    sgroups_groups.groups,
   ]
 
   for_each = local.rules_map
