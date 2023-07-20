@@ -1,12 +1,4 @@
 
-# resource "sgroups_network" "networks" {
-#   for_each = local.networks_map
-
-#   name    = each.key
-#   cidr    = each.value
-
-# }
-
 resource "sgroups_networks" "networks" {
 
   dynamic "items" {
@@ -20,15 +12,19 @@ resource "sgroups_networks" "networks" {
 
 }
 
-resource "sgroups_group" "groups" {
-    depends_on = [
-      sgroups_networks.networks
-    ]
+resource "sgroups_groups" "groups" {
+  depends_on = [
+    sgroups_networks.networks
+  ]
 
-    for_each    = local.security_groups_network__name__map
+  dynamic "items" {
+    for_each = local.security_groups_network__name__map
 
-    name        = each.key
-    networks    = each.value
+    content {
+      name        = items.key
+      networks    = items.value
+    }
+  }
 }
 
 resource "sgroups_rules" "rules" {
