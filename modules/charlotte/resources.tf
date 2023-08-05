@@ -35,11 +35,11 @@ resource "sgroups_group" "groups" {
 
   for_each = local.security_groups_network__name__map
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     networks
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      networks
+    ]
+  }
 
   name        = each.key
   networks    = each.value
