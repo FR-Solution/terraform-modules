@@ -31,7 +31,7 @@ resource "sgroups_networks" "networks" {
 #   }
 # }
 
-resource "sgroups_group" "group" {
+resource "sgroups_group" "groups" {
   depends_on = [
     sgroups_networks.networks
   ]
