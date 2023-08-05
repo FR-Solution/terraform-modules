@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     sgroups = {
-       version = "1.1.*"
+       version = "1.1.0,1.1.1"
        source = "fraima/charlotte"
     }
   }
