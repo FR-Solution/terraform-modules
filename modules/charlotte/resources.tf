@@ -16,14 +16,15 @@ resource "sgroups_groups" "groups" {
   depends_on = [
     sgroups_networks.networks
   ]
-  lifecycle {
-    ignore_changes = [
-      networks
-    ]
-  }
+
   dynamic "items" {
     for_each = local.security_groups_network__name__map
-
+    
+    lifecycle {
+      ignore_changes = [
+        networks
+      ]
+    }
     content {
       name        = items.key
       networks    = items.value
