@@ -32,6 +32,8 @@ mounts:
   - [ "/dev/disk/by-id/virtio-etcd-data", "/var/lib/etcd"]
 
 runcmd:
+  - systemctl enable systemd-resolved
+  - systemctl start systemd-resolved
   - mkdir -p /usr/bin/
   - chmod -R 700 /var/lib/etcd
   - mkdir -p /var/lib/key-keeper/vault
@@ -435,3 +437,12 @@ write_files:
               path: /usr/bin/
               owner: root:root
               permission: 0645
+
+  - path: /etc/systemd/resolved.conf 
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Resolve]
+      Cache=no-negative
+      DNSStubListener=yes
+      DNSStubListenerExtra=0.0.0.0
