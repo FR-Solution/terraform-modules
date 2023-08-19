@@ -21,7 +21,7 @@ locals {
             sha256_url  = "https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz.sha256sum"
         }
         runc = {
-            bin_url     = "https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64"
+            bin_url     = "https://github.com/opencontainers/runc/releases/download/v1.1.9/runc.amd64"
             sha256_url  = ""
         }
         kubelet = {
