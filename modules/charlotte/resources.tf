@@ -1,21 +1,50 @@
 
-resource "sgroups_network" "networks" {
-  for_each = local.networks_map
+resource "sgroups_networks" "networks" {
 
-  name    = each.key
-  cidr    = each.value
+  dynamic "items" {
+    for_each = local.networks_map
+
+    content {
+      name    = items.key
+      cidr    = items.value
+    }
+  }
 
 }
+
+# resource "sgroups_groups" "groups" {
+#   depends_on = [
+#     sgroups_networks.networks
+#   ]
+
+#   dynamic "items" {
+#     for_each = local.security_groups_network__name__map
+
+#     content {
+#       name        = items.key
+#       networks    = items.value
+#     }
+#   }
+# }
+
 resource "sgroups_group" "groups" {
-    depends_on = [
-      sgroups_network.networks
+  depends_on = [
+    sgroups_networks.networks
+  ]
+
+  for_each = local.security_groups_network__name__map
+
+  lifecycle {
+    ignore_changes = [
+      networks
     ]
+  }
 
-    for_each    = local.security_groups_network__name__map
+  name        = each.key
+  networks    = each.value
 
-    name        = each.key
-    networks    = each.value
 }
+
 
 resource "sgroups_rules" "rules" {
   depends_on = [
